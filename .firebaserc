@@ -1,0 +1,13 @@
+{
+  "projects": {
+    "default": "gimli-app"
+  },
+  "targets": {
+    "gimli-app": {
+      "hosting": {
+        "dev": ["gimli-app-dev"],
+        "prod": ["gimli-app"]
+      }
+    }
+  }
+}
