@@ -1,14 +1,15 @@
 import { Router } from 'express';
 import { verifyToken } from '../controllers/auth-controller.js';
+import { getUserProfile, upsertUserProfile } from '../controllers/user-controller.js';
 
 const router = Router();
 
 // All routes below require authentication
 router.use(verifyToken);
 
-// User routes (Task 7)
-// router.post('/user/profile', ...);
-// router.get('/user/profile', ...);
+// User routes
+router.get('/user/profile', getUserProfile);
+router.post('/user/profile', upsertUserProfile);
 
 // Exercise routes (Task 8)
 // router.get('/exercises', ...);

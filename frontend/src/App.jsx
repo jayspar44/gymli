@@ -1,5 +1,6 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { UserProfileProvider, useUserProfile } from './contexts/UserProfileContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/layout/Layout';
 import Login from './pages/Login';
@@ -7,6 +8,13 @@ import Today from './pages/Today';
 import Log from './pages/Log';
 import Progress from './pages/Progress';
 import Profile from './pages/Profile';
+
+function OnboardingGate({ children }) {
+  const { needsOnboarding, loading } = useUserProfile();
+  if (loading) return null;
+  if (needsOnboarding) return <Navigate to="/profile" replace />;
+  return children;
+}
 
 function App() {
   return (
@@ -17,13 +25,15 @@ function App() {
           path="/"
           element={
             <ProtectedRoute>
-              <Layout />
+              <UserProfileProvider>
+                <Layout />
+              </UserProfileProvider>
             </ProtectedRoute>
           }
         >
-          <Route index element={<Today />} />
-          <Route path="log" element={<Log />} />
-          <Route path="progress" element={<Progress />} />
+          <Route index element={<OnboardingGate><Today /></OnboardingGate>} />
+          <Route path="log" element={<OnboardingGate><Log /></OnboardingGate>} />
+          <Route path="progress" element={<OnboardingGate><Progress /></OnboardingGate>} />
           <Route path="profile" element={<Profile />} />
         </Route>
       </Routes>
