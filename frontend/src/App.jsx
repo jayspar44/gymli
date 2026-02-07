@@ -1,7 +1,12 @@
 import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import Layout from './components/layout/Layout';
 import Login from './pages/Login';
+import Today from './pages/Today';
+import Log from './pages/Log';
+import Progress from './pages/Progress';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -9,15 +14,18 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route
-          path="/*"
+          path="/"
           element={
             <ProtectedRoute>
-              <div className="flex items-center justify-center h-screen text-2xl font-semibold text-forge-600">
-                Gimli - Home (Coming Soon)
-              </div>
+              <Layout />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route index element={<Today />} />
+          <Route path="log" element={<Log />} />
+          <Route path="progress" element={<Progress />} />
+          <Route path="profile" element={<Profile />} />
+        </Route>
       </Routes>
     </AuthProvider>
   );
