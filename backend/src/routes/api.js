@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { verifyToken } from '../controllers/auth-controller.js';
 import { getUserProfile, upsertUserProfile } from '../controllers/user-controller.js';
 import { listExercises } from '../controllers/exercise-controller.js';
+import { createPlan, fetchActivePlan, fetchPlan, modifyPlan, fetchTemplates } from '../controllers/plan-controller.js';
 
 const router = Router();
 
@@ -15,11 +16,12 @@ router.post('/user/profile', upsertUserProfile);
 // Exercise routes
 router.get('/exercises', listExercises);
 
-// Plan routes (Task 9)
-// router.post('/plans/generate', ...);
-// router.get('/plans/active', ...);
-// router.get('/plans/:id', ...);
-// router.put('/plans/:id', ...);
+// Plan routes
+router.get('/plans/templates', fetchTemplates);
+router.post('/plans/generate', createPlan);
+router.get('/plans/active', fetchActivePlan);
+router.get('/plans/:id', fetchPlan);
+router.put('/plans/:id', modifyPlan);
 
 // Workout routes (Task 11)
 // router.post('/workouts', ...);
