@@ -1,0 +1,29 @@
+{
+  "name": "gimli",
+  "version": "0.1.0",
+  "description": "AI-powered gym assistant",
+  "type": "module",
+  "scripts": {
+    "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "build": "npm run install-all && cd frontend && npm run build",
+    "lint": "npm run lint --prefix frontend && npm run lint --prefix backend",
+    "dev:local": "node scripts/dev-with-ports.js",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "release": "standard-version",
+    "release:patch": "standard-version --release-as patch",
+    "release:minor": "standard-version --release-as minor",
+    "release:major": "standard-version --release-as major",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2",
+    "dotenv": "^16.6.1"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.3.1",
+    "@commitlint/config-conventional": "^20.3.1",
+    "husky": "^9.1.7",
+    "standard-version": "^9.5.0"
+  }
+}
