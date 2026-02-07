@@ -1,0 +1,40 @@
+import { Router } from 'express';
+import { verifyToken } from '../controllers/auth-controller.js';
+
+const router = Router();
+
+// All routes below require authentication
+router.use(verifyToken);
+
+// User routes (Task 7)
+// router.post('/user/profile', ...);
+// router.get('/user/profile', ...);
+
+// Exercise routes (Task 8)
+// router.get('/exercises', ...);
+
+// Plan routes (Task 9)
+// router.post('/plans/generate', ...);
+// router.get('/plans/active', ...);
+// router.get('/plans/:id', ...);
+// router.put('/plans/:id', ...);
+
+// Workout routes (Task 11)
+// router.post('/workouts', ...);
+// router.put('/workouts/:id', ...);
+// router.delete('/workouts/:id', ...);
+// router.get('/workouts', ...);
+// router.get('/workouts/today', ...);
+
+// Stats routes (Task 16)
+// router.get('/stats/exercise/:id', ...);
+// router.get('/stats/volume', ...);
+// router.get('/stats/streak', ...);
+// router.get('/stats/insights', ...);
+
+// Chat routes (Task 14)
+// router.post('/chat', ...);
+// router.get('/chat/history', ...);
+// router.delete('/chat/history', ...);
+
+export default router;
