@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { verifyToken } from '../controllers/auth-controller.js';
 import { getUserProfile, upsertUserProfile } from '../controllers/user-controller.js';
+import { listExercises } from '../controllers/exercise-controller.js';
 
 const router = Router();
 
@@ -11,8 +12,8 @@ router.use(verifyToken);
 router.get('/user/profile', getUserProfile);
 router.post('/user/profile', upsertUserProfile);
 
-// Exercise routes (Task 8)
-// router.get('/exercises', ...);
+// Exercise routes
+router.get('/exercises', listExercises);
 
 // Plan routes (Task 9)
 // router.post('/plans/generate', ...);
