@@ -25,3 +25,10 @@ export const deleteWorkout = (id) => client.delete(`/workouts/${id}`).then(r => 
 export const sendChat = (message, context) => client.post('/chat', { message, context }).then(r => r.data);
 export const getChatHistory = (limit) => client.get('/chat/history', { params: { limit } }).then(r => r.data);
 export const clearChatHistory = () => client.delete('/chat/history').then(r => r.data);
+
+// Stats
+export const getExerciseProgress = (exerciseId) => client.get(`/stats/exercise/${exerciseId}`).then(r => r.data);
+export const getVolumeStats = (period) => client.get('/stats/volume', { params: { period } }).then(r => r.data);
+export const getStreakData = () => client.get('/stats/streak').then(r => r.data);
+export const getInsights = () => client.get('/stats/insights').then(r => r.data);
+export const getLoggedExercises = () => client.get('/stats/exercises').then(r => r.data);

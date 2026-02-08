@@ -1,13 +1,17 @@
-import { BarChart3 } from 'lucide-react';
+import GimliInsights from '../components/progress/GimliInsights';
+import StreakCalendar from '../components/progress/StreakCalendar';
+import ExerciseChart from '../components/progress/ExerciseChart';
+import VolumeChart from '../components/progress/VolumeChart';
 
 export default function Progress() {
   return (
-    <div className="flex flex-col items-center justify-center h-full px-6 text-center">
-      <div className="flex items-center justify-center w-14 h-14 mb-4 rounded-2xl bg-[var(--color-surface-alt)]">
-        <BarChart3 className="w-7 h-7 text-[var(--color-primary)]" strokeWidth={1.5} />
-      </div>
-      <h2 className="text-lg font-semibold text-[var(--color-text)] mb-1">Progress</h2>
-      <p className="text-sm text-[var(--color-text-secondary)]">Track your gains over time</p>
+    <div className="px-4 py-6 space-y-4">
+      <h2 className="text-lg font-semibold text-[var(--color-text)]">Progress</h2>
+
+      <GimliInsights />
+      <StreakCalendar />
+      <ExerciseChart />
+      <VolumeChart />
     </div>
   );
 }
