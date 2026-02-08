@@ -606,7 +606,9 @@ Flow: TemplatePicker → Gymli generates plan (loading with Gymli quote) → Pla
 
 **Step 4: Create PlanView component**
 
-Displays plan as a weekly schedule. Each day shows exercises with sets x reps x weight targets. Collapsible day sections.
+Displays plan as a weekly schedule. Each day shows exercises with sets x reps x weight targets. Collapsible day sections. Supports two modes:
+- **Read-only mode**: Used during PlanSetup confirmation and as the default view from the Today screen.
+- **Edit mode**: Tap an exercise to edit sets/reps/weight targets inline. Add or remove exercises from a day. Reorder exercises via drag or move buttons. "Change Plan" button at the bottom to start a new plan from templates. Saves via `PUT /api/plans/:id`.
 
 **Step 5: Add plan setup to onboarding**
 
@@ -702,8 +704,10 @@ Add to `services.js`: `getTodaysWorkout()`, `logWorkout()`, `updateWorkout()`, `
 - Gymli's daily greeting (based on streak, day of week)
 - Today's planned workout preview (exercises with target sets/reps/weight)
 - "Start Workout" button
+- "View Full Plan" button → expands/navigates to PlanView (from Task 10) showing the full weekly schedule with edit capability
 - Current streak display
 - If rest day: Gymli tells you to rest ("Even dwarves need rest between battles")
+- If no active plan: prompt to create one with link to PlanSetup
 
 **Step 3: Build WorkoutSession**
 

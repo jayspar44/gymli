@@ -33,7 +33,7 @@ Gymli is a chat-first workout companion with a structured tracker backbone. The 
 ## App Structure & Navigation
 
 **Bottom tabs (3):**
-- **Today** - Current workout plan for today, quick-start button, streak counter, Gymli's daily greeting
+- **Today** - Current workout plan for today, quick-start button, streak counter, Gymli's daily greeting, "View Full Plan" to see/edit the weekly schedule
 - **Log** - Manual workout logging, exercise picker, set/rep/weight entry, workout history list
 - **Progress** - Per-exercise charts (weight over time), volume trends, streak calendar, Gymli's periodic insights
 

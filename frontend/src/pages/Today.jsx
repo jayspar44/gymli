@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Flame, Dumbbell, Moon, Play, CheckCircle2 } from 'lucide-react';
-import { getTodaysWorkout } from '../api/services';
+import { Flame, Dumbbell, Moon, Play, CheckCircle2, Calendar, X } from 'lucide-react';
+import { getTodaysWorkout, getActivePlan, updatePlan } from '../api/services';
 import WorkoutSession from '../components/workout/WorkoutSession';
+import PlanView from '../components/plan/PlanView';
 
 const GREETINGS = [
   'The forge awaits, warrior!',
@@ -19,6 +20,13 @@ export default function Today() {
   const [error, setError] = useState(null);
   const [showSession, setShowSession] = useState(false);
   const [greeting] = useState(() => GREETINGS[Math.floor(Math.random() * GREETINGS.length)]);
+
+  // Full plan overlay state
+  const [showPlan, setShowPlan] = useState(false);
+  const [fullPlan, setFullPlan] = useState(null);
+  const [planLoading, setPlanLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   useEffect(() => {
     loadToday();
@@ -43,6 +51,44 @@ export default function Today() {
   function handleSessionClose() {
     setShowSession(false);
     loadToday(); // Refresh
+  }
+
+  async function handleOpenPlan() {
+    setShowPlan(true);
+    setPlanLoading(true);
+    setSaveSuccess(false);
+    try {
+      const plan = await getActivePlan();
+      setFullPlan(plan);
+    } catch {
+      setFullPlan(null);
+    } finally {
+      setPlanLoading(false);
+    }
+  }
+
+  function handleClosePlan() {
+    setShowPlan(false);
+    setFullPlan(null);
+    setSaveSuccess(false);
+  }
+
+  async function handleSavePlan() {
+    if (!fullPlan?.id) return;
+    setSaving(true);
+    setSaveSuccess(false);
+    try {
+      const updated = await updatePlan(fullPlan.id, { days: fullPlan.days });
+      setFullPlan(updated);
+      setSaveSuccess(true);
+      // Refresh today's data since the plan changed
+      loadToday();
+      setTimeout(() => setSaveSuccess(false), 2000);
+    } catch {
+      // Could show error, but keep it simple
+    } finally {
+      setSaving(false);
+    }
   }
 
   if (loading) {
@@ -91,21 +137,43 @@ export default function Today() {
   // Rest day
   if (todayData.isRestDay) {
     return (
-      <div className="flex flex-col items-center justify-center h-full px-6 text-center">
-        <div className="flex items-center justify-center w-14 h-14 mb-4 rounded-2xl bg-[var(--color-surface-alt)]">
-          <Moon className="w-7 h-7 text-indigo-400" strokeWidth={1.5} />
-        </div>
-        <h2 className="text-lg font-semibold text-[var(--color-text)] mb-2">Rest Day</h2>
-        <p className="text-sm text-[var(--color-text-secondary)] italic">
-          &ldquo;{todayData.message}&rdquo;
-        </p>
-        {todayData.streak > 0 && (
-          <div className="flex items-center gap-1.5 mt-4 text-sm text-[var(--color-primary)]">
-            <Flame className="w-4 h-4" />
-            {todayData.streak} day streak
+      <>
+        <div className="flex flex-col items-center justify-center h-full px-6 text-center">
+          <div className="flex items-center justify-center w-14 h-14 mb-4 rounded-2xl bg-[var(--color-surface-alt)]">
+            <Moon className="w-7 h-7 text-indigo-400" strokeWidth={1.5} />
           </div>
+          <h2 className="text-lg font-semibold text-[var(--color-text)] mb-2">Rest Day</h2>
+          <p className="text-sm text-[var(--color-text-secondary)] italic">
+            &ldquo;{todayData.message}&rdquo;
+          </p>
+          {todayData.streak > 0 && (
+            <div className="flex items-center gap-1.5 mt-4 text-sm text-[var(--color-primary)]">
+              <Flame className="w-4 h-4" />
+              {todayData.streak} day streak
+            </div>
+          )}
+          <button
+            onClick={handleOpenPlan}
+            className="flex items-center gap-1.5 mt-6 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors"
+          >
+            <Calendar className="w-4 h-4" />
+            View Full Plan
+          </button>
+        </div>
+
+        {/* Full plan overlay */}
+        {showPlan && (
+          <PlanOverlay
+            loading={planLoading}
+            plan={fullPlan}
+            saving={saving}
+            saveSuccess={saveSuccess}
+            onPlanChange={setFullPlan}
+            onSave={handleSavePlan}
+            onClose={handleClosePlan}
+          />
         )}
-      </div>
+      </>
     );
   }
 
@@ -147,7 +215,7 @@ export default function Today() {
                   {ex.exerciseId.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
                 </span>
                 <span className="text-xs text-[var(--color-text-secondary)] font-mono">
-                  {ex.sets} × {ex.reps}
+                  {ex.sets} &times; {ex.reps}
                 </span>
               </div>
             ))}
@@ -171,6 +239,15 @@ export default function Today() {
             )}
           </div>
         </div>
+
+        {/* View Full Plan button */}
+        <button
+          onClick={handleOpenPlan}
+          className="flex items-center justify-center gap-1.5 w-full mt-4 py-2.5 rounded-xl border border-[var(--color-border)] text-sm text-[var(--color-text-secondary)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors"
+        >
+          <Calendar className="w-4 h-4" />
+          View Full Plan
+        </button>
       </div>
 
       {/* Workout session overlay */}
@@ -181,6 +258,65 @@ export default function Today() {
           onClose={handleSessionClose}
         />
       )}
+
+      {/* Full plan overlay */}
+      {showPlan && (
+        <PlanOverlay
+          loading={planLoading}
+          plan={fullPlan}
+          saving={saving}
+          saveSuccess={saveSuccess}
+          onPlanChange={setFullPlan}
+          onSave={handleSavePlan}
+          onClose={handleClosePlan}
+        />
+      )}
     </>
+  );
+}
+
+function PlanOverlay({ loading, plan, saving, saveSuccess, onPlanChange, onSave, onClose }) {
+  return (
+    <div className="fixed inset-0 z-50 bg-[var(--color-bg)] flex flex-col">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 h-14 border-b border-[var(--color-border)] flex-shrink-0">
+        <h2 className="text-sm font-semibold text-[var(--color-text)]">
+          {plan?.templateName || 'Your Plan'}
+        </h2>
+        <div className="flex items-center gap-2">
+          {saveSuccess && (
+            <span className="text-xs text-emerald-500 font-medium">Saved</span>
+          )}
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-alt)] transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto px-4 py-4">
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="w-6 h-6 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : !plan ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <Dumbbell className="w-8 h-8 text-[var(--color-text-secondary)] mb-2" strokeWidth={1.5} />
+            <p className="text-sm text-[var(--color-text-secondary)]">Could not load plan</p>
+          </div>
+        ) : (
+          <PlanView
+            plan={plan}
+            editable
+            onPlanChange={onPlanChange}
+            onSave={onSave}
+            saving={saving}
+          />
+        )}
+      </div>
+    </div>
   );
 }
