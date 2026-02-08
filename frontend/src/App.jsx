@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { UserProfileProvider, useUserProfile } from './contexts/UserProfileContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/layout/Layout';
@@ -19,6 +20,7 @@ function OnboardingGate({ children }) {
 
 function App() {
   return (
+    <ThemeProvider>
     <AuthProvider>
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -40,6 +42,7 @@ function App() {
         </Route>
       </Routes>
     </AuthProvider>
+    </ThemeProvider>
   );
 }
 

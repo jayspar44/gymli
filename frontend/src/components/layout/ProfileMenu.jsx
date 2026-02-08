@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import { User, Settings, LogOut } from 'lucide-react';
+import { User, LogOut, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export default function ProfileMenu({ onClose }) {
   const { user, signOut } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   function handleNav(path) {
@@ -37,12 +39,18 @@ export default function ProfileMenu({ onClose }) {
           <User className="w-4 h-4 text-[var(--color-text-secondary)]" strokeWidth={1.5} />
           Profile
         </button>
+
+        {/* Theme toggle */}
         <button
-          onClick={() => handleNav('/profile')}
+          onClick={toggleTheme}
           className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-[var(--color-text)] hover:bg-[var(--color-surface-alt)] transition-colors"
         >
-          <Settings className="w-4 h-4 text-[var(--color-text-secondary)]" strokeWidth={1.5} />
-          Settings
+          {theme === 'dark' ? (
+            <Sun className="w-4 h-4 text-[var(--color-text-secondary)]" strokeWidth={1.5} />
+          ) : (
+            <Moon className="w-4 h-4 text-[var(--color-text-secondary)]" strokeWidth={1.5} />
+          )}
+          {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
         </button>
       </div>
 

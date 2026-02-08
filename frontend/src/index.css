@@ -3,6 +3,7 @@
 :root {
   --color-primary: #d4872a;
   --color-primary-dark: #b86b1f;
+  --color-primary-light: #e8a34d;
   --color-accent: #a0522d;
   --color-success: #10b981;
   --color-danger: #ef4444;
@@ -10,7 +11,7 @@
 
   --color-bg: #fdf8f0;
   --color-surface: #ffffff;
-  --color-surface-alt: #f9ecd8;
+  --color-surface-alt: #f5ead6;
   --color-text: #1c1917;
   --color-text-secondary: #78716c;
   --color-border: #e7e5e4;
@@ -44,9 +45,29 @@ body {
   font-family: 'Outfit', system-ui, sans-serif;
   background-color: var(--color-bg);
   color: var(--color-text);
-  transition: background-color 0.2s, color 0.2s;
+  transition: background-color 0.3s ease, color 0.3s ease;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Smooth theme transitions on surfaces */
+[class*="bg-[var(--color"] {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Form inputs */
+input, textarea, select {
+  font-family: inherit;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
 }
 
 /* Scrollbar styling */
@@ -61,4 +82,16 @@ body {
 ::-webkit-scrollbar-thumb {
   background: var(--color-border);
   border-radius: 2px;
+}
+
+/* Focus ring styling */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Selection color */
+::selection {
+  background-color: rgba(212, 135, 42, 0.25);
+  color: var(--color-text);
 }
