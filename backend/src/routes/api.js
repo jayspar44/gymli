@@ -6,6 +6,7 @@ import { listExercises } from '../controllers/exercise-controller.js';
 import { createPlan, fetchActivePlan, fetchPlan, modifyPlan, fetchTemplates } from '../controllers/plan-controller.js';
 import { createWorkout, listWorkouts, fetchTodaysWorkout, modifyWorkout, removeWorkout } from '../controllers/workout-controller.js';
 import { chat, fetchChatHistory, deleteChatHistory } from '../controllers/chat-controller.js';
+import { fetchExerciseProgress, fetchVolumeStats, fetchStreakData, fetchInsights, fetchLoggedExercises } from '../controllers/stats-controller.js';
 
 const router = Router();
 
@@ -39,11 +40,12 @@ router.post('/workouts', createWorkout);
 router.put('/workouts/:id', modifyWorkout);
 router.delete('/workouts/:id', removeWorkout);
 
-// Stats routes (Task 16)
-// router.get('/stats/exercise/:id', ...);
-// router.get('/stats/volume', ...);
-// router.get('/stats/streak', ...);
-// router.get('/stats/insights', ...);
+// Stats routes
+router.get('/stats/exercises', fetchLoggedExercises);
+router.get('/stats/exercise/:id', fetchExerciseProgress);
+router.get('/stats/volume', fetchVolumeStats);
+router.get('/stats/streak', fetchStreakData);
+router.get('/stats/insights', fetchInsights);
 
 // Chat routes
 router.post('/chat', chatLimiter, chat);
