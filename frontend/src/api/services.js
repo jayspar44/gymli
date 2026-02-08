@@ -13,3 +13,10 @@ export const updatePlan = (id, data) => client.put(`/plans/${id}`, data).then(r 
 
 // Exercises
 export const searchExercises = (params) => client.get('/exercises', { params }).then(r => r.data);
+
+// Workouts
+export const getTodaysWorkout = () => client.get('/workouts/today').then(r => r.data);
+export const logWorkout = (data) => client.post('/workouts', data).then(r => r.data);
+export const getWorkouts = (params) => client.get('/workouts', { params }).then(r => r.data);
+export const updateWorkout = (id, data) => client.put(`/workouts/${id}`, data).then(r => r.data);
+export const deleteWorkout = (id) => client.delete(`/workouts/${id}`).then(r => r.data);
