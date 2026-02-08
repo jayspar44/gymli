@@ -15,10 +15,12 @@ export default defineConfig({
     __BUILD_TIMESTAMP__: JSON.stringify(new Date().toISOString()),
   },
   server: {
-    port: 4000,
+    host: true,
+    port: 4200,
+    allowedHosts: ['.ts.net'],
     proxy: {
       '/api': {
-        target: 'http://localhost:4001',
+        target: 'http://localhost:4201',
         changeOrigin: true,
       },
     },

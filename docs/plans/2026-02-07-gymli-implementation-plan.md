@@ -1,4 +1,4 @@
-# Gimli - AI Gym Assistant Implementation Plan
+# Gymli - AI Gym Assistant Implementation Plan
 
 > **For Claude:** REQUIRED SUB-SKILLS:
 > - Use superpowers:executing-plans to implement this plan task-by-task.
@@ -10,7 +10,7 @@
 
 **Tech Stack:** React 19, Vite 7, Tailwind CSS 4, Capacitor 8, Express 5, Firebase Admin, Gemini 3.0, Pino logging, Recharts
 
-**Reference:** This project mirrors the Sammy architecture. See `docs/plans/2026-02-07-gimli-design.md` for full design.
+**Reference:** This project mirrors the Sammy architecture. See `docs/plans/2026-02-07-Gymli-design.md` for full design.
 
 ---
 
@@ -28,7 +28,7 @@
 
 ```json
 {
-  "name": "gimli",
+  "name": "Gymli",
   "version": "0.1.0",
   "description": "AI-powered gym assistant",
   "scripts": {
@@ -103,7 +103,7 @@ git commit -m "chore: project scaffolding with monorepo setup"
 
 ```json
 {
-  "name": "gimli-backend",
+  "name": "Gymli-backend",
   "version": "0.1.0",
   "main": "src/index.js",
   "scripts": {
@@ -189,7 +189,7 @@ git commit -m "feat: backend foundation with express, firebase, auth middleware"
 
 ```json
 {
-  "name": "gimli-frontend",
+  "name": "Gymli-frontend",
   "version": "0.1.0",
   "type": "module",
   "scripts": {
@@ -228,11 +228,11 @@ git commit -m "feat: backend foundation with express, firebase, auth middleware"
 **Step 3: Create Tailwind + PostCSS config**
 
 - `postcss.config.js`: `@tailwindcss/postcss` + autoprefixer
-- `tailwind.config.js`: Content paths, custom colors (Gimli theme - earthy/forge colors), Outfit font
+- `tailwind.config.js`: Content paths, custom colors (Gymli theme - earthy/forge colors), Outfit font
 
 **Step 4: Create index.html and entry point**
 
-- `index.html`: Standard Vite template, viewport meta for mobile, title "Gimli"
+- `index.html`: Standard Vite template, viewport meta for mobile, title "Gymli"
 - `src/main.jsx`: StrictMode + BrowserRouter + App
 - `src/index.css`: Tailwind imports, CSS custom properties for theming, safe area insets, base styles
 
@@ -244,7 +244,7 @@ import { Routes, Route } from 'react-router-dom'
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<div>Gimli - Coming Soon</div>} />
+      <Route path="/" element={<div>Gymli - Coming Soon</div>} />
     </Routes>
   )
 }
@@ -336,7 +336,7 @@ git commit -m "feat: firebase config with firestore rules and indexes"
 
 **Step 4: Create Login page**
 
-`src/pages/Login.jsx`: Gimli-themed login page with Google sign-in button and email/password form. Redirect to home on success.
+`src/pages/Login.jsx`: Gymli-themed login page with Google sign-in button and email/password form. Redirect to home on success.
 
 **Step 5: Create ProtectedRoute**
 
@@ -386,7 +386,7 @@ Full-height container with safe area padding for Capacitor. Handles mobile viewp
 
 **Step 2: Create TopBar**
 
-App title "Gimli" on the left. Profile pic / menu button on the right. ProfileMenu component opens as a dropdown with links to profile/settings and sign out.
+App title "Gymli" on the left. Profile pic / menu button on the right. ProfileMenu component opens as a dropdown with links to profile/settings and sign out.
 
 **Step 3: Create BottomNav**
 
@@ -468,7 +468,7 @@ Form with: display name, experience level (beginner/intermediate/advanced dropdo
 
 **Step 7: Add onboarding check**
 
-If user has no profile on first login, redirect to Profile page with a "Welcome, warrior! Tell me about yourself" Gimli-flavored onboarding prompt.
+If user has no profile on first login, redirect to Profile page with a "Welcome, warrior! Tell me about yourself" Gymli-flavored onboarding prompt.
 
 **Step 8: Test**
 
@@ -547,13 +547,13 @@ git commit -m "feat: exercise library with search and seed data"
 - **5/3/1**: 4 days/week
 - **Bro Split**: 5 days/week
 
-Each template defines: days with exercise slots (exercise name, target sets, target reps, progression type). These are the starting point that Gimli customizes.
+Each template defines: days with exercise slots (exercise name, target sets, target reps, progression type). These are the starting point that Gymli customizes.
 
 **Step 2: Create AI service**
 
 `services/ai-service.js`: Initialize Gemini 3.0 client. Core function: `generatePlan(template, userProfile)` - sends template + user profile (experience, goals, available days) to Gemini with system prompt instructing it to customize the template. Returns structured plan JSON.
 
-Also: `generateWorkoutSummary(workoutData)`, `generateInsights(recentWorkouts)`, `chat(messages, context)` - all Gimli-personality functions. System prompt defines Gimli's character.
+Also: `generateWorkoutSummary(workoutData)`, `generateInsights(recentWorkouts)`, `chat(messages, context)` - all Gymli-personality functions. System prompt defines Gymli's character.
 
 **Step 3: Create plan service**
 
@@ -562,7 +562,7 @@ Also: `generateWorkoutSummary(workoutData)`, `generateInsights(recentWorkouts)`,
 **Step 4: Create plan controller**
 
 `controllers/plan-controller.js`:
-- `POST /api/plans/generate` - Body: `{ templateId, customizations }` → Gimli generates personalized plan
+- `POST /api/plans/generate` - Body: `{ templateId, customizations }` → Gymli generates personalized plan
 - `GET /api/plans/active` - Get active plan
 - `GET /api/plans/:id` - Get specific plan
 - `PUT /api/plans/:id` - Update plan
@@ -571,14 +571,14 @@ Also: `generateWorkoutSummary(workoutData)`, `generateInsights(recentWorkouts)`,
 
 ```bash
 # POST /api/plans/generate { templateId: "ppl" }
-# → Returns full personalized plan with Gimli flavor
+# → Returns full personalized plan with Gymli flavor
 ```
 
 **Step 6: Commit**
 
 ```bash
 git add backend/src/
-git commit -m "feat: workout plan generation with templates and gimli AI"
+git commit -m "feat: workout plan generation with templates and Gymli AI"
 ```
 
 ---
@@ -598,11 +598,11 @@ Add to `services.js`: `generatePlan()`, `getActivePlan()`, `getPlan()`, `updateP
 
 **Step 2: Create TemplatePicker component**
 
-Card-based selection of templates. Each card shows: name, days/week, description, who it's for. Gimli's recommendation based on user profile highlighted.
+Card-based selection of templates. Each card shows: name, days/week, description, who it's for. Gymli's recommendation based on user profile highlighted.
 
 **Step 3: Create PlanSetup page**
 
-Flow: TemplatePicker → Gimli generates plan (loading with Gimli quote) → PlanView showing the full weekly schedule → Confirm to activate.
+Flow: TemplatePicker → Gymli generates plan (loading with Gymli quote) → PlanView showing the full weekly schedule → Confirm to activate.
 
 **Step 4: Create PlanView component**
 
@@ -616,7 +616,7 @@ After profile setup, if no active plan, prompt user to create one. "Now let's fo
 
 ```bash
 npm run dev:local
-# New user → Profile setup → Plan setup → Select template → Gimli generates → Activate
+# New user → Profile setup → Plan setup → Select template → Gymli generates → Activate
 ```
 
 **Step 7: Commit**
@@ -653,9 +653,9 @@ Compare each exercise's weight/reps to historical best. Flag as PR in the workou
 
 On workout save: check if previous workout date is yesterday or today (maintaining streak). Update user's streak count and last workout date.
 
-**Step 4: Add Gimli workout summary**
+**Step 4: Add Gymli workout summary**
 
-After saving workout, call AI service to generate a Gimli-flavored summary. Include PRs, total volume, comparison to last session.
+After saving workout, call AI service to generate a Gymli-flavored summary. Include PRs, total volume, comparison to last session.
 
 **Step 5: Create workout controller**
 
@@ -699,11 +699,11 @@ Add to `services.js`: `getTodaysWorkout()`, `logWorkout()`, `updateWorkout()`, `
 
 **Step 2: Build Today page**
 
-- Gimli's daily greeting (based on streak, day of week)
+- Gymli's daily greeting (based on streak, day of week)
 - Today's planned workout preview (exercises with target sets/reps/weight)
 - "Start Workout" button
 - Current streak display
-- If rest day: Gimli tells you to rest ("Even dwarves need rest between battles")
+- If rest day: Gymli tells you to rest ("Even dwarves need rest between battles")
 
 **Step 3: Build WorkoutSession**
 
@@ -724,7 +724,7 @@ Countdown timer that auto-starts after completing a set. Configurable duration (
 
 **Step 6: Build WorkoutSummary**
 
-Post-workout overlay: total duration, total volume, PRs hit (highlighted), Gimli's AI summary. "Save Workout" button.
+Post-workout overlay: total duration, total volume, PRs hit (highlighted), Gymli's AI summary. "Save Workout" button.
 
 **Step 7: Test full workout flow**
 
@@ -766,7 +766,7 @@ Date picker, add exercises via ExercisePicker, enter sets/reps/weight for each. 
 
 **Step 4: Build WorkoutHistoryList**
 
-Paginated list of past workouts sorted by date (newest first). Each WorkoutHistoryItem shows: date, day name, exercise count, total volume, PRs, Gimli summary snippet. Tap to expand full detail.
+Paginated list of past workouts sorted by date (newest first). Each WorkoutHistoryItem shows: date, day name, exercise count, total volume, PRs, Gymli summary snippet. Tap to expand full detail.
 
 **Step 5: Build Log page**
 
@@ -789,7 +789,7 @@ git commit -m "feat: manual workout logging and workout history"
 
 ---
 
-## Task 14: Chat with Gimli - Backend
+## Task 14: Chat with Gymli - Backend
 
 **Files:**
 - Create: `backend/src/controllers/chat-controller.js`
@@ -797,10 +797,10 @@ git commit -m "feat: manual workout logging and workout history"
 - Modify: `backend/src/services/ai-service.js`
 - Modify: `backend/src/routes/api.js`
 
-**Step 1: Define Gimli's system prompt**
+**Step 1: Define Gymli's system prompt**
 
 In `ai-service.js`, create the master system prompt:
-- Character: Gimli, dwarf-inspired gym companion. Committed but not cartoonish.
+- Character: Gymli, dwarf-inspired gym companion. Committed but not cartoonish.
 - Knowledge: Experienced strength coach with real training knowledge.
 - Tone: Enthusiastic, loyal, no-nonsense. Dwarf flavor is natural ("forge," "iron," "battle").
 - Context awareness: System prompt includes user profile, active plan, recent workouts, current streak.
@@ -819,7 +819,7 @@ Parse user messages for workout logging intent ("I did 3x8 bench at 185"). Use G
 
 **Step 4: Create chat controller**
 
-- `POST /api/chat` - Body: `{ message, context: { screen } }` → Returns Gimli's response
+- `POST /api/chat` - Body: `{ message, context: { screen } }` → Returns Gymli's response
 - `GET /api/chat/history` - Query param: `limit`
 - `DELETE /api/chat/history` - Clear all
 
@@ -831,19 +831,19 @@ Chat endpoint gets stricter rate limit (10 req/minute) to manage AI costs.
 
 ```bash
 # POST /api/chat { message: "What should I do today?" }
-# → Gimli responds with today's plan in character
+# → Gymli responds with today's plan in character
 ```
 
 **Step 7: Commit**
 
 ```bash
 git add backend/src/
-git commit -m "feat: gimli chat backend with context-aware AI responses"
+git commit -m "feat: Gymli chat backend with context-aware AI responses"
 ```
 
 ---
 
-## Task 15: Chat with Gimli - Frontend
+## Task 15: Chat with Gymli - Frontend
 
 **Files:**
 - Create: `frontend/src/components/chat/ChatOverlay.jsx`
@@ -863,11 +863,11 @@ Floating action button (bottom-right, above bottom nav). Axe or speech bubble ic
 
 **Step 3: Build ChatOverlay**
 
-Full-screen or slide-up drawer over current page. Header with "Gimli" title and close button. Scrollable message list. Input at bottom with safe area padding.
+Full-screen or slide-up drawer over current page. Header with "Gymli" title and close button. Scrollable message list. Input at bottom with safe area padding.
 
 **Step 4: Build ChatMessage**
 
-Gimli messages on left with dwarf avatar. User messages on right. Markdown rendering for Gimli's responses. Timestamp display.
+Gymli messages on left with dwarf avatar. User messages on right. Markdown rendering for Gymli's responses. Timestamp display.
 
 **Step 5: Build ChatInput**
 
@@ -875,7 +875,7 @@ Text input with send button. Expands for multi-line. Send on Enter (or button ta
 
 **Step 6: Add context awareness**
 
-Pass current screen name to chat API so Gimli knows where you are. "I see you're looking at your progress..." etc.
+Pass current screen name to chat API so Gymli knows where you are. "I see you're looking at your progress..." etc.
 
 **Step 7: Add to Layout**
 
@@ -885,7 +885,7 @@ ChatFAB rendered in Layout, available on all screens. ChatOverlay manages its ow
 
 ```bash
 npm run dev:local
-# Tap chat FAB from any screen → chat opens → send message → Gimli responds in character
+# Tap chat FAB from any screen → chat opens → send message → Gymli responds in character
 # Close → FAB still visible → reopen → history preserved
 ```
 
@@ -893,7 +893,7 @@ npm run dev:local
 
 ```bash
 git add frontend/src/
-git commit -m "feat: gimli chat UI with floating action button and overlay"
+git commit -m "feat: Gymli chat UI with floating action button and overlay"
 ```
 
 ---
@@ -913,16 +913,16 @@ git commit -m "feat: gimli chat UI with floating action button and overlay"
 - `getVolumeStats(uid, period)` - Weekly/monthly total volume. Optional muscle group filter.
 - `getStreakData(uid)` - Current streak, longest streak, workout calendar data (dates with workout count).
 
-**Step 2: Add Gimli insights generation**
+**Step 2: Add Gymli insights generation**
 
-In `ai-service.js`: `generateInsights(recentWorkouts, profile)` - Analyze last 2-4 weeks of data, identify trends, PRs, gaps. Return 2-3 Gimli-flavored insight strings.
+In `ai-service.js`: `generateInsights(recentWorkouts, profile)` - Analyze last 2-4 weeks of data, identify trends, PRs, gaps. Return 2-3 Gymli-flavored insight strings.
 
 **Step 3: Create stats controller**
 
 - `GET /api/stats/exercise/:id` - Exercise progress data
 - `GET /api/stats/volume` - Query params: `period` (week/month), `muscleGroup`
 - `GET /api/stats/streak` - Streak and calendar data
-- `GET /api/stats/insights` - Gimli-generated insights (cached, regenerated daily or on demand)
+- `GET /api/stats/insights` - Gymli-generated insights (cached, regenerated daily or on demand)
 
 **Step 4: Wire up routes and test**
 
@@ -935,7 +935,7 @@ In `ai-service.js`: `generateInsights(recentWorkouts, profile)` - Analyze last 2
 
 ```bash
 git add backend/src/
-git commit -m "feat: progress stats and gimli insights API"
+git commit -m "feat: progress stats and Gymli insights API"
 ```
 
 ---
@@ -946,7 +946,7 @@ git commit -m "feat: progress stats and gimli insights API"
 - Create: `frontend/src/components/progress/ExerciseChart.jsx`
 - Create: `frontend/src/components/progress/VolumeChart.jsx`
 - Create: `frontend/src/components/progress/StreakCalendar.jsx`
-- Create: `frontend/src/components/progress/GimliInsights.jsx`
+- Create: `frontend/src/components/progress/GymliInsights.jsx`
 - Create: `frontend/src/components/progress/ExerciseSelector.jsx`
 - Modify: `frontend/src/pages/Progress.jsx`
 - Modify: `frontend/src/api/services.js`
@@ -967,27 +967,27 @@ Recharts bar chart showing weekly total volume. Toggle for muscle group filter.
 
 GitHub-style heatmap calendar. Darker = more volume that day. Current streak count displayed prominently above.
 
-**Step 5: Build GimliInsights**
+**Step 5: Build GymliInsights**
 
-Card component at top of Progress page showing 2-3 AI-generated insights. Gimli avatar with speech bubble style. Refresh button to regenerate.
+Card component at top of Progress page showing 2-3 AI-generated insights. Gymli avatar with speech bubble style. Refresh button to regenerate.
 
 **Step 6: Assemble Progress page**
 
-Layout: GimliInsights at top → StreakCalendar → ExerciseChart → VolumeChart. Scrollable.
+Layout: GymliInsights at top → StreakCalendar → ExerciseChart → VolumeChart. Scrollable.
 
 **Step 7: Test**
 
 ```bash
 npm run dev:local
 # Log a few workouts → Progress tab shows charts with data
-# Gimli insights appear with relevant commentary
+# Gymli insights appear with relevant commentary
 ```
 
 **Step 8: Commit**
 
 ```bash
 git add frontend/src/
-git commit -m "feat: progress charts with exercise tracking, volume, streaks, and gimli insights"
+git commit -m "feat: progress charts with exercise tracking, volume, streaks, and Gymli insights"
 ```
 
 ---
@@ -1004,9 +1004,9 @@ git commit -m "feat: progress charts with exercise tracking, volume, streaks, an
 
 ```json
 {
-  "appId": "io.gimli.app.dev",
+  "appId": "io.Gymli.app.dev",
   "webDir": "dist",
-  "appName": "Gimli (Dev)",
+  "appName": "Gymli (Dev)",
   "server": { "androidScheme": "https" },
   "plugins": {
     "Keyboard": { "resizeOnFullScreen": true, "style": "dark", "resize": "native" },
@@ -1066,7 +1066,7 @@ git commit -m "feat: capacitor android setup with build flavors"
 
 Dark mode toggle. Persists preference to localStorage. Adds/removes `dark` class on document. Syncs with Capacitor StatusBar style.
 
-**Step 2: Define Gimli color palette**
+**Step 2: Define Gymli color palette**
 
 Earthy, forge-inspired theme:
 - Primary: warm amber/gold (forge fire)
@@ -1091,7 +1091,7 @@ Ensure consistent styling, dark mode support, loading states, error states, empt
 
 ```bash
 git add frontend/src/
-git commit -m "feat: dark mode theme with gimli-inspired color palette"
+git commit -m "feat: dark mode theme with Gymli-inspired color palette"
 ```
 
 ---
@@ -1100,7 +1100,7 @@ git commit -m "feat: dark mode theme with gimli-inspired color palette"
 
 **Step 1: End-to-end flow test**
 
-Full flow: Sign up → Onboard (profile) → Pick plan template → Gimli generates plan → Start today's workout → Complete sets → Finish → View progress → Chat with Gimli.
+Full flow: Sign up → Onboard (profile) → Pick plan template → Gymli generates plan → Start today's workout → Complete sets → Finish → View progress → Chat with Gymli.
 
 **Step 2: Fix any integration issues**
 
@@ -1145,3 +1145,4 @@ git commit -m "chore: final integration testing and project documentation"
                        ↓
                       19 → (after 6, anytime)
 ```
+

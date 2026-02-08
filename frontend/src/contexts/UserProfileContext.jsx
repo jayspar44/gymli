@@ -49,7 +49,7 @@ export function UserProfileProvider({ children }) {
     error,
     updateProfile,
     refreshProfile: loadProfile,
-    needsOnboarding: !loading && user && !profile?.onboardingComplete,
+    needsOnboarding: !loading && !error && user && !profile?.onboardingComplete,
   };
 
   return (

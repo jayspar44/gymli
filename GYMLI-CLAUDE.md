@@ -1,4 +1,4 @@
-# Gimli - AI Gym Assistant
+# Gymli - AI Gym Assistant
 
 AI-powered gym assistant with dwarf/forge-themed UI, workout plan generation, guided sessions, progress tracking, and AI chat companion.
 
@@ -13,7 +13,7 @@ AI-powered gym assistant with dwarf/forge-themed UI, workout plan generation, gu
 ## Project Structure
 
 ```
-gimli/
+Gymli/
 ├── frontend/                 # React + Vite web app
 │   ├── src/
 │   │   ├── pages/           # Today, Log, Progress, Profile, Login, PlanSetup
@@ -23,7 +23,7 @@ gimli/
 │   │   │   ├── plan/        # TemplatePicker, PlanView
 │   │   │   ├── log/         # ExercisePicker, ManualLogForm, WorkoutHistory*
 │   │   │   ├── chat/        # ChatFAB, ChatOverlay, ChatMessage, ChatInput
-│   │   │   └── progress/    # ExerciseChart, VolumeChart, StreakCalendar, GimliInsights
+│   │   │   └── progress/    # ExerciseChart, VolumeChart, StreakCalendar, GymliInsights
 │   │   ├── contexts/        # AuthContext, UserProfileContext, ThemeContext
 │   │   ├── api/             # Axios client and API services
 │   │   └── utils/           # Helper functions
@@ -68,7 +68,7 @@ All endpoints (except health) require `Authorization: Bearer <token>`.
 | GET | `/api/workouts/today` | Today's planned workout |
 | GET/POST | `/api/workouts` | List/create workouts |
 | PUT/DELETE | `/api/workouts/:id` | Update/delete workout |
-| POST | `/api/chat` | Chat with Gimli (rate limited: 10/min) |
+| POST | `/api/chat` | Chat with Gymli (rate limited: 10/min) |
 | GET | `/api/chat/history` | Chat history |
 | DELETE | `/api/chat/history` | Clear chat |
 | GET | `/api/stats/exercises` | Logged exercises list |
@@ -87,3 +87,4 @@ All endpoints (except health) require `Authorization: Bearer <token>`.
 ## Theme
 
 Forge-inspired: warm amber primary (#d4872a), stone backgrounds (#fdf8f0 light / #0c0a09 dark). Cinzel display font + Outfit body. Dark/light mode toggle via ThemeContext.
+

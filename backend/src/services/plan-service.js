@@ -22,7 +22,7 @@ export async function generatePlan(uid, templateId) {
     days: template.days,
     daysPerWeek: template.daysPerWeek,
     weeklySchedule: aiResult.weeklySchedule || null,
-    gimliMessage: aiResult.gimliMessage || `A fine choice, warrior! The ${template.name} will forge you into iron!`,
+    gymliMessage: aiResult.gymliMessage || `A fine choice, warrior! The ${template.name} will forge you into iron!`,
     adjustments: aiResult.adjustments || [],
     customized: aiResult.customized || false,
     active: true,

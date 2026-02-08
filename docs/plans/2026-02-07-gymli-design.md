@@ -1,16 +1,16 @@
-# Gimli - AI Gym Assistant Design
+# Gymli - AI Gym Assistant Design
 
 ## Core Concept
 
-Gimli is a chat-first workout companion with a structured tracker backbone. The app has two main surfaces: a **chat interface** where Gimli (your dwarf-flavored AI trainer) lives, and a **tracker UI** for logging, plans, and progress. Gimli's personality is committed but not over-the-top - enthusiastic dwarf gym bro who genuinely cares about your progress.
+Gymli is a chat-first workout companion with a structured tracker backbone. The app has two main surfaces: a **chat interface** where Gymli (your dwarf-flavored AI trainer) lives, and a **tracker UI** for logging, plans, and progress. Gymli's personality is committed but not over-the-top - enthusiastic dwarf gym bro who genuinely cares about your progress.
 
 ### Launch Scope (v1.0)
 
 - Workout tracking (weightlifting + basic cardio)
-- AI chat companion with Gimli personality
+- AI chat companion with Gymli personality
 - Workout plans from proven templates, personalized by AI
 - Progress charts with AI commentary
-- Gimli as accountability partner (streaks, check-ins, motivation)
+- Gymli as accountability partner (streaks, check-ins, motivation)
 
 ### Deferred
 
@@ -33,9 +33,9 @@ Gimli is a chat-first workout companion with a structured tracker backbone. The 
 ## App Structure & Navigation
 
 **Bottom tabs (3):**
-- **Today** - Current workout plan for today, quick-start button, streak counter, Gimli's daily greeting
+- **Today** - Current workout plan for today, quick-start button, streak counter, Gymli's daily greeting
 - **Log** - Manual workout logging, exercise picker, set/rep/weight entry, workout history list
-- **Progress** - Per-exercise charts (weight over time), volume trends, streak calendar, Gimli's periodic insights
+- **Progress** - Per-exercise charts (weight over time), volume trends, streak calendar, Gymli's periodic insights
 
 **Profile (top-right menu):**
 - Accessed via hamburger/3-dot/profile pic menu in the top bar
@@ -44,8 +44,8 @@ Gimli is a chat-first workout companion with a structured tracker backbone. The 
 **Chat (floating action button):**
 - Available from any screen via a persistent FAB in the bottom-right
 - Opens as a full-screen overlay or slides up as a drawer
-- Context-aware: if you open chat from the Today screen, Gimli knows you're looking at today's workout. From Progress, he can discuss your trends.
-- This is where you ask Gimli to adjust plans, log ad-hoc exercises, ask training questions, or just chat
+- Context-aware: if you open chat from the Today screen, Gymli knows you're looking at today's workout. From Progress, he can discuss your trends.
+- This is where you ask Gymli to adjust plans, log ad-hoc exercises, ask training questions, or just chat
 
 ---
 
@@ -71,7 +71,7 @@ Gimli is a chat-first workout companion with a structured tracker backbone. The 
 | `schedule` | Array of workout days, each containing ordered exercise list with target sets/reps/weight |
 | `progressionScheme` | How weights increase (linear, percentage, RPE-based) |
 | `startDate`, `status` | Active/completed/paused |
-| `createdBy` | "gimli" or "user" |
+| `createdBy` | "Gymli" or "user" |
 
 ### `workouts` subcollection (under user)
 
@@ -82,7 +82,7 @@ Gimli is a chat-first workout companion with a structured tracker backbone. The 
 | `exercises` | Array of `{ exerciseId, name, sets: [{ reps, weight, completed, rpe }] }` |
 | `cardio` | Array of `{ type, duration, distance }` |
 | `duration`, `notes` | Session metadata |
-| `gimliSummary` | AI-generated workout recap |
+| `GymliSummary` | AI-generated workout recap |
 
 ### `exercises` collection (global, shared)
 
@@ -115,10 +115,10 @@ All endpoints (except health) require Firebase Auth token in `Authorization: Bea
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/api/plans/generate` | Gimli generates a plan from template + user profile |
+| POST | `/api/plans/generate` | Gymli generates a plan from template + user profile |
 | GET | `/api/plans/active` | Get current active plan |
 | GET | `/api/plans/:id` | Get specific plan |
-| PUT | `/api/plans/:id` | Update plan (manual edits or Gimli adjustments) |
+| PUT | `/api/plans/:id` | Update plan (manual edits or Gymli adjustments) |
 
 ### Workouts
 
@@ -137,13 +137,13 @@ All endpoints (except health) require Firebase Auth token in `Authorization: Bea
 | GET | `/api/stats/exercise/:id` | Weight-over-time data for a specific exercise |
 | GET | `/api/stats/volume` | Volume trends (weekly/monthly) |
 | GET | `/api/stats/streak` | Streak and calendar data |
-| GET | `/api/stats/insights` | Gimli-generated progress commentary |
+| GET | `/api/stats/insights` | Gymli-generated progress commentary |
 
 ### Chat
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/api/chat` | Send message to Gimli |
+| POST | `/api/chat` | Send message to Gymli |
 | GET | `/api/chat/history` | Get chat history |
 | DELETE | `/api/chat/history` | Clear chat history |
 
@@ -155,7 +155,7 @@ All endpoints (except health) require Firebase Auth token in `Authorization: Bea
 
 ---
 
-## Gimli's AI Personality & Behavior
+## Gymli's AI Personality & Behavior
 
 ### Personality Guidelines
 
@@ -167,7 +167,7 @@ All endpoints (except health) require Firebase Auth token in `Authorization: Bea
 
 ### Context-Aware Behavior
 
-| Context | Gimli's behavior |
+| Context | Gymli's behavior |
 |---------|-----------------|
 | Start of day | Greeting + today's workout preview. Tone adjusts based on streak |
 | During workout | Brief confirmations, form cues, motivation. Doesn't ramble between sets |
@@ -189,7 +189,7 @@ All endpoints (except health) require Firebase Auth token in `Authorization: Bea
 
 ### Starting a Workout
 
-1. Open app -> Today screen shows planned workout with Gimli's greeting
+1. Open app -> Today screen shows planned workout with Gymli's greeting
 2. Tap "Start Workout" -> timer begins, first exercise displayed
 3. Each exercise shows: name, target sets/reps/weight (pre-filled from plan), previous performance for comparison
 
@@ -204,7 +204,7 @@ All endpoints (except health) require Firebase Auth token in `Authorization: Bea
 ### Finishing a Workout
 
 1. Tap "Finish Workout" -> total duration logged
-2. Gimli gives a session summary: total volume, any PRs hit, comparison to last time
+2. Gymli gives a session summary: total volume, any PRs hit, comparison to last time
 3. Workout saved to Firestore, streak updated, progress charts refreshed
 
 ### Manual Logging
@@ -212,15 +212,15 @@ All endpoints (except health) require Firebase Auth token in `Authorization: Bea
 1. Go to Log tab -> tap "Log Workout"
 2. Pick date, search/select exercises from library
 3. Enter sets/reps/weight manually
-4. Save -> same post-workout flow minus the live Gimli commentary
+4. Save -> same post-workout flow minus the live Gymli commentary
 
 ### Edge Cases
 
 | Scenario | Behavior |
 |----------|----------|
 | App closes mid-workout | Session saved locally, resumed on reopen |
-| Skip an exercise | Marked as skipped, Gimli might ask why in post-workout |
-| Partial workout | Still counts for streak, Gimli acknowledges ("Some iron is better than no iron") |
+| Skip an exercise | Marked as skipped, Gymli might ask why in post-workout |
+| Partial workout | Still counts for streak, Gymli acknowledges ("Some iron is better than no iron") |
 
 ---
 
@@ -232,7 +232,7 @@ All endpoints (except health) require Firebase Auth token in `Authorization: Bea
 - **Volume trends**: Bar chart showing total weekly volume (sets x reps x weight). Filterable by muscle group
 - **Streak calendar**: GitHub-style heatmap grid showing workout days. Current streak prominently displayed
 
-### Gimli's Insights
+### Gymli's Insights
 
 Triggered when opening the Progress tab or after workouts accumulate. Generated server-side by passing recent workout data to Gemini with an insights prompt.
 
@@ -249,4 +249,5 @@ Examples:
 | Streak at risk | Evening notification if training day and no workout logged |
 | Weekly recap | End of week summary via push notification |
 
-All notifications written in Gimli's voice. Tone/frequency configurable in profile settings.
+All notifications written in Gymli's voice. Tone/frequency configurable in profile settings.
+

@@ -13,7 +13,7 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = express();
-const port = process.env.PORT || 4001;
+const port = process.env.PORT || 4201;
 
 // Read version from version.json
 let version = '0.1.0';
@@ -33,10 +33,20 @@ app.use(express.json());
 // CORS
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
-  : ['http://localhost:4000', 'http://localhost:4001', 'capacitor://localhost'];
+  : ['http://localhost:4200', 'http://localhost:4201', 'http://127.0.0.1:4200', 'http://127.0.0.1:4201', 'capacitor://localhost'];
 
 app.use(cors({
-  origin: allowedOrigins,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    // Allow explicitly listed origins
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    // Allow Tailscale origins (*.ts.net) in development
+    if (process.env.NODE_ENV !== 'production' && /^https?:\/\/[^/]+\.ts\.net(:\d+)?$/.test(origin)) {
+      return callback(null, true);
+    }
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
 }));
 
@@ -67,14 +77,14 @@ app.use('/api', apiRoutes);
 
 // Error handler
 app.use((err, req, res, _next) => {
-  req.log.error(err, 'Unhandled error');
+  (req.log || logger).error(err, 'Unhandled error');
   res.status(err.status || 500).json({
     error: process.env.NODE_ENV === 'production' ? 'Internal server error' : err.message,
   });
 });
 
 app.listen(port, () => {
-  logger.info(`Gimli backend listening on port ${port}`);
+  logger.info(`Gymli backend listening on port ${port}`);
 });
 
 export default app;

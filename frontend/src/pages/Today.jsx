@@ -76,7 +76,7 @@ export default function Today() {
           No Battle Plan Yet
         </h2>
         <p className="text-sm text-[var(--color-text-secondary)] mb-6">
-          Let Gimli forge a training plan for you.
+          Let Gymli forge a training plan for you.
         </p>
         <button
           onClick={() => navigate('/plan-setup')}

@@ -60,13 +60,13 @@ export default function WorkoutSummary({ result, onClose }) {
           </div>
         )}
 
-        {/* Gimli summary */}
-        {result.gimliSummary && (
+        {/* Gymli summary */}
+        {result.gymliSummary && (
           <div className="mx-6 mb-4 px-3 py-2.5 rounded-xl bg-[var(--color-surface-alt)]">
             <p className="text-sm text-[var(--color-text)] italic leading-relaxed">
-              &ldquo;{result.gimliSummary}&rdquo;
+              &ldquo;{result.gymliSummary}&rdquo;
             </p>
-            <p className="text-xs text-[var(--color-primary)] mt-1 font-medium">— Gimli</p>
+            <p className="text-xs text-[var(--color-primary)] mt-1 font-medium">— Gymli</p>
           </div>
         )}
 

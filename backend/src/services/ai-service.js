@@ -1,7 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
 import logger from '../logger.js';
 
-const GIMLI_SYSTEM_PROMPT = `You are Gimli, an AI gym companion inspired by a loyal, no-nonsense dwarf warrior. You are an experienced strength coach with deep training knowledge.
+const GYMLI_SYSTEM_PROMPT = `You are Gymli, an AI gym companion inspired by a loyal, no-nonsense dwarf warrior. You are an experienced strength coach with deep training knowledge.
 
 Your personality:
 - Enthusiastic and loyal to your training partners
@@ -39,7 +39,7 @@ export async function generatePlan(template, userProfile) {
     return { customized: false, plan: template };
   }
 
-  const prompt = `You are Gimli, the AI gym companion. A warrior has chosen the "${template.name}" training template.
+  const prompt = `You are Gymli, the AI gym companion. A warrior has chosen the "${template.name}" training template.
 
 Their profile:
 - Experience: ${userProfile.experienceLevel || 'beginner'}
@@ -51,7 +51,7 @@ The base template has ${template.days.length} training days: ${template.days.map
 
 Customize this plan for the warrior. Return a JSON object with:
 {
-  "gimliMessage": "A short motivational message from Gimli about this plan (2-3 sentences, in character)",
+  "gymliMessage": "A short motivational message from Gymli about this plan (2-3 sentences, in character)",
   "weeklySchedule": {
     "Mon": "day name or Rest",
     "Tue": "day name or Rest",
@@ -100,9 +100,9 @@ export async function generateWorkoutSummary(workoutData, userProfile) {
     .map(ex => `${ex.name}: ${ex.sets.length} sets, best set ${ex.sets.reduce((best, s) => s.weight > (best.weight || 0) ? s : best, {}).weight || 0} ${userProfile?.units || 'lbs'} x ${ex.sets.reduce((best, s) => s.weight > (best.weight || 0) ? s : best, {}).reps || 0}`)
     .join('\n');
 
-  const prompt = `${GIMLI_SYSTEM_PROMPT}
+  const prompt = `${GYMLI_SYSTEM_PROMPT}
 
-The warrior just finished a workout. Give a brief (2-3 sentence) summary and encouragement in Gimli's voice.
+The warrior just finished a workout. Give a brief (2-3 sentence) summary and encouragement in Gymli's voice.
 
 Workout details:
 - Duration: ${workoutData.duration || 'unknown'} minutes
@@ -135,9 +135,9 @@ export async function generateInsights(recentWorkouts, profile) {
     `${w.date}: ${w.exercises?.map(e => e.name).join(', ')} (volume: ${w.totalVolume || 0})`
   ).join('\n');
 
-  const prompt = `${GIMLI_SYSTEM_PROMPT}
+  const prompt = `${GYMLI_SYSTEM_PROMPT}
 
-Analyze this warrior's recent training and provide 2-3 brief insights. Each insight should be 1 sentence in Gimli's voice.
+Analyze this warrior's recent training and provide 2-3 brief insights. Each insight should be 1 sentence in Gymli's voice.
 
 Recent workouts:\n${summary}
 Experience: ${profile?.experienceLevel || 'unknown'}
@@ -177,7 +177,7 @@ Current context:
 - Experience: ${context.experienceLevel || 'unknown'}
 - Goals: ${context.goals || 'unknown'}` : '';
 
-  const systemPrompt = GIMLI_SYSTEM_PROMPT + contextStr;
+  const systemPrompt = GYMLI_SYSTEM_PROMPT + contextStr;
 
   const contents = messages.map(m => ({
     role: m.role === 'assistant' ? 'model' : 'user',
@@ -201,4 +201,4 @@ Current context:
   }
 }
 
-export { GIMLI_SYSTEM_PROMPT };
+export { GYMLI_SYSTEM_PROMPT };

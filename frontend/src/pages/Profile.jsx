@@ -91,7 +91,7 @@ export default function Profile() {
             </h2>
           </div>
           <p className="text-sm text-[var(--color-text-secondary)]">
-            Tell Gimli about yourself so he can forge the perfect training plan.
+            Tell Gymli about yourself so he can forge the perfect training plan.
           </p>
         </div>
       ) : (
@@ -108,7 +108,7 @@ export default function Profile() {
             type="text"
             value={form.displayName}
             onChange={(e) => setForm(prev => ({ ...prev, displayName: e.target.value }))}
-            placeholder="What should Gimli call you?"
+            placeholder="What should Gymli call you?"
             className="w-full py-3 px-3.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] placeholder-[var(--color-text-secondary)] text-sm outline-none transition-colors focus:border-[var(--color-primary)]"
           />
         </div>

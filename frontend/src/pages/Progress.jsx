@@ -1,4 +1,4 @@
-import GimliInsights from '../components/progress/GimliInsights';
+import GymliInsights from '../components/progress/GymliInsights';
 import StreakCalendar from '../components/progress/StreakCalendar';
 import ExerciseChart from '../components/progress/ExerciseChart';
 import VolumeChart from '../components/progress/VolumeChart';
@@ -8,7 +8,7 @@ export default function Progress() {
     <div className="px-4 py-6 space-y-4">
       <h2 className="text-lg font-semibold text-[var(--color-text)]">Progress</h2>
 
-      <GimliInsights />
+      <GymliInsights />
       <StreakCalendar />
       <ExerciseChart />
       <VolumeChart />

@@ -91,7 +91,7 @@ export default function ChatOverlay({ onClose }) {
             className="text-sm tracking-wider font-semibold text-[var(--color-text)]"
             style={{ fontFamily: "'Cinzel', serif" }}
           >
-            Gimli
+            Gymli
           </h3>
         </div>
         <button
@@ -113,7 +113,7 @@ export default function ChatOverlay({ onClose }) {
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#d4872a] to-[#96501d] flex items-center justify-center mb-4">
               <span className="text-xl font-bold text-[#fdf8f0]" style={{ fontFamily: "'Cinzel', serif" }}>G</span>
             </div>
-            <p className="text-sm text-[var(--color-text)] font-medium mb-1">Chat with Gimli</p>
+            <p className="text-sm text-[var(--color-text)] font-medium mb-1">Chat with Gymli</p>
             <p className="text-xs text-[var(--color-text-secondary)] max-w-xs">
               Ask about exercises, form tips, plan adjustments, or just chat about your training journey.
             </p>

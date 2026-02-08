@@ -5,7 +5,7 @@ const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
-    const saved = localStorage.getItem('gimli-theme');
+    const saved = localStorage.getItem('gymli-theme');
     if (saved) return saved;
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   });
@@ -17,7 +17,7 @@ export function ThemeProvider({ children }) {
     } else {
       root.classList.remove('dark');
     }
-    localStorage.setItem('gimli-theme', theme);
+    localStorage.setItem('gymli-theme', theme);
 
     // Update meta theme-color
     const meta = document.querySelector('meta[name="theme-color"]');

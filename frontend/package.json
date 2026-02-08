@@ -1,5 +1,5 @@
 {
-  "name": "gimli-frontend",
+  "name": "gymli-frontend",
   "version": "0.1.0",
   "type": "module",
   "scripts": {
@@ -11,19 +11,20 @@
     "android:local": "node scripts/android-build.js local"
   },
   "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/app": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/keyboard": "^8.0.0",
+    "@capacitor/status-bar": "^8.0.0",
     "axios": "^1.13.2",
     "date-fns": "^4.1.0",
     "firebase": "^12.7.0",
     "lucide-react": "^0.562.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
+    "react-markdown": "^10.1.0",
     "react-router-dom": "^7.11.0",
-    "recharts": "^3.6.0",
-    "@capacitor/android": "^8.0.0",
-    "@capacitor/app": "^8.0.0",
-    "@capacitor/core": "^8.0.0",
-    "@capacitor/keyboard": "^8.0.0",
-    "@capacitor/status-bar": "^8.0.0"
+    "recharts": "^3.6.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

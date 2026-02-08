@@ -35,7 +35,7 @@ export default function ChatInput({ onSend, disabled }) {
         value={text}
         onChange={handleInput}
         onKeyDown={handleKeyDown}
-        placeholder="Ask Gimli anything..."
+        placeholder="Ask Gymli anything..."
         rows={1}
         disabled={disabled}
         className="flex-1 px-4 py-2.5 rounded-xl bg-[var(--color-surface-alt)] text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-secondary)] resize-none outline-none focus:ring-1 focus:ring-[var(--color-primary)] disabled:opacity-50"

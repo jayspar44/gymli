@@ -118,7 +118,7 @@ export async function getInsightsData(uid) {
 
   if (workouts.length === 0) {
     return {
-      insights: ['Start logging workouts and Gimli will have wisdom to share!'],
+      insights: ['Start logging workouts and Gymli will have wisdom to share!'],
       generated: new Date().toISOString(),
     };
   }

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { getInsights } from '../../api/services';
 
-export default function GimliInsights() {
+export default function GymliInsights() {
   const [insights, setInsights] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -48,7 +48,7 @@ export default function GimliInsights() {
             <span className="text-[10px] font-bold text-[#fdf8f0]" style={{ fontFamily: "'Cinzel', serif" }}>G</span>
           </div>
           <span className="text-xs font-semibold text-[var(--color-text)] tracking-wide" style={{ fontFamily: "'Cinzel', serif" }}>
-            Gimli&apos;s Wisdom
+            Gymli&apos;s Wisdom
           </span>
         </div>
         <button

@@ -10,18 +10,18 @@ const configPath = join(frontendDir, 'capacitor.config.json');
 
 const flavors = {
   local: {
-    appId: 'io.gimli.app.local',
-    appName: 'Gimli (Local)',
-    apiUrl: 'http://10.0.2.2:4001/api',
+    appId: 'io.gymli.app.local',
+    appName: 'Gymli (Local)',
+    apiUrl: 'http://10.0.2.2:4201/api',
   },
   dev: {
-    appId: 'io.gimli.app.dev',
-    appName: 'Gimli (Dev)',
+    appId: 'io.gymli.app.dev',
+    appName: 'Gymli (Dev)',
     apiUrl: null,
   },
   prod: {
-    appId: 'io.gimli.app',
-    appName: 'Gimli',
+    appId: 'io.gymli.app',
+    appName: 'Gymli',
     apiUrl: null,
   },
 };

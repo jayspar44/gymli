@@ -5,7 +5,14 @@ const usersRef = db.collection('users');
 export async function getProfile(uid) {
   const doc = await usersRef.doc(uid).get();
   if (!doc.exists) return null;
-  return { id: doc.id, ...doc.data() };
+  const data = doc.data();
+  return {
+    id: doc.id,
+    ...data,
+    onboardingComplete: data.onboardingComplete !== undefined
+      ? data.onboardingComplete
+      : !!data.createdAt,
+  };
 }
 
 export async function createOrUpdateProfile(uid, data) {
@@ -34,7 +41,7 @@ export async function createOrUpdateProfile(uid, data) {
     longestStreak: 0,
     lastWorkoutDate: null,
     totalWorkouts: 0,
-    onboardingComplete: false,
+    onboardingComplete: data.onboardingComplete || false,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };

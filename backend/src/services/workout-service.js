@@ -70,7 +70,7 @@ export async function logWorkout(uid, workoutData) {
   const profile = await getProfile(uid);
 
   // Generate AI summary
-  const gimliSummary = await generateWorkoutSummary(
+  const gymliSummary = await generateWorkoutSummary(
     { exercises, totalVolume, prs: prs.map(p => p.name), duration: workoutData.duration, streak: updatedProfile?.streak || 0 },
     profile
   );
@@ -82,7 +82,7 @@ export async function logWorkout(uid, workoutData) {
     prs,
     duration: workoutData.duration || null,
     notes: workoutData.notes || '',
-    gimliSummary,
+    gymliSummary,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };

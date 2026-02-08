@@ -86,10 +86,10 @@ export default function WorkoutHistoryItem({ workout }) {
             </div>
           )}
 
-          {/* Gimli summary */}
-          {workout.gimliSummary && (
+          {/* Gymli summary */}
+          {workout.gymliSummary && (
             <p className="mt-2 text-xs text-[var(--color-text-secondary)] italic">
-              &ldquo;{workout.gimliSummary}&rdquo;
+              &ldquo;{workout.gymliSummary}&rdquo;
             </p>
           )}
         </div>

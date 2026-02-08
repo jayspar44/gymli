@@ -1,5 +1,5 @@
 {
-  "name": "gimli-backend",
+  "name": "gymli-backend",
   "version": "0.1.0",
   "main": "src/index.js",
   "type": "module",

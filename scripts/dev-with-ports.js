@@ -1,19 +1,18 @@
 import { spawn } from 'child_process';
 import { platform } from 'os';
 
-const isWindows = platform() === 'win32';
-const npmCmd = isWindows ? 'npm.cmd' : 'npm';
-
-const frontend = spawn(npmCmd, ['run', 'dev'], {
+const frontend = spawn('npm', ['run', 'dev'], {
   cwd: 'frontend',
   stdio: 'pipe',
-  env: { ...process.env, PORT: '4000' },
+  shell: true,
+  env: { ...process.env, PORT: '4200' },
 });
 
-const backend = spawn(npmCmd, ['run', 'dev'], {
+const backend = spawn('npm', ['run', 'dev'], {
   cwd: 'backend',
   stdio: 'pipe',
-  env: { ...process.env, PORT: '4001' },
+  shell: true,
+  env: { ...process.env, PORT: '4201' },
 });
 
 frontend.stdout.on('data', (data) => {
@@ -49,5 +48,5 @@ backend.on('close', (code) => {
   console.log(`[backend]  exited with code ${code}`);
 });
 
-console.log('[dev] Starting frontend on http://localhost:4000');
-console.log('[dev] Starting backend on http://localhost:4001');
+console.log('[dev] Starting frontend on http://localhost:4200');
+console.log('[dev] Starting backend on http://localhost:4201');

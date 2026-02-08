@@ -81,7 +81,7 @@ export default function PlanSetup() {
               </h2>
             </div>
             <p className="text-sm text-[var(--color-text-secondary)]">
-              Pick a template and Gimli will forge it to fit your goals.
+              Pick a template and Gymli will forge it to fit your goals.
             </p>
           </div>
 
@@ -114,7 +114,7 @@ export default function PlanSetup() {
             {FORGE_QUOTES[quoteIndex]}
           </p>
           <p className="text-xs text-[var(--color-text-secondary)]">
-            Gimli is customizing your plan
+            Gymli is customizing your plan
           </p>
         </div>
       )}
@@ -135,13 +135,13 @@ export default function PlanSetup() {
             {plan.templateName}
           </h2>
 
-          {/* Gimli message */}
-          {plan.gimliMessage && (
+          {/* Gymli message */}
+          {plan.gymliMessage && (
             <div className="mb-4 px-4 py-3 rounded-xl bg-[var(--color-primary)]/.08 border border-[var(--color-primary)]/.15">
               <p className="text-sm text-[var(--color-text)] italic leading-relaxed">
-                &ldquo;{plan.gimliMessage}&rdquo;
+                &ldquo;{plan.gymliMessage}&rdquo;
               </p>
-              <p className="text-xs text-[var(--color-primary)] mt-1 font-medium">— Gimli</p>
+              <p className="text-xs text-[var(--color-primary)] mt-1 font-medium">— Gymli</p>
             </div>
           )}
 

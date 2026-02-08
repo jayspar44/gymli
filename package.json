@@ -1,7 +1,7 @@
 {
-  "name": "gimli",
+  "name": "gymli",
   "version": "0.1.0",
-  "description": "AI-powered gym assistant",
+  "description": "AI-powered gym companion",
   "type": "module",
   "scripts": {
     "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install",

@@ -162,7 +162,7 @@ export default function Login() {
             className="text-4xl tracking-[0.15em] font-semibold text-[#fafaf9] mb-2"
             style={{ fontFamily: "'Cinzel', serif" }}
           >
-            GIMLI
+            GYMLI
           </h1>
           <p className="text-sm tracking-[0.2em] uppercase text-[#a8a29e] font-light">
             Your AI Gym Companion

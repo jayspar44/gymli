@@ -30,7 +30,7 @@ export default function TopBar() {
         className="text-lg tracking-[0.12em] font-semibold text-[var(--color-text)]"
         style={{ fontFamily: "'Cinzel', serif" }}
       >
-        <span className="text-[var(--color-primary)]">GIM</span>
+        <span className="text-[var(--color-primary)]">GYM</span>
         <span className="text-[var(--color-text)]">LI</span>
       </h1>
 

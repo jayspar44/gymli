@@ -1,3 +1,5 @@
+import ReactMarkdown from 'react-markdown';
+
 export default function ChatMessage({ message }) {
   const isUser = message.role === 'user';
 
@@ -15,7 +17,13 @@ export default function ChatMessage({ message }) {
             : 'bg-[var(--color-surface-alt)] text-[var(--color-text)] rounded-bl-md'
         }`}
       >
-        <p className="whitespace-pre-wrap">{message.content}</p>
+        {isUser ? (
+          <p className="whitespace-pre-wrap">{message.content}</p>
+        ) : (
+          <div className="chat-markdown">
+            <ReactMarkdown>{message.content}</ReactMarkdown>
+          </div>
+        )}
         {message.timestamp && (
           <p className={`text-[10px] mt-1 ${isUser ? 'text-[#fdf8f0]/60' : 'text-[var(--color-text-secondary)]'}`}>
             {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

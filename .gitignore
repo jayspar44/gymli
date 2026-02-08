@@ -21,6 +21,9 @@ ios/
 # Firebase
 .firebase/
 
+# Service account keys (NEVER commit)
+**/service-account-key*.json
+
 # IDE
 .vscode/
 .idea/
