@@ -1,0 +1,18 @@
+{
+  "appId": "io.gimli.app.dev",
+  "appName": "Gimli (Dev)",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "Keyboard": {
+      "resizeOnFullScreen": true,
+      "style": "dark",
+      "resize": "native"
+    },
+    "StatusBar": {
+      "overlay": true
+    }
+  }
+}
