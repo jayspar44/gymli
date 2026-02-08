@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import MobileContainer from './MobileContainer';
 import TopBar from './TopBar';
 import BottomNav from './BottomNav';
+import ChatFAB from '../chat/ChatFAB';
 
 export default function Layout() {
   return (
@@ -11,6 +12,7 @@ export default function Layout() {
         <Outlet />
       </main>
       <BottomNav />
+      <ChatFAB />
     </MobileContainer>
   );
 }
