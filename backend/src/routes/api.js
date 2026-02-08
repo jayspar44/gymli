@@ -1,11 +1,19 @@
 import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
 import { verifyToken } from '../controllers/auth-controller.js';
 import { getUserProfile, upsertUserProfile } from '../controllers/user-controller.js';
 import { listExercises } from '../controllers/exercise-controller.js';
 import { createPlan, fetchActivePlan, fetchPlan, modifyPlan, fetchTemplates } from '../controllers/plan-controller.js';
 import { createWorkout, listWorkouts, fetchTodaysWorkout, modifyWorkout, removeWorkout } from '../controllers/workout-controller.js';
+import { chat, fetchChatHistory, deleteChatHistory } from '../controllers/chat-controller.js';
 
 const router = Router();
+
+const chatLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  message: { error: 'Too many messages — even Gimli needs a breath between battles.' },
+});
 
 // All routes below require authentication
 router.use(verifyToken);
@@ -37,9 +45,9 @@ router.delete('/workouts/:id', removeWorkout);
 // router.get('/stats/streak', ...);
 // router.get('/stats/insights', ...);
 
-// Chat routes (Task 14)
-// router.post('/chat', ...);
-// router.get('/chat/history', ...);
-// router.delete('/chat/history', ...);
+// Chat routes
+router.post('/chat', chatLimiter, chat);
+router.get('/chat/history', fetchChatHistory);
+router.delete('/chat/history', deleteChatHistory);
 
 export default router;
