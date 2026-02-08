@@ -1,13 +1,44 @@
-import { Dumbbell } from 'lucide-react';
+import { useState } from 'react';
+import { Plus } from 'lucide-react';
+import { useUserProfile } from '../contexts/UserProfileContext';
+import ManualLogForm from '../components/log/ManualLogForm';
+import WorkoutHistoryList from '../components/log/WorkoutHistoryList';
 
 export default function Log() {
+  const { profile } = useUserProfile();
+  const [showForm, setShowForm] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  function handleSaved() {
+    setShowForm(false);
+    setRefreshKey(k => k + 1);
+  }
+
   return (
-    <div className="flex flex-col items-center justify-center h-full px-6 text-center">
-      <div className="flex items-center justify-center w-14 h-14 mb-4 rounded-2xl bg-[var(--color-surface-alt)]">
-        <Dumbbell className="w-7 h-7 text-[var(--color-primary)]" strokeWidth={1.5} />
+    <div className="px-4 py-6">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-5">
+        <h2 className="text-lg font-semibold text-[var(--color-text)]">Workout Log</h2>
+        <button
+          onClick={() => setShowForm(true)}
+          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#d4872a] to-[#b86b1f] text-[#fdf8f0] font-semibold text-xs transition-all active:scale-[0.98]"
+        >
+          <Plus className="w-3.5 h-3.5" />
+          Log Workout
+        </button>
       </div>
-      <h2 className="text-lg font-semibold text-[var(--color-text)] mb-1">Log</h2>
-      <p className="text-sm text-[var(--color-text-secondary)]">Log workouts and view history</p>
+
+      {/* History */}
+      <WorkoutHistoryList refreshKey={refreshKey} />
+
+      {/* Manual log form overlay */}
+      {showForm && (
+        <ManualLogForm
+          units={profile?.units || 'lbs'}
+          onSaved={handleSaved}
+          onClose={() => setShowForm(false)}
+        />
+      )}
     </div>
   );
 }
