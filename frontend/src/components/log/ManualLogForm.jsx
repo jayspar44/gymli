@@ -95,8 +95,7 @@ export default function ManualLogForm({ units = 'lbs', onSaved, onClose }) {
           <X className="w-5 h-5" />
         </button>
         <h3
-          className="text-sm tracking-wider font-semibold text-[var(--color-text)]"
-          style={{ fontFamily: "'Cinzel', serif" }}
+          className="text-sm tracking-wider font-bold text-[var(--color-text)]"
         >
           Log Workout
         </h3>

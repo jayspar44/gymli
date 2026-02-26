@@ -27,8 +27,7 @@ export default function TopBar() {
     <header className="relative z-30 flex items-center justify-between h-14 px-4 flex-shrink-0">
       {/* App title */}
       <h1
-        className="text-lg tracking-[0.12em] font-semibold text-[var(--color-text)]"
-        style={{ fontFamily: "'Cinzel', serif" }}
+        className="text-lg tracking-[0.12em] font-bold text-[var(--color-text)]"
       >
         <span className="text-[var(--color-primary)]">GYM</span>
         <span className="text-[var(--color-text)]">LI</span>

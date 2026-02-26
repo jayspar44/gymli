@@ -74,8 +74,7 @@ export default function PlanSetup() {
             <div className="flex items-center gap-2 mb-2">
               <Flame className="w-5 h-5 text-[var(--color-primary)]" strokeWidth={1.5} />
               <h2
-                className="text-lg tracking-wider font-semibold text-[var(--color-text)]"
-                style={{ fontFamily: "'Cinzel', serif" }}
+                className="text-lg tracking-wider font-bold text-[var(--color-text)]"
               >
                 Choose Your Battle Plan
               </h2>

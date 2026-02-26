@@ -7,7 +7,7 @@ export default function ChatMessage({ message }) {
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-3`}>
       {!isUser && (
         <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-[#d4872a] to-[#96501d] flex items-center justify-center mr-2 mt-0.5">
-          <span className="text-[10px] font-bold text-[#fdf8f0]" style={{ fontFamily: "'Cinzel', serif" }}>G</span>
+          <span className="text-[10px] font-bold text-[#fdf8f0]">G</span>
         </div>
       )}
       <div

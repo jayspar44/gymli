@@ -14,8 +14,7 @@ export default function WorkoutSummary({ result, onClose }) {
             <Trophy className="w-7 h-7 text-[#fdf8f0]" strokeWidth={1.5} />
           </div>
           <h3
-            className="text-xl tracking-wider font-semibold text-[var(--color-text)] mb-1"
-            style={{ fontFamily: "'Cinzel', serif" }}
+            className="text-xl tracking-wider font-bold text-[var(--color-text)] mb-1"
           >
             Workout Complete!
           </h3>

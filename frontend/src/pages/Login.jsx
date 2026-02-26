@@ -159,8 +159,7 @@ export default function Login() {
           </div>
 
           <h1
-            className="text-4xl tracking-[0.15em] font-semibold text-[#fafaf9] mb-2"
-            style={{ fontFamily: "'Cinzel', serif" }}
+            className="text-4xl tracking-[0.15em] font-bold text-[#fafaf9] mb-2"
           >
             GYMLI
           </h1>

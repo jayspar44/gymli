@@ -116,8 +116,7 @@ export default function Today() {
           <Dumbbell className="w-7 h-7 text-[var(--color-primary)]" strokeWidth={1.5} />
         </div>
         <h2
-          className="text-lg tracking-wider font-semibold text-[var(--color-text)] mb-2"
-          style={{ fontFamily: "'Cinzel', serif" }}
+          className="text-lg tracking-wider font-bold text-[var(--color-text)] mb-2"
         >
           No Battle Plan Yet
         </h2>
