@@ -20,6 +20,8 @@ export const logWorkout = (data) => client.post('/workouts', data).then(r => r.d
 export const getWorkouts = (params) => client.get('/workouts', { params }).then(r => r.data);
 export const updateWorkout = (id, data) => client.put(`/workouts/${id}`, data).then(r => r.data);
 export const deleteWorkout = (id) => client.delete(`/workouts/${id}`).then(r => r.data);
+export const getPreviousPerformance = (exerciseIds) =>
+  client.post('/workouts/previous', { exerciseIds }).then(r => r.data);
 
 // Chat
 export const sendChat = (message, context) => client.post('/chat', { message, context }).then(r => r.data);

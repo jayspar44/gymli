@@ -5,6 +5,7 @@ import {
   updateWorkout,
   deleteWorkout,
 } from '../services/workout-service.js';
+import { getPreviousPerformance } from '../services/performance-service.js';
 
 export async function createWorkout(req, res) {
   try {
@@ -57,5 +58,17 @@ export async function removeWorkout(req, res) {
   } catch (error) {
     req.log.error(error, 'Failed to delete workout');
     res.status(500).json({ error: 'Failed to delete workout' });
+  }
+}
+
+export async function fetchPreviousPerformance(req, res) {
+  try {
+    const { exerciseIds } = req.body;
+    if (!exerciseIds?.length) return res.json({});
+    const result = await getPreviousPerformance(req.user.uid, exerciseIds);
+    res.json(result);
+  } catch (error) {
+    req.log.error(error, 'Failed to fetch previous performance');
+    res.status(500).json({ error: 'Failed to fetch previous performance' });
   }
 }

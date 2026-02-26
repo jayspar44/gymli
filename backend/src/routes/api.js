@@ -4,7 +4,7 @@ import { verifyToken } from '../controllers/auth-controller.js';
 import { getUserProfile, upsertUserProfile } from '../controllers/user-controller.js';
 import { listExercises } from '../controllers/exercise-controller.js';
 import { createPlan, fetchActivePlan, fetchPlan, modifyPlan, fetchTemplates } from '../controllers/plan-controller.js';
-import { createWorkout, listWorkouts, fetchTodaysWorkout, modifyWorkout, removeWorkout } from '../controllers/workout-controller.js';
+import { createWorkout, listWorkouts, fetchTodaysWorkout, modifyWorkout, removeWorkout, fetchPreviousPerformance } from '../controllers/workout-controller.js';
 import { chat, fetchChatHistory, deleteChatHistory } from '../controllers/chat-controller.js';
 import { fetchExerciseProgress, fetchVolumeStats, fetchStreakData, fetchInsights, fetchLoggedExercises } from '../controllers/stats-controller.js';
 
@@ -39,6 +39,7 @@ router.get('/workouts', listWorkouts);
 router.post('/workouts', createWorkout);
 router.put('/workouts/:id', modifyWorkout);
 router.delete('/workouts/:id', removeWorkout);
+router.post('/workouts/previous', fetchPreviousPerformance);
 
 // Stats routes
 router.get('/stats/exercises', fetchLoggedExercises);
