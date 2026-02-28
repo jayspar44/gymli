@@ -1,24 +1,15 @@
 import { GoogleGenAI } from '@google/genai';
 import logger from '../logger.js';
 
-const GYMLI_SYSTEM_PROMPT = `You are Gymli, an AI gym companion inspired by a loyal, no-nonsense dwarf warrior. You are an experienced strength coach with deep training knowledge.
+const GYMLI_SYSTEM_PROMPT = `You are Gymli, an AI strength training coach built into the Gymli workout app. You are knowledgeable, direct, and encouraging — like a smart training partner.
 
-Your personality:
-- Enthusiastic and loyal to your training partners
-- Direct and honest — you don't sugarcoat, but you're always supportive
-- Natural dwarf flavor in speech: references to "forging," "iron," "the forge," "battle," "steel" — but keep it natural, never forced or cartoonish
-- You call the user "lad," "lass," or "warrior" occasionally
-- Celebrate PRs enthusiastically, like a victory in battle
-- On rest days, remind them even dwarves need recovery between battles
-
-Your knowledge:
-- Proper form and technique for all major exercises
-- Programming principles: progressive overload, periodization, deload weeks
-- Nutrition basics for muscle building and fat loss
-- Recovery, sleep, and injury prevention
-- You can read workout data and provide meaningful analysis
-
-Keep responses concise and actionable. You're a gym companion, not an encyclopedia.`;
+Guidelines:
+- Be concise. 2-4 sentences max unless the user asks for detail.
+- Reference the user's actual data when available (weights, trends, PRs, volume).
+- Give specific, actionable advice. "Try 82.5kg next session" is better than "keep pushing."
+- If you don't have enough data to answer, say so honestly.
+- No roleplay, no character voice. Just be a helpful coach.
+- Use the user's preferred units (provided in context).`;
 
 let ai = null;
 
@@ -93,7 +84,7 @@ Only return valid JSON, nothing else.`;
 export async function generateWorkoutSummary(workoutData, userProfile) {
   const client = getAI();
   if (!client) {
-    return 'Another battle won at the forge! Keep pushing, warrior.';
+    return 'Great workout! Keep pushing forward.';
   }
 
   const exerciseList = workoutData.exercises
@@ -102,7 +93,7 @@ export async function generateWorkoutSummary(workoutData, userProfile) {
 
   const prompt = `${GYMLI_SYSTEM_PROMPT}
 
-The warrior just finished a workout. Give a brief (2-3 sentence) summary and encouragement in Gymli's voice.
+The user just finished a workout. Give a brief (2-3 sentence) summary and encouragement.
 
 Workout details:
 - Duration: ${workoutData.duration || 'unknown'} minutes
@@ -121,14 +112,14 @@ Be specific about their performance. Celebrate PRs. Keep it short.`;
     return response.text;
   } catch (error) {
     logger.error(error, 'Failed to generate workout summary');
-    return 'Another day of iron conquered! The forge burns bright, warrior.';
+    return 'Solid session. Keep showing up and the results will follow.';
   }
 }
 
 export async function generateInsights(recentWorkouts, profile) {
   const client = getAI();
   if (!client) {
-    return ['Keep training consistently — the forge rewards those who show up.'];
+    return ['Keep training consistently — results come from showing up.'];
   }
 
   const summary = recentWorkouts.slice(0, 10).map(w =>
@@ -137,7 +128,7 @@ export async function generateInsights(recentWorkouts, profile) {
 
   const prompt = `${GYMLI_SYSTEM_PROMPT}
 
-Analyze this warrior's recent training and provide 2-3 brief insights. Each insight should be 1 sentence in Gymli's voice.
+Analyze this user's recent training and provide 2-3 brief insights. Each insight should be 1 actionable sentence.
 
 Recent workouts:\n${summary}
 Experience: ${profile?.experienceLevel || 'unknown'}
@@ -158,26 +149,23 @@ Return as JSON array of strings. Only valid JSON.`;
     return JSON.parse(response.text);
   } catch (error) {
     logger.error(error, 'Failed to generate insights');
-    return ['The forge awaits — keep training and the insights will come.'];
+    return ['Keep training and the insights will come.'];
   }
 }
 
-export async function chat(messages, context) {
+export async function chat(messages, context, coachingContext) {
   const client = getAI();
   if (!client) {
-    return 'The forge fires are dim — AI features are not configured. But the iron still awaits you, warrior!';
+    return 'AI features are not configured. Check your Gemini API key.';
   }
 
-  const contextStr = context ? `
-Current context:
-- Screen: ${context.screen || 'unknown'}
-- Streak: ${context.streak || 0} days
-- Active plan: ${context.planName || 'none'}
-- Last workout: ${context.lastWorkoutDate || 'never'}
-- Experience: ${context.experienceLevel || 'unknown'}
-- Goals: ${context.goals || 'unknown'}` : '';
-
-  const systemPrompt = GYMLI_SYSTEM_PROMPT + contextStr;
+  let systemPrompt = GYMLI_SYSTEM_PROMPT;
+  if (coachingContext) {
+    systemPrompt += '\n\n--- USER DATA ---\n' + coachingContext;
+  }
+  if (context?.screen) {
+    systemPrompt += `\n\nThe user is currently on the "${context.screen}" screen of the app.`;
+  }
 
   const contents = messages.map(m => ({
     role: m.role === 'assistant' ? 'model' : 'user',
@@ -197,7 +185,7 @@ Current context:
     return response.text;
   } catch (error) {
     logger.error(error, 'Chat failed');
-    return 'The forge fires flicker... Something went wrong. Try again, warrior.';
+    return 'Something went wrong generating a response. Please try again.';
   }
 }
 

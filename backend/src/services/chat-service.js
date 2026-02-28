@@ -1,14 +1,24 @@
 import { db } from './firebase.js';
 import { chat as aiChat } from './ai-service.js';
-import { getProfile } from './user-service.js';
+import { buildCoachingContext, formatContextForAI } from './coaching-context-service.js';
 import logger from '../logger.js';
+
+const contextCache = new Map();
 
 function chatRef(uid) {
   return db.collection('users').doc(uid).collection('chat_sessions');
 }
 
 export async function sendMessage(uid, message, screenContext) {
-  const profile = await getProfile(uid);
+  // Build or retrieve cached coaching context (10 min TTL)
+  let cachedCtx = contextCache.get(uid);
+  const now = Date.now();
+  if (!cachedCtx || now - cachedCtx.timestamp > 10 * 60 * 1000) {
+    const ctx = await buildCoachingContext(uid);
+    const formatted = formatContextForAI(ctx);
+    cachedCtx = { text: formatted, timestamp: now };
+    contextCache.set(uid, cachedCtx);
+  }
 
   // Load recent chat history for context
   const historySnap = await chatRef(uid)
@@ -28,18 +38,8 @@ export async function sendMessage(uid, message, screenContext) {
   // Add current message
   history.push({ role: 'user', content: message });
 
-  // Build context for AI
-  const context = {
-    screen: screenContext || 'unknown',
-    streak: profile?.streak || 0,
-    planName: profile?.activePlanName || 'none',
-    lastWorkoutDate: profile?.lastWorkoutDate || 'never',
-    experienceLevel: profile?.experienceLevel || 'unknown',
-    goals: profile?.goals || 'unknown',
-  };
-
-  // Get AI response
-  const response = await aiChat(history, context);
+  // Get AI response with full coaching context
+  const response = await aiChat(history, { screen: screenContext }, cachedCtx.text);
 
   // Save to Firestore
   const chatDoc = {

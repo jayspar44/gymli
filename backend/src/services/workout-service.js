@@ -35,23 +35,22 @@ export async function logWorkout(uid, workoutData) {
 
   const totalVolume = exercises.reduce((sum, ex) => sum + ex.volume, 0);
 
-  // Detect PRs by comparing to historical best
+  // PR detection — fetch recent workouts and filter in code
+  const historySnap = await workoutsRef(uid)
+    .orderBy('date', 'desc')
+    .limit(50)
+    .get();
+
   const prs = [];
   for (const exercise of exercises) {
-    const history = await workoutsRef(uid)
-      .where('exercises', '!=', null)
-      .orderBy('exercises')
-      .orderBy('date', 'desc')
-      .limit(50)
-      .get()
-      .catch(() => ({ docs: [] }));
-
     let historicalBest = 0;
-    for (const doc of history.docs) {
-      const data = doc.data();
-      const matchingEx = data.exercises?.find(e => e.exerciseId === exercise.exerciseId);
-      if (matchingEx && matchingEx.bestWeight > historicalBest) {
-        historicalBest = matchingEx.bestWeight;
+
+    for (const doc of historySnap.docs) {
+      const w = doc.data();
+      if (!w.exercises) continue;
+      const match = w.exercises.find(e => e.exerciseId === exercise.exerciseId);
+      if (match && match.bestWeight > historicalBest) {
+        historicalBest = match.bestWeight;
       }
     }
 
