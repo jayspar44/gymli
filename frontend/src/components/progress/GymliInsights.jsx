@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { RefreshCw } from 'lucide-react';
+import { Sparkles, RefreshCw } from 'lucide-react';
+import Card from '../ui/Card';
+import Skeleton from '../ui/Skeleton';
 import { getInsights } from '../../api/services';
 
 export default function GymliInsights() {
@@ -24,31 +26,28 @@ export default function GymliInsights() {
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] flex items-center justify-center flex-shrink-0">
-            <span className="text-xs font-bold text-white">G</span>
+      <Card>
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Skeleton variant="circle" className="w-7 h-7" />
+            <Skeleton variant="heading" className="w-24" />
           </div>
-          <div className="flex-1">
-            <div className="h-3 w-3/4 rounded bg-[var(--color-surface-alt)] animate-pulse mb-2" />
-            <div className="h-3 w-1/2 rounded bg-[var(--color-surface-alt)] animate-pulse" />
-          </div>
+          <Skeleton variant="text" />
+          <Skeleton variant="text" className="w-3/4" />
         </div>
-      </div>
+      </Card>
     );
   }
 
   if (insights.length === 0) return null;
 
   return (
-    <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden">
+    <Card padding="none">
       <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--color-border)]">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] flex items-center justify-center">
-            <span className="text-[10px] font-bold text-white">G</span>
-          </div>
-          <span className="text-xs font-bold text-[var(--color-text)] tracking-wide">
-            Gymli&apos;s Wisdom
+          <Sparkles className="w-4 h-4 text-[var(--color-primary)]" />
+          <span className="text-sm font-semibold text-[var(--color-text)]">
+            AI Insights
           </span>
         </div>
         <button
@@ -61,11 +60,11 @@ export default function GymliInsights() {
       </div>
       <div className="px-4 py-3 space-y-2">
         {insights.map((insight, i) => (
-          <p key={i} className="text-sm text-[var(--color-text)] leading-relaxed italic">
-            &ldquo;{insight}&rdquo;
+          <p key={i} className="text-sm text-[var(--color-text)] leading-relaxed">
+            {insight}
           </p>
         ))}
       </div>
-    </div>
+    </Card>
   );
 }

@@ -1,10 +1,24 @@
 import { useState, useEffect } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import ExerciseSelector from './ExerciseSelector';
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+} from 'recharts';
+import Card from '../ui/Card';
+import Skeleton from '../ui/Skeleton';
 import { getExerciseProgress } from '../../api/services';
 
-export default function ExerciseChart() {
-  const [exerciseId, setExerciseId] = useState(null);
+function ChartTooltip({ active, payload, label }) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 shadow-md">
+      <p className="text-xs text-[var(--color-text-secondary)] mb-0.5">{label}</p>
+      <p className="text-sm font-semibold text-[var(--color-text)]">
+        {payload[0].value} lbs
+      </p>
+    </div>
+  );
+}
+
+export default function ExerciseChart({ exerciseId }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -28,60 +42,59 @@ export default function ExerciseChart() {
   }
 
   return (
-    <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden">
+    <Card padding="none">
       <div className="px-4 py-3 border-b border-[var(--color-border)]">
-        <h3 className="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide mb-2">
-          Exercise Progress
+        <h3 className="text-sm font-semibold text-[var(--color-text)]">
+          Weight Progression
         </h3>
-        <ExerciseSelector selected={exerciseId} onSelect={setExerciseId} />
       </div>
 
       <div className="px-2 py-4">
         {loading ? (
-          <div className="flex items-center justify-center h-40">
-            <div className="w-5 h-5 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
+          <div className="px-2">
+            <Skeleton variant="chart" />
           </div>
         ) : data.length < 2 ? (
           <div className="flex items-center justify-center h-40 text-sm text-[var(--color-text-secondary)]">
-            {data.length === 0 ? 'No data yet' : 'Need more sessions to chart'}
+            {data.length === 0 ? 'Select an exercise to see progress' : 'Need more sessions to chart'}
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height={180}>
-            <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+          <ResponsiveContainer width="100%" height={200}>
+            <AreaChart data={data}>
+              <defs>
+                <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="var(--color-primary)" stopOpacity={0.3} />
+                  <stop offset="100%" stopColor="var(--color-primary)" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
               <XAxis
                 dataKey="label"
-                tick={{ fontSize: 10, fill: 'var(--color-text-secondary)' }}
+                tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
                 tickLine={false}
                 axisLine={{ stroke: 'var(--color-border)' }}
               />
               <YAxis
-                tick={{ fontSize: 10, fill: 'var(--color-text-secondary)' }}
+                tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
                 tickLine={false}
                 axisLine={false}
                 width={35}
               />
-              <Tooltip
-                contentStyle={{
-                  background: 'var(--color-surface)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: '8px',
-                  fontSize: '12px',
-                }}
-              />
-              <Line
+              <Tooltip content={<ChartTooltip />} />
+              <Area
                 type="monotone"
                 dataKey="maxWeight"
                 stroke="var(--color-primary)"
                 strokeWidth={2}
+                fill="url(#chartGradient)"
                 dot={{ r: 3, fill: 'var(--color-primary)' }}
-                activeDot={{ r: 5, fill: 'var(--color-primary)' }}
+                activeDot={{ r: 5, strokeWidth: 2, stroke: 'var(--color-surface)', fill: 'var(--color-primary)' }}
                 name="Max Weight"
               />
-            </LineChart>
+            </AreaChart>
           </ResponsiveContainer>
         )}
       </div>
-    </div>
+    </Card>
   );
 }
