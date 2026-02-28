@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { X, Plus, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
 import ExercisePicker from './ExercisePicker';
 import { logWorkout } from '../../api/services';
+import Button from '../ui/Button';
+import Card from '../ui/Card';
 
 export default function ManualLogForm({ units = 'lbs', onSaved, onClose }) {
   const [exercises, setExercises] = useState([]);
@@ -94,9 +96,7 @@ export default function ManualLogForm({ units = 'lbs', onSaved, onClose }) {
         <button onClick={onClose} className="text-[var(--color-text-secondary)]">
           <X className="w-5 h-5" />
         </button>
-        <h3
-          className="text-sm tracking-wider font-bold text-[var(--color-text)]"
-        >
+        <h3 className="text-sm font-bold text-[var(--color-text)]">
           Log Workout
         </h3>
         <button
@@ -121,10 +121,7 @@ export default function ManualLogForm({ units = 'lbs', onSaved, onClose }) {
             {exercises.map((ex, exIndex) => {
               const isExpanded = expandedIndex === exIndex;
               return (
-                <div
-                  key={exIndex}
-                  className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden"
-                >
+                <Card key={exIndex} padding="none" className="overflow-hidden">
                   {/* Exercise header */}
                   <button
                     onClick={() => setExpandedIndex(isExpanded ? null : exIndex)}
@@ -175,7 +172,7 @@ export default function ManualLogForm({ units = 'lbs', onSaved, onClose }) {
                             value={set.weight}
                             onChange={(e) => updateSet(exIndex, setIndex, 'weight', e.target.value)}
                             placeholder="0"
-                            className="flex-1 px-3 py-2 rounded-lg bg-[var(--color-surface-alt)] text-sm text-center text-[var(--color-text)] placeholder:text-[var(--color-text-secondary)]/.4 border-0 outline-none focus:ring-1 focus:ring-[var(--color-primary)]"
+                            className="flex-1 px-3 py-2 rounded-lg bg-[var(--color-surface-alt)] text-sm text-center text-[var(--color-text)] placeholder:text-[var(--color-text-secondary)] border border-[var(--color-border)] outline-none focus:border-[var(--color-primary)] transition-colors"
                           />
                           <input
                             type="number"
@@ -183,7 +180,7 @@ export default function ManualLogForm({ units = 'lbs', onSaved, onClose }) {
                             value={set.reps}
                             onChange={(e) => updateSet(exIndex, setIndex, 'reps', e.target.value)}
                             placeholder="0"
-                            className="w-16 px-3 py-2 rounded-lg bg-[var(--color-surface-alt)] text-sm text-center text-[var(--color-text)] placeholder:text-[var(--color-text-secondary)]/.4 border-0 outline-none focus:ring-1 focus:ring-[var(--color-primary)]"
+                            className="w-16 px-3 py-2 rounded-lg bg-[var(--color-surface-alt)] text-sm text-center text-[var(--color-text)] placeholder:text-[var(--color-text-secondary)] border border-[var(--color-border)] outline-none focus:border-[var(--color-primary)] transition-colors"
                           />
                           <button
                             onClick={() => removeSet(exIndex, setIndex)}
@@ -197,13 +194,13 @@ export default function ManualLogForm({ units = 'lbs', onSaved, onClose }) {
 
                       <button
                         onClick={() => addSet(exIndex)}
-                        className="flex items-center justify-center gap-1 w-full py-2 mt-1 text-xs text-[var(--color-primary)] hover:text-[var(--color-primary-dark)]"
+                        className="flex items-center justify-center gap-1 w-full py-2 mt-1 text-xs text-[var(--color-primary)] font-medium"
                       >
                         <Plus className="w-3 h-3" /> Add Set
                       </button>
                     </div>
                   )}
-                </div>
+                </Card>
               );
             })}
           </div>
@@ -217,7 +214,7 @@ export default function ManualLogForm({ units = 'lbs', onSaved, onClose }) {
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Notes (optional)..."
               rows={2}
-              className="w-full px-4 py-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-secondary)] resize-none outline-none focus:ring-1 focus:ring-[var(--color-primary)]"
+              className="w-full px-4 py-3 rounded-xl bg-[var(--color-surface-alt)] border border-[var(--color-border)] text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-secondary)] resize-none outline-none focus:border-[var(--color-primary)] transition-colors"
             />
           </div>
         )}
@@ -225,12 +222,13 @@ export default function ManualLogForm({ units = 'lbs', onSaved, onClose }) {
 
       {/* Add exercise button */}
       <div className="px-4 py-3 border-t border-[var(--color-border)] flex-shrink-0" style={{ paddingBottom: 'calc(var(--safe-area-bottom) + 0.75rem)' }}>
-        <button
+        <Button
+          variant="secondary"
+          fullWidth
           onClick={() => setShowPicker(true)}
-          className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[var(--color-surface-alt)] border border-[var(--color-border)] text-sm font-medium text-[var(--color-text)] active:scale-[0.98] transition-all"
         >
           <Plus className="w-4 h-4" /> Add Exercise
-        </button>
+        </Button>
       </div>
 
       {showPicker && (

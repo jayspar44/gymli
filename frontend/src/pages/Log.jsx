@@ -3,6 +3,7 @@ import { Plus } from 'lucide-react';
 import { useUserProfile } from '../contexts/UserProfileContext';
 import ManualLogForm from '../components/log/ManualLogForm';
 import WorkoutHistoryList from '../components/log/WorkoutHistoryList';
+import Button from '../components/ui/Button';
 
 export default function Log() {
   const { profile } = useUserProfile();
@@ -19,13 +20,14 @@ export default function Log() {
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <h2 className="text-lg font-semibold text-[var(--color-text)]">Workout Log</h2>
-        <button
+        <Button
+          variant="primary"
+          size="sm"
           onClick={() => setShowForm(true)}
-          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white font-semibold text-xs transition-all active:scale-[0.98]"
         >
           <Plus className="w-3.5 h-3.5" />
           Log Workout
-        </button>
+        </Button>
       </div>
 
       {/* History */}
