@@ -72,10 +72,10 @@ export default function ExerciseChart() {
               <Line
                 type="monotone"
                 dataKey="maxWeight"
-                stroke="#d4872a"
+                stroke="var(--color-primary)"
                 strokeWidth={2}
-                dot={{ r: 3, fill: '#d4872a' }}
-                activeDot={{ r: 5, fill: '#d4872a' }}
+                dot={{ r: 3, fill: 'var(--color-primary)' }}
+                activeDot={{ r: 5, fill: 'var(--color-primary)' }}
                 name="Max Weight"
               />
             </LineChart>

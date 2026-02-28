@@ -211,7 +211,7 @@ export default function Profile() {
         <button
           type="submit"
           disabled={saving}
-          className="flex items-center justify-center gap-2 w-full py-3.5 mt-2 rounded-xl bg-gradient-to-r from-[#d4872a] to-[#b86b1f] text-[#fdf8f0] font-semibold text-sm transition-all duration-200 hover:shadow-lg hover:shadow-[#d4872a25] active:scale-[0.98] disabled:opacity-50"
+          className="flex items-center justify-center gap-2 w-full py-3.5 mt-2 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white font-semibold text-sm transition-all duration-200 hover:shadow-lg hover:shadow-[var(--color-primary)]/25 active:scale-[0.98] disabled:opacity-50"
         >
           {saving ? (
             <>

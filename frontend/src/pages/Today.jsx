@@ -125,7 +125,7 @@ export default function Today() {
         </p>
         <button
           onClick={() => navigate('/plan-setup')}
-          className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#d4872a] to-[#b86b1f] text-[#fdf8f0] font-semibold text-sm transition-all active:scale-[0.98]"
+          className="px-6 py-3 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white font-semibold text-sm transition-all active:scale-[0.98]"
         >
           Create Plan
         </button>
@@ -230,7 +230,7 @@ export default function Today() {
             ) : (
               <button
                 onClick={() => setShowSession(true)}
-                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gradient-to-r from-[#d4872a] to-[#b86b1f] text-[#fdf8f0] font-semibold text-sm transition-all active:scale-[0.98]"
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white font-semibold text-sm transition-all active:scale-[0.98]"
               >
                 <Play className="w-4 h-4" fill="currentColor" />
                 Start Workout

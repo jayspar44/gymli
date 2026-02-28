@@ -44,7 +44,7 @@ export default function ChatInput({ onSend, disabled }) {
       <button
         onClick={handleSubmit}
         disabled={!text.trim() || disabled}
-        className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-r from-[#d4872a] to-[#b86b1f] text-[#fdf8f0] disabled:opacity-40 transition-all active:scale-95 flex-shrink-0"
+        className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white disabled:opacity-40 transition-all active:scale-95 flex-shrink-0"
       >
         <Send className="w-4 h-4" />
       </button>

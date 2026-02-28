@@ -81,10 +81,10 @@ export default function StreakCalendar() {
 
   const intensityColors = [
     'bg-[var(--color-surface-alt)]',
-    'bg-[#d4872a]/25',
-    'bg-[#d4872a]/45',
-    'bg-[#d4872a]/70',
-    'bg-[#d4872a]',
+    'bg-[var(--color-primary)]/25',
+    'bg-[var(--color-primary)]/45',
+    'bg-[var(--color-primary)]/70',
+    'bg-[var(--color-primary)]',
   ];
 
   return (

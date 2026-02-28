@@ -69,7 +69,7 @@ export default function ExercisePicker({ onSelect, onClose }) {
             onClick={() => setCategory(cat)}
             className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
               category === cat
-                ? 'bg-[var(--color-primary)] text-[#fdf8f0]'
+                ? 'bg-[var(--color-primary)] text-white'
                 : 'bg-[var(--color-surface-alt)] text-[var(--color-text-secondary)]'
             }`}
           >

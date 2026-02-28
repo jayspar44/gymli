@@ -1,20 +1,22 @@
 @import 'tailwindcss';
 
 :root {
-  --color-primary: #d4872a;
-  --color-primary-dark: #b86b1f;
-  --color-primary-light: #e8a34d;
-  --color-accent: #a0522d;
+  --color-primary: #d97706;
+  --color-primary-dark: #b45309;
+  --color-primary-light: #f59e0b;
+  --color-primary-muted: rgba(217, 119, 6, 0.1);
   --color-success: #10b981;
+  --color-success-muted: rgba(16, 185, 129, 0.1);
   --color-danger: #ef4444;
+  --color-danger-muted: rgba(239, 68, 68, 0.1);
   --color-warning: #f59e0b;
 
-  --color-bg: #fdf8f0;
+  --color-bg: #fafafa;
   --color-surface: #ffffff;
-  --color-surface-alt: #f5ead6;
-  --color-text: #1c1917;
-  --color-text-secondary: #78716c;
-  --color-border: #e7e5e4;
+  --color-surface-alt: #f4f4f5;
+  --color-text: #09090b;
+  --color-text-secondary: #71717a;
+  --color-border: #e4e4e7;
 
   --safe-area-top: env(safe-area-inset-top, 0px);
   --safe-area-bottom: env(safe-area-inset-bottom, 0px);
@@ -23,12 +25,21 @@
 }
 
 .dark {
-  --color-bg: #0c0a09;
-  --color-surface: #1c1917;
-  --color-surface-alt: #292524;
-  --color-text: #fafaf9;
-  --color-text-secondary: #a8a29e;
-  --color-border: #44403c;
+  --color-primary: #f59e0b;
+  --color-primary-dark: #d97706;
+  --color-primary-light: #fbbf24;
+  --color-primary-muted: rgba(245, 158, 11, 0.1);
+  --color-success: #34d399;
+  --color-success-muted: rgba(52, 211, 153, 0.1);
+  --color-danger: #f87171;
+  --color-danger-muted: rgba(248, 113, 113, 0.1);
+
+  --color-bg: #09090b;
+  --color-surface: #18181b;
+  --color-surface-alt: #27272a;
+  --color-text: #fafafa;
+  --color-text-secondary: #a1a1aa;
+  --color-border: #3f3f46;
 }
 
 * {
@@ -92,7 +103,7 @@ input[type="number"] {
 
 /* Selection color */
 ::selection {
-  background-color: rgba(212, 135, 42, 0.25);
+  background-color: rgba(217, 119, 6, 0.25);
   color: var(--color-text);
 }
 

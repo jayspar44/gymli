@@ -24,7 +24,7 @@ export default function TopBar() {
   }, [menuOpen]);
 
   return (
-    <header className="relative z-30 flex items-center justify-between h-14 px-4 flex-shrink-0">
+    <header className="relative z-30 flex items-center justify-between h-14 px-4 flex-shrink-0 border-b border-[var(--color-border)]">
       {/* App title */}
       <h1
         className="text-lg tracking-[0.12em] font-bold text-[var(--color-text)]"
@@ -42,7 +42,7 @@ export default function TopBar() {
           {user?.photoURL ? (
             <img src={user.photoURL} alt="" className="w-full h-full object-cover" />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-[#d4872a] to-[#96501d] flex items-center justify-center text-[#fdf8f0] text-sm font-semibold">
+            <div className="w-full h-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] flex items-center justify-center text-white text-sm font-semibold">
               {(user?.displayName || user?.email || '?')[0].toUpperCase()}
             </div>
           )}
@@ -53,16 +53,6 @@ export default function TopBar() {
         )}
       </div>
 
-      {/* Bottom border with forge glow */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-[var(--color-border)]">
-        <div
-          className="absolute inset-0"
-          style={{
-            background: 'linear-gradient(90deg, transparent 10%, var(--color-primary) 50%, transparent 90%)',
-            opacity: 0.15,
-          }}
-        />
-      </div>
     </header>
   );
 }

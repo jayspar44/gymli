@@ -22,7 +22,7 @@ export function ThemeProvider({ children }) {
     // Update meta theme-color
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) {
-      meta.setAttribute('content', theme === 'dark' ? '#0c0a09' : '#fdf8f0');
+      meta.setAttribute('content', theme === 'dark' ? '#09090b' : '#fafafa');
     }
 
     // Sync with Capacitor StatusBar

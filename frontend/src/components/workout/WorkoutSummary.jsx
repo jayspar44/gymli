@@ -10,8 +10,8 @@ export default function WorkoutSummary({ result, onClose }) {
       <div className="w-full max-w-sm rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="px-6 pt-6 pb-4 text-center bg-gradient-to-b from-[var(--color-primary)]/.08 to-transparent">
-          <div className="flex items-center justify-center w-14 h-14 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-[#d4872a] to-[#96501d]">
-            <Trophy className="w-7 h-7 text-[#fdf8f0]" strokeWidth={1.5} />
+          <div className="flex items-center justify-center w-14 h-14 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)]">
+            <Trophy className="w-7 h-7 text-white" strokeWidth={1.5} />
           </div>
           <h3
             className="text-xl tracking-wider font-bold text-[var(--color-text)] mb-1"
@@ -73,7 +73,7 @@ export default function WorkoutSummary({ result, onClose }) {
         <div className="px-6 pb-6">
           <button
             onClick={onClose}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-[#d4872a] to-[#b86b1f] text-[#fdf8f0] font-semibold text-sm transition-all duration-200 active:scale-[0.98]"
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white font-semibold text-sm transition-all duration-200 active:scale-[0.98]"
           >
             Done
           </button>

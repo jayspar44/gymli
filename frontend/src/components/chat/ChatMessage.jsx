@@ -6,14 +6,14 @@ export default function ChatMessage({ message }) {
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-3`}>
       {!isUser && (
-        <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-[#d4872a] to-[#96501d] flex items-center justify-center mr-2 mt-0.5">
-          <span className="text-[10px] font-bold text-[#fdf8f0]">G</span>
+        <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] flex items-center justify-center mr-2 mt-0.5">
+          <span className="text-[10px] font-bold text-white">G</span>
         </div>
       )}
       <div
         className={`max-w-[80%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed ${
           isUser
-            ? 'bg-[var(--color-primary)] text-[#fdf8f0] rounded-br-md'
+            ? 'bg-[var(--color-primary)] text-white rounded-br-md'
             : 'bg-[var(--color-surface-alt)] text-[var(--color-text)] rounded-bl-md'
         }`}
       >
@@ -25,7 +25,7 @@ export default function ChatMessage({ message }) {
           </div>
         )}
         {message.timestamp && (
-          <p className={`text-[10px] mt-1 ${isUser ? 'text-[#fdf8f0]/60' : 'text-[var(--color-text-secondary)]'}`}>
+          <p className={`text-[10px] mt-1 ${isUser ? 'text-white/60' : 'text-[var(--color-text-secondary)]'}`}>
             {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </p>
         )}

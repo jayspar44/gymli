@@ -26,8 +26,8 @@ export default function GymliInsights() {
     return (
       <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#d4872a] to-[#96501d] flex items-center justify-center flex-shrink-0">
-            <span className="text-xs font-bold text-[#fdf8f0]">G</span>
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] flex items-center justify-center flex-shrink-0">
+            <span className="text-xs font-bold text-white">G</span>
           </div>
           <div className="flex-1">
             <div className="h-3 w-3/4 rounded bg-[var(--color-surface-alt)] animate-pulse mb-2" />
@@ -44,8 +44,8 @@ export default function GymliInsights() {
     <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden">
       <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--color-border)]">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#d4872a] to-[#96501d] flex items-center justify-center">
-            <span className="text-[10px] font-bold text-[#fdf8f0]">G</span>
+          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] flex items-center justify-center">
+            <span className="text-[10px] font-bold text-white">G</span>
           </div>
           <span className="text-xs font-bold text-[var(--color-text)] tracking-wide">
             Gymli&apos;s Wisdom

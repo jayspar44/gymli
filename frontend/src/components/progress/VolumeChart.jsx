@@ -71,7 +71,7 @@ export default function VolumeChart() {
               />
               <Bar
                 dataKey="volumeK"
-                fill="#d4872a"
+                fill="var(--color-primary)"
                 radius={[4, 4, 0, 0]}
                 name="Volume"
               />

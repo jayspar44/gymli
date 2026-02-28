@@ -288,10 +288,10 @@ export default function PlanView({ plan, editable = false, onPlanChange, onSave,
             <button
               onClick={onSave}
               disabled={saving}
-              className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gradient-to-r from-[#d4872a] to-[#b86b1f] text-[#fdf8f0] font-semibold text-sm transition-all active:scale-[0.98] disabled:opacity-50"
+              className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white font-semibold text-sm transition-all active:scale-[0.98] disabled:opacity-50"
             >
               {saving ? (
-                <div className="w-4 h-4 border-2 border-[#fdf8f0] border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               ) : (
                 <Check className="w-4 h-4" />
               )}
