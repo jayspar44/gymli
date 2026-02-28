@@ -1,9 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, ChevronLeft, ChevronRight, Timer } from 'lucide-react';
+import { X, Timer } from 'lucide-react';
 import ExerciseCard from './ExerciseCard';
 import RestTimer from './RestTimer';
 import WorkoutSummary from './WorkoutSummary';
-import { logWorkout } from '../../api/services';
+import { logWorkout, getPreviousPerformance } from '../../api/services';
+import { cn } from '../../utils/cn';
+import Button from '../ui/Button';
+import BottomSheet from '../ui/BottomSheet';
 
 export default function WorkoutSession({ day, units, onClose }) {
   const [exercises, setExercises] = useState([]);
@@ -12,15 +15,20 @@ export default function WorkoutSession({ day, units, onClose }) {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [saving, setSaving] = useState(false);
   const [result, setResult] = useState(null);
+  const [previousData, setPreviousData] = useState({});
+  const [showFinishSheet, setShowFinishSheet] = useState(false);
   const timerRef = useRef(null);
+  const lastCompletionRef = useRef(0);
+  const pillStripRef = useRef(null);
 
+  // Initialize exercises from plan day
   useEffect(() => {
-    // Initialize exercises from plan day
     const initialized = day.exercises.map(ex => ({
       exerciseId: ex.exerciseId,
       name: ex.exerciseId.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
       targetSets: ex.sets,
       targetReps: ex.reps,
+      notes: '',
       sets: Array.from({ length: ex.sets }, () => ({
         weight: '',
         reps: '',
@@ -30,6 +38,31 @@ export default function WorkoutSession({ day, units, onClose }) {
     setExercises(initialized);
   }, [day]);
 
+  // Load previous performance on mount
+  useEffect(() => {
+    const ids = day.exercises.map(e => e.exerciseId);
+    if (ids.length) {
+      getPreviousPerformance(ids).then(setPreviousData).catch(() => {});
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Pre-fill weights from previous session
+  useEffect(() => {
+    if (Object.keys(previousData).length === 0) return;
+    setExercises(prevExercises => prevExercises.map(ex => {
+      const prevPerf = previousData[ex.exerciseId];
+      if (!prevPerf?.sets?.length) return ex;
+      return {
+        ...ex,
+        sets: ex.sets.map((set, i) => ({
+          ...set,
+          weight: set.weight || prevPerf.sets[i]?.weight || prevPerf.sets[0]?.weight || '',
+        })),
+      };
+    }));
+  }, [previousData]);
+
   // Elapsed timer
   useEffect(() => {
     timerRef.current = setInterval(() => {
@@ -38,21 +71,48 @@ export default function WorkoutSession({ day, units, onClose }) {
     return () => clearInterval(timerRef.current);
   }, []);
 
+  // Scroll pill strip when current index changes
+  useEffect(() => {
+    if (pillStripRef.current) {
+      const pills = pillStripRef.current.children;
+      if (pills[currentIndex]) {
+        pills[currentIndex].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      }
+    }
+  }, [currentIndex]);
+
   function handleExerciseChange(updated) {
     const newExercises = [...exercises];
+    const prevExercise = exercises[currentIndex];
     newExercises[currentIndex] = updated;
     setExercises(newExercises);
 
-    // Auto-show rest timer when a set is completed
-    const lastSet = updated.sets[updated.sets.length - 1];
+    // Check if a new set was just completed
     const completedCount = updated.sets.filter(s => s.completed).length;
-    const prevCompletedCount = exercises[currentIndex]?.sets.filter(s => s.completed).length || 0;
-    if (completedCount > prevCompletedCount && !lastSet?.completed) {
-      setShowRestTimer(true);
+    const prevCompletedCount = prevExercise?.sets.filter(s => s.completed).length || 0;
+
+    if (completedCount > prevCompletedCount) {
+      const now = Date.now();
+      const gap = now - lastCompletionRef.current;
+      lastCompletionRef.current = now;
+
+      // Only show rest timer if gap > 5 seconds (not rapid corrections)
+      // and not all sets are done
+      const allDone = updated.sets.every(s => s.completed);
+      if (gap > 5000 && !allDone) {
+        setShowRestTimer(true);
+      }
     }
   }
 
+  function handleUpdateNotes(notes) {
+    const newExercises = [...exercises];
+    newExercises[currentIndex] = { ...newExercises[currentIndex], notes };
+    setExercises(newExercises);
+  }
+
   async function handleFinish() {
+    setShowFinishSheet(false);
     setSaving(true);
     const duration = Math.round(elapsedSeconds / 60);
 
@@ -61,6 +121,7 @@ export default function WorkoutSession({ day, units, onClose }) {
         exercises: exercises.map(ex => ({
           exerciseId: ex.exerciseId,
           name: ex.name,
+          notes: ex.notes || undefined,
           sets: ex.sets.map(s => ({
             weight: Number(s.weight) || 0,
             reps: Number(s.reps) || 0,
@@ -73,7 +134,6 @@ export default function WorkoutSession({ day, units, onClose }) {
       setResult({ ...workoutResult, duration });
     } catch (err) {
       console.error('Failed to save workout:', err);
-      // Still show summary with local data
       setResult({
         exercises,
         duration,
@@ -91,6 +151,9 @@ export default function WorkoutSession({ day, units, onClose }) {
   const seconds = elapsedSeconds % 60;
   const currentExercise = exercises[currentIndex];
 
+  const completedExerciseCount = exercises.filter(ex => ex.sets.some(s => s.completed)).length;
+  const totalExercises = exercises.length;
+
   if (result) {
     return <WorkoutSummary result={result} onClose={onClose} />;
   }
@@ -104,38 +167,41 @@ export default function WorkoutSession({ day, units, onClose }) {
         </button>
         <div className="flex items-center gap-2 text-sm">
           <Timer className="w-4 h-4 text-[var(--color-primary)]" />
-          <span className="font-mono font-medium text-[var(--color-text)]">
+          <span className="font-mono font-medium text-[var(--color-text)] tabular-nums">
             {minutes}:{seconds.toString().padStart(2, '0')}
           </span>
         </div>
         <button
-          onClick={handleFinish}
+          onClick={() => setShowFinishSheet(true)}
           disabled={saving}
-          className="text-sm font-semibold text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] disabled:opacity-50"
+          className="text-sm font-semibold text-[var(--color-text-secondary)] disabled:opacity-50"
         >
-          {saving ? 'Saving...' : 'Finish'}
+          {saving ? 'Saving...' : 'End'}
         </button>
       </div>
 
-      {/* Exercise navigation */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--color-border)] flex-shrink-0">
-        <button
-          onClick={() => setCurrentIndex(i => Math.max(0, i - 1))}
-          disabled={currentIndex === 0}
-          className="flex items-center gap-1 text-xs text-[var(--color-text-secondary)] disabled:opacity-30"
-        >
-          <ChevronLeft className="w-4 h-4" /> Prev
-        </button>
-        <span className="text-xs text-[var(--color-text-secondary)]">
-          {currentIndex + 1} / {exercises.length}
-        </span>
-        <button
-          onClick={() => setCurrentIndex(i => Math.min(exercises.length - 1, i + 1))}
-          disabled={currentIndex === exercises.length - 1}
-          className="flex items-center gap-1 text-xs text-[var(--color-text-secondary)] disabled:opacity-30"
-        >
-          Next <ChevronRight className="w-4 h-4" />
-        </button>
+      {/* Exercise navigation — pill strip */}
+      <div
+        ref={pillStripRef}
+        className="flex gap-2 px-4 py-2 overflow-x-auto border-b border-[var(--color-border)] flex-shrink-0"
+        style={{ scrollbarWidth: 'none' }}
+      >
+        {exercises.map((ex, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrentIndex(i)}
+            className={cn(
+              'flex-shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors',
+              i === currentIndex
+                ? 'bg-[var(--color-primary)] text-white'
+                : i < currentIndex || ex.sets.some(s => s.completed)
+                  ? 'bg-[var(--color-success-muted)] text-[var(--color-success)]'
+                  : 'bg-[var(--color-surface-alt)] text-[var(--color-text-secondary)]'
+            )}
+          >
+            {ex.name.split(' ').slice(0, 2).join(' ')}
+          </button>
+        ))}
       </div>
 
       {/* Current exercise */}
@@ -144,38 +210,31 @@ export default function WorkoutSession({ day, units, onClose }) {
           <ExerciseCard
             exercise={currentExercise}
             units={units}
+            previous={previousData[currentExercise.exerciseId]}
             onChange={handleExerciseChange}
+            onUpdateNotes={handleUpdateNotes}
           />
         )}
-
-        {/* Quick nav dots */}
-        <div className="flex items-center justify-center gap-1.5 mt-4">
-          {exercises.map((ex, i) => {
-            const completed = ex.sets.every(s => s.completed);
-            const partial = ex.sets.some(s => s.completed);
-            return (
-              <button
-                key={i}
-                onClick={() => setCurrentIndex(i)}
-                className={`w-2 h-2 rounded-full transition-all duration-150 ${
-                  i === currentIndex
-                    ? 'w-4 bg-[var(--color-primary)]'
-                    : completed
-                      ? 'bg-emerald-500'
-                      : partial
-                        ? 'bg-[var(--color-primary)]/.5'
-                        : 'bg-[var(--color-border)]'
-                }`}
-              />
-            );
-          })}
-        </div>
       </div>
 
       {/* Rest timer */}
       {showRestTimer && (
         <RestTimer duration={90} onDismiss={() => setShowRestTimer(false)} />
       )}
+
+      {/* Finish confirmation bottom sheet */}
+      <BottomSheet open={showFinishSheet} onClose={() => setShowFinishSheet(false)}>
+        <div className="py-4 space-y-4">
+          <h3 className="text-lg font-bold text-[var(--color-text)]">End workout?</h3>
+          <p className="text-sm text-[var(--color-text-secondary)]">
+            {completedExerciseCount} of {totalExercises} exercises completed
+          </p>
+          <div className="flex gap-3">
+            <Button variant="secondary" fullWidth onClick={() => setShowFinishSheet(false)}>Cancel</Button>
+            <Button variant="primary" fullWidth onClick={handleFinish}>End Workout</Button>
+          </div>
+        </div>
+      </BottomSheet>
     </div>
   );
 }

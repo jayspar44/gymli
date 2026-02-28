@@ -18,7 +18,7 @@ export default function SetRow({ setIndex, set, units, onChange }) {
             value={set.weight || ''}
             onChange={(e) => handleChange('weight', e.target.value)}
             placeholder="0"
-            className="w-full py-2 px-2.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] text-sm text-center outline-none focus:border-[var(--color-primary)] transition-colors"
+            className="w-full py-2 px-2.5 rounded-lg bg-[var(--color-surface-alt)] border border-[var(--color-border)] text-[var(--color-text)] text-sm text-center outline-none focus:border-[var(--color-primary)] transition-colors"
           />
           <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-[var(--color-text-secondary)]">
             {units}
@@ -31,7 +31,7 @@ export default function SetRow({ setIndex, set, units, onChange }) {
             value={set.reps || ''}
             onChange={(e) => handleChange('reps', e.target.value)}
             placeholder="0"
-            className="w-full py-2 px-2.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] text-sm text-center outline-none focus:border-[var(--color-primary)] transition-colors"
+            className="w-full py-2 px-2.5 rounded-lg bg-[var(--color-surface-alt)] border border-[var(--color-border)] text-[var(--color-text)] text-sm text-center outline-none focus:border-[var(--color-primary)] transition-colors"
           />
           <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-[var(--color-text-secondary)]">
             reps
