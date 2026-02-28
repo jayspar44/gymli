@@ -5,11 +5,6 @@ export default function ChatMessage({ message }) {
 
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-3`}>
-      {!isUser && (
-        <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] flex items-center justify-center mr-2 mt-0.5">
-          <span className="text-[10px] font-bold text-white">G</span>
-        </div>
-      )}
       <div
         className={`max-w-[80%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed ${
           isUser
