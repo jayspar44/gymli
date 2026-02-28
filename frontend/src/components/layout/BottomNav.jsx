@@ -1,5 +1,6 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { Home, Dumbbell, BarChart3 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const tabs = [
   { to: '/', icon: Home, label: 'Today' },
@@ -8,47 +9,45 @@ const tabs = [
 ];
 
 export default function BottomNav() {
-  return (
-    <nav className="relative z-30 flex-shrink-0" style={{ paddingBottom: 'var(--safe-area-bottom)' }}>
-      {/* Top border */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-[var(--color-border)]" />
+  const location = useLocation();
+  const activeTab = tabs.find(t =>
+    t.to === '/' ? location.pathname === '/' : location.pathname.startsWith(t.to)
+  )?.to;
 
+  return (
+    <nav
+      className="relative z-30 flex-shrink-0 border-t border-[var(--color-border)]"
+      style={{ paddingBottom: 'var(--safe-area-bottom)' }}
+    >
       <div className="flex items-center justify-around h-16 bg-[var(--color-surface)]">
-        {tabs.map(({ to, icon: Icon, label }) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={to === '/'}
-            className={({ isActive }) =>
-              `relative flex flex-col items-center justify-center gap-1 w-full h-full transition-colors duration-200 ${
-                isActive
-                  ? 'text-[var(--color-primary)]'
-                  : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text)]'
-              }`
-            }
-          >
-            {({ isActive }) => (
-              <>
-                {/* Active indicator */}
-                {isActive && (
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-b-full bg-[var(--color-primary)]">
-                    <div
-                      className="absolute inset-0 rounded-b-full"
-                      style={{
-                        boxShadow: '0 2px 8px var(--color-primary)',
-                        opacity: 0.5,
-                      }}
-                    />
-                  </div>
-                )}
-                <Icon className="w-5 h-5" strokeWidth={isActive ? 2 : 1.5} />
-                <span className={`text-[11px] ${isActive ? 'font-medium' : 'font-normal'}`}>
-                  {label}
-                </span>
-              </>
-            )}
-          </NavLink>
-        ))}
+        {tabs.map(({ to, icon: Icon, label }) => {
+          const isActive = to === activeTab;
+          return (
+            <NavLink
+              key={to}
+              to={to}
+              end={to === '/'}
+              className="relative flex flex-col items-center justify-center gap-1 w-full h-full"
+            >
+              {isActive && (
+                <motion.div
+                  layoutId="bottomnav-indicator"
+                  className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-0.5 rounded-full bg-[var(--color-primary)]"
+                  transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                />
+              )}
+              <Icon
+                className={`w-5 h-5 transition-colors ${isActive ? 'text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)]'}`}
+                strokeWidth={isActive ? 2 : 1.5}
+              />
+              <span
+                className={`text-[11px] transition-colors ${isActive ? 'text-[var(--color-primary)] font-medium' : 'text-[var(--color-text-secondary)]'}`}
+              >
+                {label}
+              </span>
+            </NavLink>
+          );
+        })}
       </div>
     </nav>
   );

@@ -19,7 +19,7 @@ export default function ProfileMenu({ onClose }) {
   }
 
   return (
-    <div className="absolute right-0 top-full mt-2 w-64 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xl shadow-black/20 overflow-hidden z-50">
+    <div className="absolute right-0 top-full mt-2 w-64 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-lg overflow-hidden z-50">
       {/* User info */}
       <div className="px-4 py-3 border-b border-[var(--color-border)]">
         <p className="text-sm font-medium text-[var(--color-text)] truncate">

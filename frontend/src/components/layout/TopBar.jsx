@@ -8,32 +8,24 @@ export default function TopBar() {
   const menuRef = useRef(null);
 
   useEffect(() => {
-    function handleClickOutside(e) {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setMenuOpen(false);
-      }
-    }
-    if (menuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('touchstart', handleClickOutside);
-    }
+    if (!menuOpen) return;
+    const close = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false);
+    };
+    document.addEventListener('mousedown', close);
+    document.addEventListener('touchstart', close);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('touchstart', handleClickOutside);
+      document.removeEventListener('mousedown', close);
+      document.removeEventListener('touchstart', close);
     };
   }, [menuOpen]);
 
+  const initial = user?.displayName?.[0] || user?.email?.[0] || '?';
+
   return (
     <header className="relative z-30 flex items-center justify-between h-14 px-4 flex-shrink-0 border-b border-[var(--color-border)]">
-      {/* App title */}
-      <h1
-        className="text-lg tracking-[0.12em] font-bold text-[var(--color-text)]"
-      >
-        <span className="text-[var(--color-primary)]">GYM</span>
-        <span className="text-[var(--color-text)]">LI</span>
-      </h1>
+      <span className="text-lg font-bold text-[var(--color-text)] tracking-tight">Gymli</span>
 
-      {/* Profile */}
       <div className="relative" ref={menuRef}>
         <button
           onClick={() => setMenuOpen(!menuOpen)}
@@ -42,17 +34,13 @@ export default function TopBar() {
           {user?.photoURL ? (
             <img src={user.photoURL} alt="" className="w-full h-full object-cover" />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] flex items-center justify-center text-white text-sm font-semibold">
-              {(user?.displayName || user?.email || '?')[0].toUpperCase()}
+            <div className="w-full h-full flex items-center justify-center bg-[var(--color-primary)] text-white text-sm font-semibold">
+              {initial.toUpperCase()}
             </div>
           )}
         </button>
-
-        {menuOpen && (
-          <ProfileMenu onClose={() => setMenuOpen(false)} />
-        )}
+        {menuOpen && <ProfileMenu onClose={() => setMenuOpen(false)} />}
       </div>
-
     </header>
   );
 }
