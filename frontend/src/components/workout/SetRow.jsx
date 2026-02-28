@@ -1,7 +1,11 @@
 import { Check } from 'lucide-react';
+import { impactMedium } from '../../utils/haptics';
 
 export default function SetRow({ setIndex, set, units, onChange }) {
   function handleChange(field, value) {
+    if (field === 'completed' && value) {
+      impactMedium();
+    }
     onChange(setIndex, { ...set, [field]: value });
   }
 

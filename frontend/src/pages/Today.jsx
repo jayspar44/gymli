@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import {
   Flame, Dumbbell, Moon, Play, CheckCircle2, Calendar,
   X, Lightbulb,
@@ -322,13 +323,15 @@ export default function Today() {
       </div>
 
       {/* Workout session overlay */}
-      {showSession && day && (
-        <WorkoutSession
-          day={day}
-          units={units}
-          onClose={handleSessionClose}
-        />
-      )}
+      <AnimatePresence>
+        {showSession && day && (
+          <WorkoutSession
+            day={day}
+            units={units}
+            onClose={handleSessionClose}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Full plan overlay */}
       {showPlan && (

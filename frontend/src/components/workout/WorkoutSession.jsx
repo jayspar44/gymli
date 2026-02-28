@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import { X, Timer } from 'lucide-react';
 import ExerciseCard from './ExerciseCard';
 import RestTimer from './RestTimer';
@@ -159,7 +160,13 @@ export default function WorkoutSession({ day, units, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-[var(--color-bg)] flex flex-col">
+    <motion.div
+      className="fixed inset-0 z-50 bg-[var(--color-bg)] flex flex-col"
+      initial={{ x: '100%' }}
+      animate={{ x: 0 }}
+      exit={{ x: '100%' }}
+      transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+    >
       {/* Header */}
       <div className="flex items-center justify-between px-4 h-14 border-b border-[var(--color-border)] flex-shrink-0">
         <button onClick={onClose} className="text-[var(--color-text-secondary)] hover:text-[var(--color-text)]">
@@ -235,6 +242,6 @@ export default function WorkoutSession({ day, units, onClose }) {
           </div>
         </div>
       </BottomSheet>
-    </div>
+    </motion.div>
   );
 }

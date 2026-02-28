@@ -1,9 +1,15 @@
+import { useEffect } from 'react';
 import { Clock, Dumbbell, Flame } from 'lucide-react';
 import Stat from '../ui/Stat';
 import Badge from '../ui/Badge';
 import Button from '../ui/Button';
+import { notifySuccess } from '../../utils/haptics';
 
 export default function WorkoutSummary({ result, onClose }) {
+  useEffect(() => {
+    notifySuccess();
+  }, []);
+
   if (!result) return null;
 
   const totalSets = result.exercises?.reduce((sum, ex) => sum + ex.sets.filter(s => s.completed).length, 0) || 0;
