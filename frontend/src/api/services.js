@@ -28,6 +28,9 @@ export const sendChat = (message, context) => client.post('/chat', { message, co
 export const getChatHistory = (limit) => client.get('/chat/history', { params: { limit } }).then(r => r.data);
 export const clearChatHistory = () => client.delete('/chat/history').then(r => r.data);
 
+// Coaching
+export const getDailyTip = () => client.get('/coaching/tip').then(r => r.data);
+
 // Stats
 export const getExerciseProgress = (exerciseId) => client.get(`/stats/exercise/${exerciseId}`).then(r => r.data);
 export const getVolumeStats = (period) => client.get('/stats/volume', { params: { period } }).then(r => r.data);
