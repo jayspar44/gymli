@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Flame, ArrowLeft } from 'lucide-react';
+import { Dumbbell, ArrowLeft, Check } from 'lucide-react';
 import { getTemplates, generatePlan as generatePlanApi } from '../api/services';
 import TemplatePicker from '../components/plan/TemplatePicker';
 import PlanView from '../components/plan/PlanView';
@@ -55,15 +55,15 @@ export default function PlanSetup() {
         <>
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-2">
-              <Flame className="w-5 h-5 text-[var(--color-primary)]" strokeWidth={1.5} />
+              <Dumbbell className="w-5 h-5 text-[var(--color-primary)]" strokeWidth={1.5} />
               <h2
                 className="text-lg tracking-wider font-bold text-[var(--color-text)]"
               >
-                Choose Your Battle Plan
+                Choose Your Plan
               </h2>
             </div>
             <p className="text-sm text-[var(--color-text-secondary)]">
-              Pick a template and Gymli will forge it to fit your goals.
+              Pick a template and we'll customize it for your goals.
             </p>
           </div>
 
@@ -122,7 +122,7 @@ export default function PlanSetup() {
             onClick={handleActivate}
             className="flex items-center justify-center gap-2 w-full py-3.5 mt-6 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white font-semibold text-sm transition-all duration-200 hover:shadow-lg hover:shadow-[var(--color-primary)]/25 active:scale-[0.98]"
           >
-            <Flame className="w-4 h-4" strokeWidth={1.5} />
+            <Check className="w-4 h-4" strokeWidth={2} />
             Activate Plan
           </button>
         </>
