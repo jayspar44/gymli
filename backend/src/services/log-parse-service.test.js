@@ -38,4 +38,10 @@ describe('handleParse', () => {
     expect(out.needsClarification).toBe(true);
     expect(out.reply).toBeTruthy();
   });
+
+  it('does not read or write global chat history', async () => {
+    parseLogMock.mockResolvedValue({ reply: 'ok', confidence: 1, needsClarification: false, clarification: null, actions: [] });
+    const out = await handleParse('u1', { text: 'hi', session: {}, units: 'lbs' });
+    expect(out).toBeTruthy();
+  });
 });

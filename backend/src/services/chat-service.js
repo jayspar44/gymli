@@ -1,6 +1,7 @@
 import { db } from './firebase.js';
-import { chat as aiChat } from './ai-service.js';
+import { chat as aiChat, GEMINI_MODEL } from './ai-service.js';
 import { buildCoachingContext, formatContextForAI } from './coaching-context-service.js';
+import { logInteraction } from './interaction-log-service.js';
 import logger from '../logger.js';
 
 const contextCache = new Map();
@@ -50,6 +51,13 @@ export async function sendMessage(uid, message, screenContext) {
   };
 
   await chatRef(uid).add(chatDoc);
+
+  logInteraction({
+    uid, surface: 'global-chat',
+    inputText: message,
+    envelope: { reply: response, actions: [{ type: 'answer', text: response }] },
+    model: GEMINI_MODEL,
+  });
 
   return {
     message: response,
