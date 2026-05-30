@@ -1,14 +1,28 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Clock, Dumbbell, Flame } from 'lucide-react';
 import Stat from '../ui/Stat';
 import Badge from '../ui/Badge';
 import Button from '../ui/Button';
 import { notifySuccess } from '../../utils/haptics';
 
-export default function WorkoutSummary({ result, onClose }) {
+export default function WorkoutSummary({ result, onClose, onSaveAsRoutine }) {
+  const [savedRoutine, setSavedRoutine] = useState(false);
+  const [savingRoutine, setSavingRoutine] = useState(false);
+
   useEffect(() => {
     notifySuccess();
   }, []);
+
+  async function handleSaveAsRoutine() {
+    if (!onSaveAsRoutine || savedRoutine) return;
+    setSavingRoutine(true);
+    try {
+      await onSaveAsRoutine();
+      setSavedRoutine(true);
+    } finally {
+      setSavingRoutine(false);
+    }
+  }
 
   if (!result) return null;
 
@@ -67,8 +81,18 @@ export default function WorkoutSummary({ result, onClose }) {
           </div>
         )}
 
-        {/* Close button */}
-        <div className="px-6 pb-6">
+        {/* Actions */}
+        <div className="px-6 pb-6 space-y-2">
+          {onSaveAsRoutine && (
+            <Button
+              variant="secondary"
+              fullWidth
+              onClick={handleSaveAsRoutine}
+              disabled={savedRoutine || savingRoutine}
+            >
+              {savedRoutine ? 'Saved as routine ✓' : savingRoutine ? 'Saving…' : 'Save as routine'}
+            </Button>
+          )}
           <Button variant="primary" fullWidth onClick={onClose}>
             Done
           </Button>

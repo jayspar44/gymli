@@ -4,7 +4,7 @@ import { X, Timer } from 'lucide-react';
 import ExerciseCard from './ExerciseCard';
 import RestTimer from './RestTimer';
 import WorkoutSummary from './WorkoutSummary';
-import { logWorkout, getPreviousPerformance } from '../../api/services';
+import { logWorkout, getPreviousPerformance, createRoutine } from '../../api/services';
 import { cn } from '../../utils/cn';
 import Button from '../ui/Button';
 import BottomSheet from '../ui/BottomSheet';
@@ -155,8 +155,21 @@ export default function WorkoutSession({ day, units, onClose }) {
   const completedExerciseCount = exercises.filter(ex => ex.sets.some(s => s.completed)).length;
   const totalExercises = exercises.length;
 
+  async function handleSaveAsRoutine() {
+    await createRoutine({
+      name: day?.name || 'My Routine',
+      exercises: exercises.map(ex => ({
+        exerciseId: ex.exerciseId,
+        name: ex.name,
+        kind: ex.kind || 'weighted',
+        targetSets: ex.sets.length,
+        targetReps: ex.targetReps || '8-12',
+      })),
+    });
+  }
+
   if (result) {
-    return <WorkoutSummary result={result} onClose={onClose} />;
+    return <WorkoutSummary result={result} onClose={onClose} onSaveAsRoutine={handleSaveAsRoutine} />;
   }
 
   return (
