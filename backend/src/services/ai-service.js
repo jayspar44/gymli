@@ -31,7 +31,7 @@ export async function generateWorkoutSummary(workoutData, userProfile) {
   }
 
   const exerciseList = workoutData.exercises
-    .map(ex => `${ex.name}: ${ex.sets.length} sets, best set ${ex.sets.reduce((best, s) => s.weight > (best.weight || 0) ? s : best, {}).weight || 0} ${userProfile?.units || 'lbs'} x ${ex.sets.reduce((best, s) => s.weight > (best.weight || 0) ? s : best, {}).reps || 0}`)
+    .map(ex => `${ex.name}: ${ex.sets.length} sets${typeof ex.bestScore === 'number' ? ` (best ${ex.bestScore})` : ''}`)
     .join('\n');
 
   const prompt = `${GYMLI_SYSTEM_PROMPT}

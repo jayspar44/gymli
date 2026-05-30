@@ -1,6 +1,7 @@
 import { db } from './firebase.js';
 import { updateStreak, getProfile } from './user-service.js';
 import { generateWorkoutSummary } from './ai-service.js';
+import { exerciseRollup } from './set-metrics.js';
 
 function workoutsRef(uid) {
   return db.collection('users').doc(uid).collection('workouts');
@@ -11,24 +12,19 @@ export async function logWorkout(uid, workoutData) {
 
   // Calculate total volume and detect PRs
   const exercises = workoutData.exercises.map(ex => {
-    const sets = ex.sets.map(s => ({
-      reps: Number(s.reps) || 0,
-      weight: Number(s.weight) || 0,
-      completed: s.completed !== false,
-    }));
-
-    const completedSets = sets.filter(s => s.completed);
-    const volume = completedSets.reduce((sum, s) => sum + (s.reps * s.weight), 0);
-    const bestSet = completedSets.reduce((best, s) =>
-      (s.weight > (best?.weight || 0)) ? s : best, null);
-
+    const kind = ex.kind || 'weighted';
+    const sets = ex.sets.map(s => ({ ...s, completed: s.completed !== false }));
+    const rollup = exerciseRollup(kind, sets);
     return {
       exerciseId: ex.exerciseId,
       name: ex.name,
+      kind,
       sets,
-      volume,
-      bestWeight: bestSet?.weight || 0,
-      bestReps: bestSet?.reps || 0,
+      volume: rollup.volume,
+      bestScore: rollup.best.score,
+      bestSet: rollup.best.set,
+      hasData: rollup.hasData,
+      notes: ex.notes || undefined,
     };
   });
 
@@ -42,24 +38,18 @@ export async function logWorkout(uid, workoutData) {
 
   const prs = [];
   for (const exercise of exercises) {
-    let historicalBest = 0;
-
+    if (!exercise.hasData) continue;
+    let historicalBest = null;
     for (const doc of historySnap.docs) {
       const w = doc.data();
       if (!w.exercises) continue;
       const match = w.exercises.find(e => e.exerciseId === exercise.exerciseId);
-      if (match && match.bestWeight > historicalBest) {
-        historicalBest = match.bestWeight;
+      if (match && typeof match.bestScore === 'number') {
+        historicalBest = historicalBest === null ? match.bestScore : Math.max(historicalBest, match.bestScore);
       }
     }
-
-    if (exercise.bestWeight > historicalBest && historicalBest > 0) {
-      prs.push({
-        exerciseId: exercise.exerciseId,
-        name: exercise.name,
-        weight: exercise.bestWeight,
-        previousBest: historicalBest,
-      });
+    if (historicalBest !== null && exercise.bestScore > historicalBest) {
+      prs.push({ exerciseId: exercise.exerciseId, name: exercise.name, score: exercise.bestScore, previousBest: historicalBest });
     }
   }
 
