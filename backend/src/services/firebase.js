@@ -21,6 +21,9 @@ if (!admin.apps.length) {
 }
 
 const db = admin.firestore();
+// Optional fields (e.g. per-exercise notes, kind-specific set fields) are often
+// undefined; without this the Admin SDK throws on any undefined value at write time.
+db.settings({ ignoreUndefinedProperties: true });
 const auth = admin.auth();
 
 export { admin, db, auth };
