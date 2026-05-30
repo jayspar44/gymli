@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Plus, Minus, FileText } from 'lucide-react';
 import SetRow from './SetRow';
 import Card from '../ui/Card';
-import { emptySet } from '../../utils/set-fields';
+import { emptySet, fieldsForKind } from '../../utils/set-fields';
 
 export default function ExerciseCard({ exercise, units, previous, onChange, onUpdateNotes }) {
   const [showNotes, setShowNotes] = useState(false);
@@ -43,11 +43,29 @@ export default function ExerciseCard({ exercise, units, previous, onChange, onUp
             Target: {exercise.targetSets} x {exercise.targetReps}
           </p>
         )}
-        {previous && previous.sets && previous.sets.length > 0 && (
-          <p className="text-xs text-[var(--color-text-secondary)] mt-1">
-            Last: {previous.sets[0].weight}{units} x {previous.sets.map(s => s.reps).join(', ')}
-          </p>
-        )}
+        {previous && previous.sets && previous.sets.length > 0 && (() => {
+          const kind = exercise.kind || 'weighted';
+          const fields = fieldsForKind(kind);
+          const setStrings = previous.sets.map(s => {
+            const vals = fields.map(f => {
+              const v = s[f.key];
+              return v != null && v !== '' ? String(v) : null;
+            }).filter(Boolean);
+            if (vals.length === 0) return null;
+            if (kind === 'weighted') return `${vals[0]}${units} × ${vals[1] ?? '?'}`;
+            if (kind === 'bodyweight') return `+${vals[0] ?? 0} × ${vals[1] ?? '?'}`;
+            if (kind === 'assisted') return `−${vals[0] ?? 0} × ${vals[1] ?? '?'}`;
+            if (kind === 'timed') return `${vals[0]}s`;
+            if (kind === 'distance') return vals.join(' / ');
+            return vals.join(' × ');
+          }).filter(Boolean);
+          if (setStrings.length === 0) return null;
+          return (
+            <p className="text-xs text-[var(--color-text-secondary)] mt-1">
+              Last: {setStrings.join(', ')}
+            </p>
+          );
+        })()}
       </div>
 
       {/* Sets */}
@@ -56,8 +74,14 @@ export default function ExerciseCard({ exercise, units, previous, onChange, onUp
         <div className="flex items-center gap-2 pb-1 mb-1 border-b border-[var(--color-border)]">
           <span className="w-6 text-[10px] text-[var(--color-text-secondary)] text-center uppercase">Set</span>
           <div className="flex-1 flex gap-2">
-            <span className="flex-1 text-[10px] text-[var(--color-text-secondary)] text-center uppercase">Weight</span>
-            <span className="w-16 text-[10px] text-[var(--color-text-secondary)] text-center uppercase">Reps</span>
+            {fieldsForKind(exercise.kind || 'weighted').map((f, fi, arr) => (
+              <span
+                key={f.key}
+                className={`${fi === arr.length - 1 && arr.length > 1 ? 'w-16' : 'flex-1'} text-[10px] text-[var(--color-text-secondary)] text-center uppercase`}
+              >
+                {f.label}
+              </span>
+            ))}
           </div>
           <span className="w-8 text-[10px] text-[var(--color-text-secondary)] text-center">&#10003;</span>
         </div>

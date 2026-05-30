@@ -1,6 +1,16 @@
 import Card from '../ui/Card';
 import Badge from '../ui/Badge';
 
+function scoreLabel(ex) {
+  const score = ex.bestScore;
+  if (score == null) return '—';
+  const kind = ex.kind || 'weighted';
+  if (kind === 'timed') return `${score}s`;
+  if (kind === 'distance') return String(score);
+  // weighted / bodyweight / assisted — show with units when available
+  return ex.units ? `${score} ${ex.units}` : String(score);
+}
+
 export default function PRBoard({ exercises }) {
   if (!exercises?.length) return null;
 
@@ -15,7 +25,7 @@ export default function PRBoard({ exercises }) {
             <span className="text-sm text-[var(--color-text)]">{ex.name}</span>
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold tabular-nums text-[var(--color-text)]">
-                {ex.bestWeight} {ex.units}
+                {scoreLabel(ex)}
               </span>
               {ex.isRecent && <Badge variant="success">PR</Badge>}
             </div>

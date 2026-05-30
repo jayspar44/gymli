@@ -65,7 +65,7 @@ export default function WorkoutSummary({ result, onClose, onSaveAsRoutine }) {
               <div key={i} className="flex items-center gap-2">
                 <Badge variant="success">PR</Badge>
                 <span className="text-sm text-[var(--color-text)]">
-                  {pr.name}: {pr.weight} (+{pr.weight - pr.previousBest})
+                  {pr.name}: {pr.score} (+{pr.score - pr.previousBest})
                 </span>
               </div>
             ))}

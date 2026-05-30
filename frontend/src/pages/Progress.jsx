@@ -133,9 +133,9 @@ function StrengthTab() {
 
             return {
               name: ex.name,
-              bestWeight: best.maxWeight,
+              bestScore: best.maxWeight,
               bestDate: best.date,
-              units: 'lbs',
+              kind: ex.kind || best.kind || 'weighted',
               isRecent: new Date(best.date) >= thirtyDaysAgo,
             };
           } catch {
@@ -144,7 +144,7 @@ function StrengthTab() {
         })
       );
 
-      setPrData(prs.filter(Boolean).sort((a, b) => b.bestWeight - a.bestWeight));
+      setPrData(prs.filter(Boolean).sort((a, b) => b.bestScore - a.bestScore));
     } catch {
       setPrData([]);
     } finally {
