@@ -45,3 +45,4 @@ coverage/
 .superpowers/
 .playwright-mcp/
 .claude-pocket/
+.worktrees/
