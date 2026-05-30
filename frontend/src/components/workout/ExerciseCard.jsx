@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Plus, Minus, FileText } from 'lucide-react';
 import SetRow from './SetRow';
 import Card from '../ui/Card';
+import { emptySet } from '../../utils/set-fields';
 
 export default function ExerciseCard({ exercise, units, previous, onChange, onUpdateNotes }) {
   const [showNotes, setShowNotes] = useState(false);
@@ -13,10 +14,15 @@ export default function ExerciseCard({ exercise, units, previous, onChange, onUp
   }
 
   function addSet() {
-    const lastSet = exercise.sets[exercise.sets.length - 1] || { weight: '', reps: '', completed: false };
+    const kind = exercise.kind || 'weighted';
+    const lastSet = exercise.sets[exercise.sets.length - 1] || emptySet(kind);
+    const newSet = { ...emptySet(kind) };
+    // Carry over the first numeric field value (e.g. weight) from last set
+    const firstKey = Object.keys(newSet).find(k => k !== 'completed');
+    if (firstKey && lastSet[firstKey] !== undefined) newSet[firstKey] = lastSet[firstKey];
     onChange({
       ...exercise,
-      sets: [...exercise.sets, { weight: lastSet.weight, reps: lastSet.reps, completed: false }],
+      sets: [...exercise.sets, newSet],
     });
   }
 
@@ -62,6 +68,7 @@ export default function ExerciseCard({ exercise, units, previous, onChange, onUp
             setIndex={i}
             set={set}
             units={units}
+            kind={exercise.kind || 'weighted'}
             onChange={handleSetChange}
           />
         ))}

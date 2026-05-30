@@ -6,6 +6,7 @@ import RestTimer from './RestTimer';
 import WorkoutSummary from './WorkoutSummary';
 import { logWorkout, getPreviousPerformance, createRoutine } from '../../api/services';
 import { cn } from '../../utils/cn';
+import { emptySet } from '../../utils/set-fields';
 import Button from '../ui/Button';
 import BottomSheet from '../ui/BottomSheet';
 
@@ -24,18 +25,18 @@ export default function WorkoutSession({ day, units, onClose }) {
 
   // Initialize exercises from plan day
   useEffect(() => {
-    const initialized = day.exercises.map(ex => ({
-      exerciseId: ex.exerciseId,
-      name: ex.exerciseId.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-      targetSets: ex.sets,
-      targetReps: ex.reps,
-      notes: '',
-      sets: Array.from({ length: ex.sets }, () => ({
-        weight: '',
-        reps: '',
-        completed: false,
-      })),
-    }));
+    const initialized = day.exercises.map(ex => {
+      const kind = ex.kind || 'weighted';
+      return {
+        exerciseId: ex.exerciseId,
+        name: ex.exerciseId.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+        kind,
+        targetSets: ex.sets,
+        targetReps: ex.reps,
+        notes: '',
+        sets: Array.from({ length: ex.sets }, () => emptySet(kind)),
+      };
+    });
     setExercises(initialized);
   }, [day]);
 
@@ -122,12 +123,9 @@ export default function WorkoutSession({ day, units, onClose }) {
         exercises: exercises.map(ex => ({
           exerciseId: ex.exerciseId,
           name: ex.name,
+          kind: ex.kind,
           notes: ex.notes || undefined,
-          sets: ex.sets.map(s => ({
-            weight: Number(s.weight) || 0,
-            reps: Number(s.reps) || 0,
-            completed: !!s.completed,
-          })),
+          sets: ex.sets.map(s => ({ ...s, completed: !!s.completed })),
         })),
         duration,
       });
