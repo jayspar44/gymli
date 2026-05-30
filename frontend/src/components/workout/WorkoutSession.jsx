@@ -4,11 +4,17 @@ import { X, Timer } from 'lucide-react';
 import ExerciseCard from './ExerciseCard';
 import RestTimer from './RestTimer';
 import WorkoutSummary from './WorkoutSummary';
-import { logWorkout, getPreviousPerformance, createRoutine } from '../../api/services';
+import LogInput from './LogInput';
+import LogFeed from './LogFeed';
+import { logWorkout, getPreviousPerformance, createRoutine, parseLog } from '../../api/services';
+import { applyAction } from '../../utils/session-actions';
 import { cn } from '../../utils/cn';
 import { emptySet } from '../../utils/set-fields';
 import Button from '../ui/Button';
 import BottomSheet from '../ui/BottomSheet';
+
+// Minimum confidence to auto-apply actions (reserved for future gating)
+const CONFIDENCE_MIN = 0.6;
 
 export default function WorkoutSession({ day, units, onClose }) {
   const [exercises, setExercises] = useState([]);
@@ -19,9 +25,12 @@ export default function WorkoutSession({ day, units, onClose }) {
   const [result, setResult] = useState(null);
   const [previousData, setPreviousData] = useState({});
   const [showFinishSheet, setShowFinishSheet] = useState(false);
+  const [feed, setFeed] = useState([]);
+  const [parsing, setParsing] = useState(false);
   const timerRef = useRef(null);
   const lastCompletionRef = useRef(0);
   const pillStripRef = useRef(null);
+  const sessionId = useRef('s-' + Math.round(performance.now())).current;
 
   // Initialize exercises from plan day
   useEffect(() => {
@@ -146,6 +155,40 @@ export default function WorkoutSession({ day, units, onClose }) {
     }
   }
 
+  function applyEnvelopeActions(actions) {
+    setExercises(prev => {
+      let session = { exercises: prev.map(e => ({ ...e })), currentExerciseId: prev[currentIndex]?.exerciseId || null };
+      for (const a of actions) session = applyAction(session, a);
+      return session.exercises;
+    });
+  }
+
+  async function handleLogInput(text) {
+    setFeed(f => [...f, { from: 'user', text }]);
+    setParsing(true);
+    try {
+      const session = {
+        exercises: exercises.map(e => ({ exerciseId: e.exerciseId, name: e.name, kind: e.kind, sets: e.sets })),
+        currentExerciseId: exercises[currentIndex]?.exerciseId || null,
+      };
+      const env = await parseLog({ text, session, units, sessionId });
+      setFeed(f => [...f, { from: 'gymli', text: env.reply || '…', clarification: env.needsClarification ? env.clarification : null }]);
+      // Apply actions when no clarification needed; CONFIDENCE_MIN threshold reserved for future gating
+      if (!env.needsClarification && (env.confidence == null || env.confidence >= CONFIDENCE_MIN)) {
+        applyEnvelopeActions(env.actions || []);
+      }
+    } catch {
+      setFeed(f => [...f, { from: 'gymli', text: 'Something went wrong — try again.' }]);
+    } finally {
+      setParsing(false);
+    }
+  }
+
+  function handleClarify(option) {
+    applyEnvelopeActions([{ type: 'add_exercise', exerciseId: option.exerciseId, name: option.label, kind: 'weighted' }]);
+    setFeed(f => [...f, { from: 'gymli', text: `Added ${option.label}.` }]);
+  }
+
   const minutes = Math.floor(elapsedSeconds / 60);
   const seconds = elapsedSeconds % 60;
   const currentExercise = exercises[currentIndex];
@@ -222,17 +265,28 @@ export default function WorkoutSession({ day, units, onClose }) {
         ))}
       </div>
 
-      {/* Current exercise */}
-      <div className="flex-1 overflow-y-auto px-4 py-4">
-        {currentExercise && (
-          <ExerciseCard
-            exercise={currentExercise}
-            units={units}
-            previous={previousData[currentExercise.exerciseId]}
-            onChange={handleExerciseChange}
-            onUpdateNotes={handleUpdateNotes}
-          />
-        )}
+      {/* Split layout: scrollable exercise grid (top) + feed + input (bottom) */}
+      <div className="flex flex-1 flex-col overflow-hidden">
+        {/* Current exercise — scrollable */}
+        <div className="flex-1 overflow-y-auto px-4 py-4">
+          {currentExercise && (
+            <ExerciseCard
+              exercise={currentExercise}
+              units={units}
+              previous={previousData[currentExercise.exerciseId]}
+              onChange={handleExerciseChange}
+              onUpdateNotes={handleUpdateNotes}
+            />
+          )}
+        </div>
+
+        {/* Conversational log feed */}
+        <div className="max-h-[34vh] overflow-y-auto border-t border-[var(--color-border)]">
+          <LogFeed entries={feed} onClarify={handleClarify} />
+        </div>
+
+        {/* Conversational log input */}
+        <LogInput onSend={handleLogInput} disabled={parsing} />
       </div>
 
       {/* Rest timer */}
