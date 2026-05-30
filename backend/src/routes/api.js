@@ -6,6 +6,7 @@ import { listExercises } from '../controllers/exercise-controller.js';
 import { listRoutines, createRoutine, getRoutine, updateRoutine, deleteRoutine } from '../controllers/routine-controller.js';
 import { createWorkout, listWorkouts, fetchTodaysWorkout, modifyWorkout, removeWorkout, fetchPreviousPerformance } from '../controllers/workout-controller.js';
 import { chat, fetchChatHistory, deleteChatHistory } from '../controllers/chat-controller.js';
+import { parseLogEntry } from '../controllers/log-controller.js';
 import { fetchDailyTip } from '../controllers/coaching-controller.js';
 import { fetchExerciseProgress, fetchVolumeStats, fetchStreakData, fetchInsights, fetchLoggedExercises } from '../controllers/stats-controller.js';
 
@@ -41,6 +42,9 @@ router.post('/workouts', createWorkout);
 router.put('/workouts/:id', modifyWorkout);
 router.delete('/workouts/:id', removeWorkout);
 router.post('/workouts/previous', fetchPreviousPerformance);
+
+// Log parse routes
+router.post('/log/parse', chatLimiter, parseLogEntry);
 
 // Stats routes
 router.get('/stats/exercises', fetchLoggedExercises);
