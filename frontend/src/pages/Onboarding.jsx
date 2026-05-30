@@ -1,16 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Calendar, Star } from 'lucide-react';
 import { useUserProfile } from '../contexts/UserProfileContext';
-import { getTemplates, generatePlan as generatePlanApi } from '../api/services';
 import MobileContainer from '../components/layout/MobileContainer';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Card from '../components/ui/Card';
 import Chip from '../components/ui/Chip';
-
-const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 const GOAL_PRESETS = [
   { label: 'Strength', phrase: 'Build raw strength and increase my major lifts' },
@@ -36,13 +32,6 @@ const EXPERIENCE_LEVELS = [
     desc: '3+ years, comfortable with programming',
   },
 ];
-
-function recommendTemplate(daysCount) {
-  if (daysCount <= 3) return 'full_body';
-  if (daysCount === 4) return 'upper_lower';
-  if (daysCount === 5) return 'bro_split';
-  return 'ppl';
-}
 
 function StepIndicator({ current, total }) {
   return (
@@ -72,38 +61,10 @@ export default function Onboarding() {
     experienceLevel: '',
     bodyweight: '',
     units: 'lbs',
-    availableDays: [],
-    templateId: null,
   });
   const [selectedGoalPreset, setSelectedGoalPreset] = useState(null);
-  const [templates, setTemplates] = useState([]);
-  const [templatesLoading, setTemplatesLoading] = useState(false);
-  const [generating, setGenerating] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
-
-  // Fetch templates when reaching step 4
-  useEffect(() => {
-    if (step === 4 && templates.length === 0) {
-      setTemplatesLoading(true);
-      getTemplates()
-        .then(data => {
-          setTemplates(data.templates || []);
-        })
-        .catch(() => setError('Failed to load plan templates'))
-        .finally(() => setTemplatesLoading(false));
-    }
-  }, [step, templates.length]);
-
-  // Auto-recommend template when days or experience change on step 4
-  useEffect(() => {
-    if (step === 4 && formData.availableDays.length > 0 && templates.length > 0) {
-      const recommendedId = recommendTemplate(formData.availableDays.length);
-      const match = templates.find(t => t.id === recommendedId);
-      if (match && !formData.templateId) {
-        setFormData(prev => ({ ...prev, templateId: recommendedId }));
-      }
-    }
-  }, [step, formData.availableDays.length, formData.templateId, templates]);
 
   function goForward() {
     setDirection(1);
@@ -113,22 +74,6 @@ export default function Onboarding() {
   function goBack() {
     setDirection(-1);
     setStep(prev => prev - 1);
-  }
-
-  function toggleDay(day) {
-    setFormData(prev => {
-      const newDays = prev.availableDays.includes(day)
-        ? prev.availableDays.filter(d => d !== day)
-        : [...prev.availableDays, day];
-      // Reset template selection when days change so auto-recommend can re-fire
-      const newRecommended = recommendTemplate(newDays.length);
-      const match = templates.find(t => t.id === newRecommended);
-      return {
-        ...prev,
-        availableDays: newDays,
-        templateId: match ? newRecommended : prev.templateId,
-      };
-    });
   }
 
   function handleGoalPreset(preset) {
@@ -141,33 +86,24 @@ export default function Onboarding() {
     }
   }
 
-  async function handleGenerate() {
-    setGenerating(true);
+  async function handleFinish() {
+    setSaving(true);
     setError(null);
     try {
-      // Save profile
       await updateProfile({
         displayName: formData.displayName.trim(),
         goals: formData.goals,
         experienceLevel: formData.experienceLevel,
         bodyweight: formData.bodyweight ? Number(formData.bodyweight) : null,
         units: formData.units,
-        availableDays: formData.availableDays,
         onboardingComplete: true,
       });
-      // Generate plan
-      await generatePlanApi(formData.templateId);
-      // Navigate to Today
       navigate('/', { replace: true });
     } catch (err) {
       setError(err.response?.data?.error || 'Something went wrong. Please try again.');
-      setGenerating(false);
+      setSaving(false);
     }
   }
-
-  const recommendedTemplateId = formData.availableDays.length > 0
-    ? recommendTemplate(formData.availableDays.length)
-    : null;
 
   function renderStep() {
     switch (step) {
@@ -175,7 +111,7 @@ export default function Onboarding() {
         return (
           <div className="flex flex-col items-center text-center">
             <h1 className="text-2xl font-bold text-[var(--color-text)] mb-2">
-              Let&apos;s build your program.
+              Let&apos;s get you set up.
             </h1>
             <p className="text-sm text-[var(--color-text-secondary)] mb-8">
               First, what should we call you?
@@ -257,7 +193,7 @@ export default function Onboarding() {
               Where are you starting from?
             </h1>
             <p className="text-sm text-[var(--color-text-secondary)] mb-6">
-              This helps us tailor your plan.
+              This helps us tailor your experience.
             </p>
             <div className="w-full max-w-sm flex flex-col gap-3 mb-6">
               {EXPERIENCE_LEVELS.map(level => (
@@ -308,105 +244,26 @@ export default function Onboarding() {
                 ))}
               </div>
             </div>
+            {error && (
+              <div className="w-full max-w-sm mt-4 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm text-left">
+                {error}
+              </div>
+            )}
             <div className="w-full max-w-sm mt-8 flex flex-col gap-3">
               <Button
                 variant="primary"
                 size="lg"
                 fullWidth
                 disabled={!formData.experienceLevel}
-                onClick={goForward}
+                loading={saving}
+                onClick={handleFinish}
               >
-                Continue
+                Get Started
               </Button>
-              <Button variant="ghost" size="md" fullWidth onClick={goBack}>
+              <Button variant="ghost" size="md" fullWidth onClick={goBack} disabled={saving}>
                 Back
               </Button>
             </div>
-          </div>
-        );
-
-      case 4:
-        return (
-          <div className="flex flex-col items-center text-center">
-            {generating ? (
-              <div className="flex flex-col items-center justify-center py-16">
-                <div className="w-10 h-10 mb-4 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
-                <p className="text-base font-medium text-[var(--color-text)]">
-                  Generating your plan...
-                </p>
-                <p className="text-sm text-[var(--color-text-secondary)] mt-1">
-                  This may take a few seconds.
-                </p>
-              </div>
-            ) : (
-              <>
-                <h1 className="text-2xl font-bold text-[var(--color-text)] mb-2">
-                  When can you train?
-                </h1>
-                <p className="text-sm text-[var(--color-text-secondary)] mb-6">
-                  Select the days you can make it to the gym.
-                </p>
-                <div className="w-full max-w-sm flex gap-2 mb-6">
-                  {DAYS.map(day => (
-                    <button
-                      key={day}
-                      type="button"
-                      onClick={() => toggleDay(day)}
-                      className={`flex-1 py-2.5 rounded-lg text-xs font-medium transition-all duration-150 ${
-                        formData.availableDays.includes(day)
-                          ? 'bg-[var(--color-primary)] text-white shadow-sm'
-                          : 'bg-[var(--color-surface-alt)] text-[var(--color-text-secondary)]'
-                      }`}
-                    >
-                      {day}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Template selection */}
-                {formData.availableDays.length > 0 && (
-                  <div className="w-full max-w-sm text-left">
-                    {formData.experienceLevel === 'beginner' ? (
-                      <BeginnerRecommendation
-                        templates={templates}
-                        recommendedId={recommendedTemplateId}
-                        loading={templatesLoading}
-                      />
-                    ) : (
-                      <TemplateSelection
-                        templates={templates}
-                        selectedId={formData.templateId}
-                        recommendedId={recommendedTemplateId}
-                        onSelect={(id) => setFormData(prev => ({ ...prev, templateId: id }))}
-                        loading={templatesLoading}
-                      />
-                    )}
-                  </div>
-                )}
-
-                {error && (
-                  <div className="w-full max-w-sm mt-4 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm text-left">
-                    {error}
-                  </div>
-                )}
-
-                <div className="w-full max-w-sm mt-8 flex flex-col gap-3">
-                  <Button
-                    variant="primary"
-                    size="lg"
-                    fullWidth
-                    disabled={formData.availableDays.length === 0 || !formData.templateId}
-                    loading={generating}
-                    onClick={handleGenerate}
-                  >
-                    Generate Plan
-                  </Button>
-                  <Button variant="ghost" size="md" fullWidth onClick={goBack}>
-                    Back
-                  </Button>
-                </div>
-              </>
-            )}
           </div>
         );
 
@@ -418,7 +275,7 @@ export default function Onboarding() {
   return (
     <MobileContainer>
       <div className="flex flex-col flex-1 px-6 pt-16 pb-8">
-        <StepIndicator current={step} total={4} />
+        <StepIndicator current={step} total={3} />
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={step}
@@ -434,81 +291,5 @@ export default function Onboarding() {
         </AnimatePresence>
       </div>
     </MobileContainer>
-  );
-}
-
-function BeginnerRecommendation({ templates, recommendedId, loading }) {
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-6">
-        <div className="w-5 h-5 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  const template = templates.find(t => t.id === recommendedId);
-  if (!template) return null;
-
-  return (
-    <div className="px-4 py-3 rounded-xl bg-[var(--color-primary)]/8 border border-[var(--color-primary)]/15">
-      <p className="text-sm text-[var(--color-text)] leading-relaxed">
-        We recommend <strong>{template.name}</strong> training {template.daysPerWeek} days per
-        week — perfect for building a foundation.
-      </p>
-    </div>
-  );
-}
-
-function TemplateSelection({ templates, selectedId, recommendedId, onSelect, loading }) {
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-6">
-        <div className="w-5 h-5 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  if (templates.length === 0) return null;
-
-  return (
-    <div className="flex flex-col gap-3">
-      {templates.map(template => {
-        const isRecommended = template.id === recommendedId;
-        const isSelected = template.id === selectedId;
-        return (
-          <button
-            key={template.id}
-            onClick={() => onSelect(template.id)}
-            className={`relative w-full text-left p-4 rounded-xl border transition-all duration-200 active:scale-[0.98] ${
-              isSelected
-                ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/5 shadow-sm shadow-[var(--color-primary)]/10'
-                : 'border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-primary)]/50'
-            }`}
-          >
-            {isRecommended && (
-              <div className="absolute -top-2.5 left-3 px-2 py-0.5 rounded-full bg-[var(--color-primary)] text-[10px] font-semibold text-white tracking-wider uppercase flex items-center gap-1">
-                <Star className="w-2.5 h-2.5" fill="currentColor" />
-                Recommended
-              </div>
-            )}
-            <h3 className="text-sm font-semibold text-[var(--color-text)] mb-1">
-              {template.name}
-            </h3>
-            <p className="text-xs text-[var(--color-text-secondary)] mb-2 leading-relaxed">
-              {template.description}
-            </p>
-            <div className="flex items-center gap-3">
-              <span className="flex items-center gap-1 text-xs text-[var(--color-text-secondary)]">
-                <Calendar className="w-3 h-3" />
-                {template.daysPerWeek} days/week
-              </span>
-              <span className="text-xs text-[var(--color-text-secondary)] capitalize">
-                {template.suitableFor?.join(', ')}
-              </span>
-            </div>
-          </button>
-        );
-      })}
-    </div>
   );
 }

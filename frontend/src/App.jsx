@@ -10,8 +10,6 @@ import Today from './pages/Today';
 import Log from './pages/Log';
 import Progress from './pages/Progress';
 import Profile from './pages/Profile';
-import PlanSetup from './pages/PlanSetup';
-
 function OnboardingGate({ children }) {
   const { needsOnboarding, loading } = useUserProfile();
   if (loading) return null;
@@ -46,7 +44,6 @@ function App() {
           <Route path="log" element={<OnboardingGate><Log /></OnboardingGate>} />
           <Route path="progress" element={<OnboardingGate><Progress /></OnboardingGate>} />
           <Route path="profile" element={<Profile />} />
-          <Route path="plan-setup" element={<OnboardingGate><PlanSetup /></OnboardingGate>} />
         </Route>
       </Routes>
     </AuthProvider>
