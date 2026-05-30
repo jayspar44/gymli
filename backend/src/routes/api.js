@@ -3,7 +3,7 @@ import rateLimit from 'express-rate-limit';
 import { verifyToken } from '../controllers/auth-controller.js';
 import { getUserProfile, upsertUserProfile } from '../controllers/user-controller.js';
 import { listExercises } from '../controllers/exercise-controller.js';
-import { createPlan, fetchActivePlan, fetchPlan, modifyPlan, fetchTemplates } from '../controllers/plan-controller.js';
+import { listRoutines, createRoutine, getRoutine, updateRoutine, deleteRoutine } from '../controllers/routine-controller.js';
 import { createWorkout, listWorkouts, fetchTodaysWorkout, modifyWorkout, removeWorkout, fetchPreviousPerformance } from '../controllers/workout-controller.js';
 import { chat, fetchChatHistory, deleteChatHistory } from '../controllers/chat-controller.js';
 import { fetchDailyTip } from '../controllers/coaching-controller.js';
@@ -27,12 +27,12 @@ router.post('/user/profile', upsertUserProfile);
 // Exercise routes
 router.get('/exercises', listExercises);
 
-// Plan routes
-router.get('/plans/templates', fetchTemplates);
-router.post('/plans/generate', createPlan);
-router.get('/plans/active', fetchActivePlan);
-router.get('/plans/:id', fetchPlan);
-router.put('/plans/:id', modifyPlan);
+// Routine routes
+router.get('/routines', listRoutines);
+router.post('/routines', createRoutine);
+router.get('/routines/:id', getRoutine);
+router.put('/routines/:id', updateRoutine);
+router.delete('/routines/:id', deleteRoutine);
 
 // Workout routes
 router.get('/workouts/today', fetchTodaysWorkout);
