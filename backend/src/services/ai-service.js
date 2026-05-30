@@ -24,63 +24,6 @@ function getAI() {
   return ai;
 }
 
-export async function generatePlan(template, userProfile) {
-  const client = getAI();
-  if (!client) {
-    return { customized: false, plan: template };
-  }
-
-  const prompt = `You are Gymli, the AI gym companion. A warrior has chosen the "${template.name}" training template.
-
-Their profile:
-- Experience: ${userProfile.experienceLevel || 'beginner'}
-- Goals: ${userProfile.goals || 'general fitness'}
-- Available days: ${userProfile.availableDays?.join(', ') || 'flexible'}
-- Bodyweight: ${userProfile.bodyweight || 'unknown'} ${userProfile.units || 'lbs'}
-
-The base template has ${template.days.length} training days: ${template.days.map(d => d.name).join(', ')}.
-
-Customize this plan for the warrior. Return a JSON object with:
-{
-  "gymliMessage": "A short motivational message from Gymli about this plan (2-3 sentences, in character)",
-  "weeklySchedule": {
-    "Mon": "day name or Rest",
-    "Tue": "day name or Rest",
-    "Wed": "day name or Rest",
-    "Thu": "day name or Rest",
-    "Fri": "day name or Rest",
-    "Sat": "day name or Rest",
-    "Sun": "day name or Rest"
-  },
-  "adjustments": ["list of any exercise swaps or set/rep changes you recommend"]
-}
-
-Only return valid JSON, nothing else.`;
-
-  try {
-    const response = await client.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json',
-        temperature: 0.7,
-      },
-    });
-
-    const text = response.text;
-    const customization = JSON.parse(text);
-
-    return {
-      customized: true,
-      plan: template,
-      ...customization,
-    };
-  } catch (error) {
-    logger.error(error, 'Failed to generate plan with AI');
-    return { customized: false, plan: template };
-  }
-}
-
 export async function generateWorkoutSummary(workoutData, userProfile) {
   const client = getAI();
   if (!client) {

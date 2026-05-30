@@ -1,15 +1,13 @@
 import { db } from './firebase.js';
 import { getProfile } from './user-service.js';
-import { getActivePlan } from './plan-service.js';
 
 /**
  * Build a structured coaching context for AI calls.
  * Assembled once per chat session, cached by caller.
  */
 export async function buildCoachingContext(uid) {
-  const [profile, plan, workoutsSnap] = await Promise.all([
+  const [profile, workoutsSnap] = await Promise.all([
     getProfile(uid),
-    getActivePlan(uid),
     db.collection('users').doc(uid).collection('workouts')
       .orderBy('date', 'desc').limit(15).get(),
   ]);
@@ -46,15 +44,8 @@ export async function buildCoachingContext(uid) {
     }
   }
 
-  // Adherence: workouts in last 4 weeks vs planned
-  const fourWeeksAgo = new Date();
-  fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28);
-  const fourWeeksStr = fourWeeksAgo.toISOString().slice(0, 10);
-  const recentCount = recentWorkouts.filter(w => w.date >= fourWeeksStr).length;
-  const plannedPerWeek = plan?.daysPerWeek || 0;
-  const completionRate = plannedPerWeek > 0
-    ? Math.round((recentCount / (plannedPerWeek * 4)) * 100)
-    : null;
+  // Adherence
+  const completionRate = null;
 
   return {
     profile: {
@@ -64,14 +55,7 @@ export async function buildCoachingContext(uid) {
       units: profile?.units || 'lbs',
       bodyweight: profile?.bodyweight || null,
     },
-    plan: plan ? {
-      name: plan.templateName || plan.name || 'Custom',
-      daysPerWeek: plan.daysPerWeek,
-      schedule: plan.weeklySchedule || null,
-      exercises: (plan.days || []).flatMap(d =>
-        (d.exercises || []).map(e => e.name || e.exerciseId)
-      ),
-    } : null,
+    plan: null,
     recentWorkouts: recentWorkouts.slice(0, 10),
     exerciseTrends,
     adherence: {
