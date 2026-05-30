@@ -37,3 +37,6 @@ export const getVolumeStats = (period) => client.get('/stats/volume', { params: 
 export const getStreakData = () => client.get('/stats/streak').then(r => r.data);
 export const getInsights = () => client.get('/stats/insights').then(r => r.data);
 export const getLoggedExercises = () => client.get('/stats/exercises').then(r => r.data);
+
+// Conversational logging
+export const parseLog = (payload) => client.post('/log/parse', payload).then(r => r.data);
