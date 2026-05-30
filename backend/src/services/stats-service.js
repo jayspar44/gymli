@@ -1,6 +1,7 @@
 import { db } from './firebase.js';
 import { getProfile } from './user-service.js';
 import { generateInsights } from './ai-service.js';
+import { setScore, setVolume } from './set-metrics.js';
 
 
 function workoutsRef(uid) {
@@ -19,14 +20,22 @@ export async function getExerciseProgress(uid, exerciseId) {
     const exercise = workout.exercises?.find(e => e.exerciseId === exerciseId);
     if (!exercise) return;
 
+    const kind = exercise.kind || 'weighted';
     const completedSets = exercise.sets?.filter(s => s.completed !== false) || [];
     if (completedSets.length === 0) return;
 
-    const maxWeight = Math.max(...completedSets.map(s => Number(s.weight) || 0));
-    const maxReps = Math.max(...completedSets.map(s => Number(s.reps) || 0));
-    const totalVolume = completedSets.reduce(
-      (sum, s) => sum + (Number(s.weight) || 0) * (Number(s.reps) || 0), 0
-    );
+    // Use stored bestScore if available (written by logWorkout); otherwise derive it.
+    const maxWeight = exercise.bestScore != null
+      ? Number(exercise.bestScore)
+      : Math.max(0, ...completedSets.map(s => setScore(kind, s)));
+
+    // maxReps is only meaningful for rep-based kinds; keep as best reps for weighted compat.
+    const maxReps = Math.max(0, ...completedSets.map(s => Number(s.reps) || 0));
+
+    // Use stored volume if available; otherwise derive it.
+    const totalVolume = exercise.volume != null
+      ? Number(exercise.volume)
+      : completedSets.reduce((sum, s) => sum + setVolume(kind, s), 0);
 
     dataPoints.push({
       date: workout.date,
@@ -34,6 +43,7 @@ export async function getExerciseProgress(uid, exerciseId) {
       maxReps,
       totalVolume,
       sets: completedSets.length,
+      kind,
     });
   });
 

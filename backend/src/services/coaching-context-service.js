@@ -18,8 +18,9 @@ export async function buildCoachingContext(uid) {
       date: w.date,
       exercises: (w.exercises || []).map(e => ({
         name: e.name,
-        sets: (e.sets || []).filter(s => s.completed).map(s => ({ weight: s.weight, reps: s.reps })),
-        bestWeight: e.bestWeight || 0,
+        kind: e.kind || 'weighted',
+        sets: (e.sets || []).filter(s => s.completed).map(s => ({ ...s })),
+        bestScore: e.bestScore ?? e.bestWeight ?? 0,
       })),
       totalVolume: w.totalVolume || 0,
       duration: w.duration || null,
@@ -39,7 +40,7 @@ export async function buildCoachingContext(uid) {
     const raw = workoutsSnap.docs.find(d => d.data().date === w.date)?.data();
     if (raw?.prs?.length) {
       for (const pr of raw.prs) {
-        recentPRs.push({ name: pr.name, weight: pr.weight, date: w.date });
+        recentPRs.push({ name: pr.name, score: pr.score ?? pr.weight, date: w.date });
       }
     }
   }
@@ -73,7 +74,7 @@ function computeTrends(workouts) {
   for (const w of workouts) {
     for (const e of w.exercises) {
       if (!exerciseMap[e.name]) exerciseMap[e.name] = [];
-      exerciseMap[e.name].push({ date: w.date, bestWeight: e.bestWeight });
+      exerciseMap[e.name].push({ date: w.date, bestScore: e.bestScore });
     }
   }
 
@@ -85,8 +86,8 @@ function computeTrends(workouts) {
     const recent = entries.filter(e => e.date >= twoWeeksStr);
     const older = entries.filter(e => e.date < twoWeeksStr);
 
-    const recentBest = Math.max(0, ...recent.map(e => e.bestWeight));
-    const olderBest = Math.max(0, ...older.map(e => e.bestWeight));
+    const recentBest = Math.max(0, ...recent.map(e => e.bestScore));
+    const olderBest = Math.max(0, ...older.map(e => e.bestScore));
 
     let trend = 'flat';
     if (recentBest > olderBest) trend = 'improving';
@@ -126,7 +127,17 @@ export function formatContextForAI(ctx) {
     lines.push('\nRecent workouts:');
     for (const w of ctx.recentWorkouts.slice(0, 8)) {
       const exercises = w.exercises.map(e => {
-        const setsStr = e.sets.map(s => `${s.weight}x${s.reps}`).join(', ');
+        const kind = e.kind || 'weighted';
+        const setsStr = e.sets.map(s => {
+          switch (kind) {
+            case 'timed': return `${s.seconds ?? 0}s`;
+            case 'distance': return `${s.distance ?? 0}`;
+            case 'bodyweight': return `+${s.addedWeight ?? 0}x${s.reps ?? 0}`;
+            case 'assisted': return `-${s.assistWeight ?? 0}x${s.reps ?? 0}`;
+            case 'weighted':
+            default: return `${s.weight ?? 0}x${s.reps ?? 0}`;
+          }
+        }).join(', ');
         return `${e.name} [${setsStr}]`;
       }).join('; ');
       lines.push(`  ${w.date}: ${exercises} (vol: ${w.totalVolume})`);
@@ -143,7 +154,7 @@ export function formatContextForAI(ctx) {
   if (ctx.recentPRs.length) {
     lines.push('\nRecent PRs:');
     for (const pr of ctx.recentPRs) {
-      lines.push(`  ${pr.name}: ${pr.weight} (${pr.date})`);
+      lines.push(`  ${pr.name}: ${pr.score} (${pr.date})`);
     }
   }
 

@@ -26,10 +26,13 @@ export async function getPreviousPerformance(uid, exerciseIds) {
       if (exerciseIds.includes(ex.exerciseId) && !found.has(ex.exerciseId)) {
         result[ex.exerciseId] = {
           date: workout.date,
+          kind: ex.kind || 'weighted',
           sets: (ex.sets || [])
             .filter(s => s.completed)
-            .map(s => ({ weight: s.weight, reps: s.reps })),
-          bestWeight: ex.bestWeight || 0,
+            .map(s => ({ ...s })),
+          bestScore: ex.bestScore ?? ex.bestWeight ?? 0,
+          // Keep bestWeight alias for any legacy consumers that still read it
+          bestWeight: ex.bestScore ?? ex.bestWeight ?? 0,
           notes: ex.notes || null,
         };
         found.add(ex.exerciseId);
