@@ -42,8 +42,9 @@ export async function getRoutine(uid, routineId) {
 }
 
 export async function updateRoutine(uid, routineId, data) {
-  const patch = { ...data, updatedAt: new Date().toISOString() };
-  if (data.exercises) patch.exercises = normalizeExercises(data.exercises);
+  const patch = { updatedAt: new Date().toISOString() };
+  if (data.name !== undefined) patch.name = String(data.name).trim();
+  if (data.exercises !== undefined) patch.exercises = normalizeExercises(data.exercises);
   await routinesRef(uid).doc(routineId).update(patch);
   return getRoutine(uid, routineId);
 }

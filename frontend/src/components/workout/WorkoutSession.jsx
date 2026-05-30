@@ -35,7 +35,7 @@ export default function WorkoutSession({ day, units, onClose }) {
       const kind = ex.kind || 'weighted';
       return {
         exerciseId: ex.exerciseId,
-        name: ex.exerciseId.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+        name: ex.name || ex.exerciseId.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
         kind,
         targetSets: ex.sets,
         targetReps: ex.reps,

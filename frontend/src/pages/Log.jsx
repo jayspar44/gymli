@@ -65,6 +65,8 @@ export default function Log() {
       name: routine.name,
       exercises: routine.exercises.map(e => ({
         exerciseId: e.exerciseId,
+        name: e.name,
+        kind: e.kind || 'weighted',
         sets: e.targetSets,
         reps: e.targetReps,
       })),
