@@ -1,6 +1,5 @@
 import { db } from './firebase.js';
 import { updateStreak, getProfile } from './user-service.js';
-import { getActivePlan } from './plan-service.js';
 import { generateWorkoutSummary } from './ai-service.js';
 
 function workoutsRef(uid) {
@@ -102,45 +101,21 @@ export async function getWorkouts(uid, { limit = 20, startAfterDate } = {}) {
 }
 
 export async function getTodaysWorkout(uid) {
-  const plan = await getActivePlan(uid);
-  if (!plan) return { hasPlan: false, isRestDay: true, message: 'No active plan. Set one up first!' };
+  const todayStr = new Date().toISOString().split('T')[0];
 
-  const today = new Date();
-  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const todayName = dayNames[today.getDay()];
+  const [todaySnap, recentSnap, profile] = await Promise.all([
+    workoutsRef(uid).where('date', '==', todayStr).limit(1).get(),
+    workoutsRef(uid).orderBy('date', 'desc').limit(1).get(),
+    getProfile(uid),
+  ]);
 
-  // Check weekly schedule
-  let todayDayName = null;
-  if (plan.weeklySchedule) {
-    const assignment = plan.weeklySchedule[todayName];
-    if (!assignment || assignment.toLowerCase() === 'rest') {
-      return { hasPlan: true, isRestDay: true, planName: plan.templateName, message: 'Rest day — even dwarves need recovery between battles.' };
-    }
-    todayDayName = assignment;
-  } else {
-    // No weekly schedule — use day index rotation
-    const dayIndex = today.getDay() % plan.days.length;
-    todayDayName = plan.days[dayIndex]?.name;
-  }
-
-  const todaysDay = plan.days.find(d => d.name === todayDayName) || plan.days[0];
-
-  // Check if already logged today
-  const todayStr = today.toISOString().split('T')[0];
-  const existing = await workoutsRef(uid)
-    .where('date', '==', todayStr)
-    .limit(1)
-    .get();
-
-  const profile = await getProfile(uid);
+  const lastDoc = recentSnap.docs[0];
+  const lastWorkout = lastDoc ? { id: lastDoc.id, ...lastDoc.data() } : null;
 
   return {
-    hasPlan: true,
-    isRestDay: false,
-    planName: plan.templateName,
-    day: todaysDay,
-    alreadyLogged: !existing.empty,
-    existingWorkout: existing.empty ? null : { id: existing.docs[0].id, ...existing.docs[0].data() },
+    alreadyLoggedToday: !todaySnap.empty,
+    existingWorkout: todaySnap.empty ? null : { id: todaySnap.docs[0].id, ...todaySnap.docs[0].data() },
+    lastWorkout,
     streak: profile?.streak || 0,
     units: profile?.units || 'lbs',
   };
