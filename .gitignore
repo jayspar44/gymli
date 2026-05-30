@@ -40,3 +40,8 @@ npm-debug.log*
 
 # Coverage
 coverage/
+
+# Agent / tooling scratch dirs
+.superpowers/
+.playwright-mcp/
+.claude-pocket/
