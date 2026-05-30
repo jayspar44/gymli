@@ -13,9 +13,6 @@ import { emptySet } from '../../utils/set-fields';
 import Button from '../ui/Button';
 import BottomSheet from '../ui/BottomSheet';
 
-// Minimum confidence to auto-apply actions (reserved for future gating)
-const CONFIDENCE_MIN = 0.6;
-
 export default function WorkoutSession({ day, units, onClose }) {
   const [exercises, setExercises] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -173,8 +170,10 @@ export default function WorkoutSession({ day, units, onClose }) {
       };
       const env = await parseLog({ text, session, units, sessionId });
       setFeed(f => [...f, { from: 'gymli', text: env.reply || '…', clarification: env.needsClarification ? env.clarification : null }]);
-      // Apply actions when no clarification needed; CONFIDENCE_MIN threshold reserved for future gating
-      if (!env.needsClarification && (env.confidence == null || env.confidence >= CONFIDENCE_MIN)) {
+      // Apply actions whenever no clarification is needed. The backend already guards
+      // exercise resolution, and the grid stays editable, so we never silently drop a
+      // low-confidence parse — surfacing it in the grid beats a misleading no-op.
+      if (!env.needsClarification) {
         applyEnvelopeActions(env.actions || []);
       }
     } catch {
