@@ -3,6 +3,7 @@ import type { ExpoConfig } from 'expo/config';
 const config: ExpoConfig = {
   name: 'Gymli',
   slug: 'gymli',
+  owner: 'jayspar44',
   scheme: 'gymli',
   version: '0.1.0',
   orientation: 'portrait',
@@ -38,6 +39,7 @@ const config: ExpoConfig = {
     apiUrl: process.env.EXPO_PUBLIC_API_URL,
     firebaseConfig: process.env.EXPO_PUBLIC_FIREBASE_CONFIG,
     googleWebClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    eas: { projectId: '18695339-fd5b-4c06-9743-d0e59c0ac197' },
   },
 };
 
