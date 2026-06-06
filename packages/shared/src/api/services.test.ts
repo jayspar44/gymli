@@ -24,3 +24,10 @@ test("getRoutines hits /routines", async () => {
   await createServices(c).getRoutines();
   expect(c.calls[0]).toEqual(['get', '/routines', undefined]);
 });
+
+test("parseLog posts to /log/parse with the payload", async () => {
+  const c = fakeClient();
+  const s = createServices(c);
+  await s.parseLog({ text: 'bench 3x5' });
+  expect(c.calls[0]).toEqual(['post', '/log/parse', { text: 'bench 3x5' }]);
+});

@@ -29,6 +29,8 @@ export function createServices(client: AxiosInstance) {
     sendChat: (message: string, context: any) => post('/chat', { message, context }),
     getChatHistory: (limit?: number) => get('/chat/history', { params: { limit } }),
     clearChatHistory: () => del('/chat/history'),
+    // Conversational logging
+    parseLog: (payload: any) => post('/log/parse', payload),
     // Coaching
     getDailyTip: () => get('/coaching/tip'),
     // Stats
