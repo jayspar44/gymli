@@ -20,7 +20,7 @@ export default defineConfig({
     allowedHosts: ['.ts.net'],
     proxy: {
       '/api': {
-        target: 'http://localhost:4201',
+        target: `http://localhost:${process.env.BACKEND_PORT || 4201}`,
         changeOrigin: true,
       },
     },
