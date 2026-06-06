@@ -1,24 +1,17 @@
 import { GoogleGenAI } from '@google/genai';
 import logger from '../logger.js';
 
-const GYMLI_SYSTEM_PROMPT = `You are Gymli, an AI gym companion inspired by a loyal, no-nonsense dwarf warrior. You are an experienced strength coach with deep training knowledge.
+export const GEMINI_MODEL = 'gemini-3-flash-preview';
 
-Your personality:
-- Enthusiastic and loyal to your training partners
-- Direct and honest — you don't sugarcoat, but you're always supportive
-- Natural dwarf flavor in speech: references to "forging," "iron," "the forge," "battle," "steel" — but keep it natural, never forced or cartoonish
-- You call the user "lad," "lass," or "warrior" occasionally
-- Celebrate PRs enthusiastically, like a victory in battle
-- On rest days, remind them even dwarves need recovery between battles
+const GYMLI_SYSTEM_PROMPT = `You are Gymli, an AI strength training coach built into the Gymli workout app. You are knowledgeable, direct, and encouraging — like a smart training partner.
 
-Your knowledge:
-- Proper form and technique for all major exercises
-- Programming principles: progressive overload, periodization, deload weeks
-- Nutrition basics for muscle building and fat loss
-- Recovery, sleep, and injury prevention
-- You can read workout data and provide meaningful analysis
-
-Keep responses concise and actionable. You're a gym companion, not an encyclopedia.`;
+Guidelines:
+- Be concise. 2-4 sentences max unless the user asks for detail.
+- Reference the user's actual data when available (weights, trends, PRs, volume).
+- Give specific, actionable advice. "Try 82.5kg next session" is better than "keep pushing."
+- If you don't have enough data to answer, say so honestly.
+- No roleplay, no character voice. Just be a helpful coach.
+- Use the user's preferred units (provided in context).`;
 
 let ai = null;
 
@@ -33,76 +26,19 @@ function getAI() {
   return ai;
 }
 
-export async function generatePlan(template, userProfile) {
-  const client = getAI();
-  if (!client) {
-    return { customized: false, plan: template };
-  }
-
-  const prompt = `You are Gymli, the AI gym companion. A warrior has chosen the "${template.name}" training template.
-
-Their profile:
-- Experience: ${userProfile.experienceLevel || 'beginner'}
-- Goals: ${userProfile.goals || 'general fitness'}
-- Available days: ${userProfile.availableDays?.join(', ') || 'flexible'}
-- Bodyweight: ${userProfile.bodyweight || 'unknown'} ${userProfile.units || 'lbs'}
-
-The base template has ${template.days.length} training days: ${template.days.map(d => d.name).join(', ')}.
-
-Customize this plan for the warrior. Return a JSON object with:
-{
-  "gymliMessage": "A short motivational message from Gymli about this plan (2-3 sentences, in character)",
-  "weeklySchedule": {
-    "Mon": "day name or Rest",
-    "Tue": "day name or Rest",
-    "Wed": "day name or Rest",
-    "Thu": "day name or Rest",
-    "Fri": "day name or Rest",
-    "Sat": "day name or Rest",
-    "Sun": "day name or Rest"
-  },
-  "adjustments": ["list of any exercise swaps or set/rep changes you recommend"]
-}
-
-Only return valid JSON, nothing else.`;
-
-  try {
-    const response = await client.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json',
-        temperature: 0.7,
-      },
-    });
-
-    const text = response.text;
-    const customization = JSON.parse(text);
-
-    return {
-      customized: true,
-      plan: template,
-      ...customization,
-    };
-  } catch (error) {
-    logger.error(error, 'Failed to generate plan with AI');
-    return { customized: false, plan: template };
-  }
-}
-
 export async function generateWorkoutSummary(workoutData, userProfile) {
   const client = getAI();
   if (!client) {
-    return 'Another battle won at the forge! Keep pushing, warrior.';
+    return 'Great workout! Keep pushing forward.';
   }
 
   const exerciseList = workoutData.exercises
-    .map(ex => `${ex.name}: ${ex.sets.length} sets, best set ${ex.sets.reduce((best, s) => s.weight > (best.weight || 0) ? s : best, {}).weight || 0} ${userProfile?.units || 'lbs'} x ${ex.sets.reduce((best, s) => s.weight > (best.weight || 0) ? s : best, {}).reps || 0}`)
+    .map(ex => `${ex.name}: ${ex.sets.length} sets${typeof ex.bestScore === 'number' ? ` (best ${ex.bestScore})` : ''}`)
     .join('\n');
 
   const prompt = `${GYMLI_SYSTEM_PROMPT}
 
-The warrior just finished a workout. Give a brief (2-3 sentence) summary and encouragement in Gymli's voice.
+The user just finished a workout. Give a brief (2-3 sentence) summary and encouragement.
 
 Workout details:
 - Duration: ${workoutData.duration || 'unknown'} minutes
@@ -114,21 +50,21 @@ Be specific about their performance. Celebrate PRs. Keep it short.`;
 
   try {
     const response = await client.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: GEMINI_MODEL,
       contents: prompt,
       config: { temperature: 0.8, maxOutputTokens: 200 },
     });
     return response.text;
   } catch (error) {
     logger.error(error, 'Failed to generate workout summary');
-    return 'Another day of iron conquered! The forge burns bright, warrior.';
+    return 'Solid session. Keep showing up and the results will follow.';
   }
 }
 
 export async function generateInsights(recentWorkouts, profile) {
   const client = getAI();
   if (!client) {
-    return ['Keep training consistently — the forge rewards those who show up.'];
+    return ['Keep training consistently — results come from showing up.'];
   }
 
   const summary = recentWorkouts.slice(0, 10).map(w =>
@@ -137,7 +73,7 @@ export async function generateInsights(recentWorkouts, profile) {
 
   const prompt = `${GYMLI_SYSTEM_PROMPT}
 
-Analyze this warrior's recent training and provide 2-3 brief insights. Each insight should be 1 sentence in Gymli's voice.
+Analyze this user's recent training and provide 2-3 brief insights. Each insight should be 1 actionable sentence.
 
 Recent workouts:\n${summary}
 Experience: ${profile?.experienceLevel || 'unknown'}
@@ -147,7 +83,7 @@ Return as JSON array of strings. Only valid JSON.`;
 
   try {
     const response = await client.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: GEMINI_MODEL,
       contents: prompt,
       config: {
         responseMimeType: 'application/json',
@@ -158,26 +94,23 @@ Return as JSON array of strings. Only valid JSON.`;
     return JSON.parse(response.text);
   } catch (error) {
     logger.error(error, 'Failed to generate insights');
-    return ['The forge awaits — keep training and the insights will come.'];
+    return ['Keep training and the insights will come.'];
   }
 }
 
-export async function chat(messages, context) {
+export async function chat(messages, context, coachingContext) {
   const client = getAI();
   if (!client) {
-    return 'The forge fires are dim — AI features are not configured. But the iron still awaits you, warrior!';
+    return 'AI features are not configured. Check your Gemini API key.';
   }
 
-  const contextStr = context ? `
-Current context:
-- Screen: ${context.screen || 'unknown'}
-- Streak: ${context.streak || 0} days
-- Active plan: ${context.planName || 'none'}
-- Last workout: ${context.lastWorkoutDate || 'never'}
-- Experience: ${context.experienceLevel || 'unknown'}
-- Goals: ${context.goals || 'unknown'}` : '';
-
-  const systemPrompt = GYMLI_SYSTEM_PROMPT + contextStr;
+  let systemPrompt = GYMLI_SYSTEM_PROMPT;
+  if (coachingContext) {
+    systemPrompt += '\n\n--- USER DATA ---\n' + coachingContext;
+  }
+  if (context?.screen) {
+    systemPrompt += `\n\nThe user is currently on the "${context.screen}" screen of the app.`;
+  }
 
   const contents = messages.map(m => ({
     role: m.role === 'assistant' ? 'model' : 'user',
@@ -186,7 +119,7 @@ Current context:
 
   try {
     const response = await client.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: GEMINI_MODEL,
       contents,
       config: {
         systemInstruction: systemPrompt,
@@ -197,8 +130,60 @@ Current context:
     return response.text;
   } catch (error) {
     logger.error(error, 'Chat failed');
-    return 'The forge fires flicker... Something went wrong. Try again, warrior.';
+    return 'Something went wrong generating a response. Please try again.';
   }
 }
 
 export { GYMLI_SYSTEM_PROMPT };
+
+const LOG_SYSTEM_PROMPT = `You are Gymli's logging engine. Convert the user's message into a JSON command envelope that logs sets, adds exercises, sets notes, or answers a brief question.
+
+Return ONLY valid JSON with this exact shape:
+{
+  "reply": "short confirmation or answer shown in the feed",
+  "confidence": 0.0-1.0,
+  "needsClarification": boolean,
+  "clarification": null | { "prompt": "...", "options": [{ "label": "...", "exerciseId": "..." }] },
+  "actions": [
+    { "type": "add_exercise", "exerciseId": "<catalog id>", "name": "<name>", "kind": "<kind>" },
+    { "type": "log_sets", "exerciseId": "<catalog id>", "sets": [ /* kind-aware: weighted {weight,reps}; bodyweight {addedWeight,reps}; assisted {assistWeight,reps}; timed {seconds}; distance {distance,seconds} */ ] },
+    { "type": "set_notes", "exerciseId": "<catalog id>", "text": "..." },
+    { "type": "answer", "text": "..." }
+  ]
+}
+
+Rules:
+- Resolve exercises to an id from the CATALOG. If multiple plausible matches, set needsClarification=true with options and DO NOT log.
+- Use the exercise's kind to choose set fields. Respect the user's units; never invent numbers.
+- "set 3", "last one", "next set" refer to the current exercise in SESSION.
+- Lower confidence when the exercise is unclear or numbers are ambiguous.
+- For pure questions (what's next, was that a PR), use a single "answer" action and no mutations. Keep replies under 2 sentences.`;
+
+export async function parseLog({ text, session, units, catalog, coachingContext }) {
+  const client = getAI();
+  if (!client) {
+    return { reply: 'AI logging is not configured.', confidence: 0, needsClarification: false, clarification: null, actions: [] };
+  }
+  const catalogText = catalog.map(c => `${c.id} | ${c.name} | ${c.kind}${c.aliases?.length ? ' | ' + c.aliases.join(',') : ''}`).join('\n');
+  const sessionText = JSON.stringify(session || {});
+  const system = `${LOG_SYSTEM_PROMPT}
+
+UNITS: ${units || 'lbs'}
+${coachingContext ? `\n--- USER DATA ---\n${coachingContext}\n` : ''}
+--- CATALOG (id | name | kind | aliases) ---
+${catalogText}
+--- SESSION ---
+${sessionText}`;
+
+  const response = await client.models.generateContent({
+    model: GEMINI_MODEL,
+    contents: [{ role: 'user', parts: [{ text }] }],
+    config: {
+      systemInstruction: system,
+      responseMimeType: 'application/json',
+      temperature: 0.2,
+      maxOutputTokens: 800,
+    },
+  });
+  return JSON.parse(response.text);
+}

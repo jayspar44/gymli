@@ -2,10 +2,13 @@ import { useState, useEffect } from 'react';
 import { ScrollText } from 'lucide-react';
 import WorkoutHistoryItem from './WorkoutHistoryItem';
 import { getWorkouts } from '../../api/services';
+import Skeleton from '../ui/Skeleton';
+import Button from '../ui/Button';
 
 export default function WorkoutHistoryList({ refreshKey }) {
   const [workouts, setWorkouts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(false);
 
   useEffect(() => {
@@ -13,7 +16,11 @@ export default function WorkoutHistoryList({ refreshKey }) {
   }, [refreshKey]);
 
   async function loadWorkouts(append = false) {
-    setLoading(true);
+    if (append) {
+      setLoadingMore(true);
+    } else {
+      setLoading(true);
+    }
     try {
       const params = { limit: 20 };
       if (append && workouts.length > 0) {
@@ -31,13 +38,16 @@ export default function WorkoutHistoryList({ refreshKey }) {
       if (!append) setWorkouts([]);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   }
 
   if (loading && workouts.length === 0) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="w-5 h-5 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
+      <div className="space-y-3">
+        {[1, 2, 3, 4].map(i => (
+          <Skeleton key={i} variant="card" className="h-20" />
+        ))}
       </div>
     );
   }
@@ -47,7 +57,7 @@ export default function WorkoutHistoryList({ refreshKey }) {
       <div className="flex flex-col items-center justify-center py-12 text-center">
         <ScrollText className="w-8 h-8 text-[var(--color-text-secondary)] mb-2" strokeWidth={1.5} />
         <p className="text-sm text-[var(--color-text-secondary)]">No workouts logged yet</p>
-        <p className="text-xs text-[var(--color-text-secondary)] mt-1">Start forging your legacy!</p>
+        <p className="text-xs text-[var(--color-text-secondary)] mt-1">Log your first workout to get started.</p>
       </div>
     );
   }
@@ -59,13 +69,14 @@ export default function WorkoutHistoryList({ refreshKey }) {
       ))}
 
       {hasMore && (
-        <button
+        <Button
+          variant="secondary"
+          fullWidth
+          loading={loadingMore}
           onClick={() => loadWorkouts(true)}
-          disabled={loading}
-          className="w-full py-3 text-sm text-[var(--color-primary)] font-medium disabled:opacity-50"
         >
-          {loading ? 'Loading...' : 'Load More'}
-        </button>
+          Load More
+        </Button>
       )}
     </div>
   );

@@ -2,9 +2,11 @@ import { useNavigate } from 'react-router-dom';
 import { User, LogOut, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useUserProfile } from '../../contexts/UserProfileContext';
 
 export default function ProfileMenu({ onClose }) {
   const { user, signOut } = useAuth();
+  const { profile } = useUserProfile();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
@@ -19,11 +21,11 @@ export default function ProfileMenu({ onClose }) {
   }
 
   return (
-    <div className="absolute right-0 top-full mt-2 w-64 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xl shadow-black/20 overflow-hidden z-50">
+    <div className="absolute right-0 top-full mt-2 w-64 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-lg overflow-hidden z-50">
       {/* User info */}
       <div className="px-4 py-3 border-b border-[var(--color-border)]">
         <p className="text-sm font-medium text-[var(--color-text)] truncate">
-          {user?.displayName || 'Warrior'}
+          {profile?.displayName || user?.displayName || 'Athlete'}
         </p>
         <p className="text-xs text-[var(--color-text-secondary)] truncate mt-0.5">
           {user?.email}

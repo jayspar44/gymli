@@ -5,25 +5,19 @@ export default {
   theme: {
     extend: {
       colors: {
-        forge: {
-          50: '#fdf8f0',
-          100: '#f9ecd8',
-          200: '#f2d5a8',
-          300: '#e8b96e',
-          400: '#dea043',
-          500: '#d4872a',
-          600: '#b86b1f',
-          700: '#96501d',
-          800: '#7a411f',
-          900: '#66371e',
-          950: '#391b0e',
+        primary: {
+          DEFAULT: 'var(--color-primary)',
+          dark: 'var(--color-primary-dark)',
+          light: 'var(--color-primary-light)',
+          muted: 'var(--color-primary-muted)',
         },
-        stone: {
-          850: '#1c1917',
+        surface: {
+          DEFAULT: 'var(--color-surface)',
+          alt: 'var(--color-surface-alt)',
         },
       },
       fontFamily: {
-        sans: ['Outfit', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
       },
     },
   },

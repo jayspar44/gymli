@@ -7,7 +7,16 @@ const client = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
+// Resolves once Firebase has determined the initial auth state
+const authReady = new Promise((resolve) => {
+  const unsubscribe = auth.onAuthStateChanged(() => {
+    unsubscribe();
+    resolve();
+  });
+});
+
 client.interceptors.request.use(async (config) => {
+  await authReady;
   const user = auth.currentUser;
   if (user) {
     const token = await user.getIdToken();
@@ -16,15 +25,10 @@ client.interceptors.request.use(async (config) => {
   return config;
 });
 
+// No 401 auto-signout — ProtectedRoute handles auth redirects
 client.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      auth.signOut();
-      window.location.href = '/login';
-    }
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 export default client;

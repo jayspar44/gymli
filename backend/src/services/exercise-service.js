@@ -41,3 +41,24 @@ export async function getExerciseById(exerciseId) {
   if (!doc.exists) return null;
   return { id: doc.id, ...doc.data() };
 }
+
+let catalogCache = null;
+let catalogCachedAt = 0;
+const CATALOG_TTL = 10 * 60 * 1000;
+
+export async function getCatalog() {
+  const snap = await exercisesRef.orderBy('name').get();
+  return snap.docs.map(d => {
+    const x = d.data();
+    return { id: d.id, name: x.name, kind: x.kind || 'weighted', aliases: x.aliases || [] };
+  });
+}
+
+export async function getCachedCatalog() {
+  const now = Date.now();
+  if (!catalogCache || now - catalogCachedAt > CATALOG_TTL) {
+    catalogCache = await getCatalog();
+    catalogCachedAt = now;
+  }
+  return catalogCache;
+}

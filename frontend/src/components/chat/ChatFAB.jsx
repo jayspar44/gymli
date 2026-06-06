@@ -10,7 +10,7 @@ export default function ChatFAB() {
       {/* FAB button */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed z-30 flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-[#d4872a] to-[#96501d] text-[#fdf8f0] shadow-lg shadow-[#d4872a]/25 transition-all duration-200 active:scale-90 hover:shadow-xl hover:shadow-[#d4872a]/30"
+        className="fixed z-30 flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white shadow-lg shadow-[var(--color-primary)]/25 transition-all duration-200 active:scale-90 hover:shadow-xl hover:shadow-[var(--color-primary)]/30"
         style={{
           right: '1rem',
           bottom: 'calc(var(--safe-area-bottom) + 5rem)',

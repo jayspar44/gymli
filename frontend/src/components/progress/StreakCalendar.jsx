@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Flame } from 'lucide-react';
+import Card from '../ui/Card';
+import Skeleton from '../ui/Skeleton';
 import { getStreakData } from '../../api/services';
 
 export default function StreakCalendar() {
@@ -23,11 +25,12 @@ export default function StreakCalendar() {
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
-        <div className="h-24 flex items-center justify-center">
-          <div className="w-5 h-5 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
+      <Card>
+        <div className="space-y-3">
+          <Skeleton variant="heading" />
+          <Skeleton variant="chart" className="h-24" />
         </div>
-      </div>
+      </Card>
     );
   }
 
@@ -44,7 +47,6 @@ export default function StreakCalendar() {
     days.push({
       date: dateStr,
       dayOfWeek: d.getDay(),
-      volume: dayData?.volume || 0,
       count: dayData?.count || 0,
     });
   }
@@ -52,7 +54,6 @@ export default function StreakCalendar() {
   // Group by week (columns)
   const weeks = [];
   let currentWeek = [];
-  // Pad the first week
   if (days.length > 0) {
     const firstDay = days[0].dayOfWeek;
     for (let i = 0; i < firstDay; i++) {
@@ -68,27 +69,15 @@ export default function StreakCalendar() {
   });
   if (currentWeek.length > 0) weeks.push(currentWeek);
 
-  const maxVolume = Math.max(...days.map(d => d.volume), 1);
-
-  function getIntensity(volume) {
-    if (volume === 0) return 0;
-    const ratio = volume / maxVolume;
-    if (ratio < 0.25) return 1;
-    if (ratio < 0.5) return 2;
-    if (ratio < 0.75) return 3;
-    return 4;
+  function getIntensityClass(count) {
+    if (count === 0) return 'bg-[var(--color-surface-alt)]';
+    if (count === 1) return 'bg-[var(--color-primary)]/20';
+    if (count === 2) return 'bg-[var(--color-primary)]/50';
+    return 'bg-[var(--color-primary)]';
   }
 
-  const intensityColors = [
-    'bg-[var(--color-surface-alt)]',
-    'bg-[#d4872a]/25',
-    'bg-[#d4872a]/45',
-    'bg-[#d4872a]/70',
-    'bg-[#d4872a]',
-  ];
-
   return (
-    <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden">
+    <Card padding="none">
       {/* Streak stats */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--color-border)]">
         <div className="flex items-center gap-2">
@@ -118,11 +107,10 @@ export default function StreakCalendar() {
               {Array.from({ length: 7 }, (_, di) => {
                 const day = week[di];
                 if (!day) return <div key={di} className="w-3 h-3" />;
-                const intensity = getIntensity(day.volume);
                 return (
                   <div
                     key={di}
-                    className={`w-3 h-3 rounded-[2px] ${intensityColors[intensity]} transition-colors`}
+                    className={`w-3 h-3 rounded-[2px] ${getIntensityClass(day.count)} transition-colors`}
                     title={`${day.date}: ${day.count} workout${day.count !== 1 ? 's' : ''}`}
                   />
                 );
@@ -131,6 +119,6 @@ export default function StreakCalendar() {
           ))}
         </div>
       </div>
-    </div>
+    </Card>
   );
 }

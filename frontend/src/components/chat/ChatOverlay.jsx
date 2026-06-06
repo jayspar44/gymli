@@ -58,7 +58,7 @@ export default function ChatOverlay({ onClose }) {
       const errorMsg = {
         id: `err-${Date.now()}`,
         role: 'assistant',
-        content: 'The forge fires flicker... Something went wrong. Try again, warrior.',
+        content: 'Something went wrong. Try again.',
         timestamp: new Date().toISOString(),
       };
       setMessages(prev => [...prev, errorMsg]);
@@ -80,25 +80,18 @@ export default function ChatOverlay({ onClose }) {
     <div className="fixed inset-0 z-50 bg-[var(--color-bg)] flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between px-4 h-14 border-b border-[var(--color-border)] flex-shrink-0">
-        <button onClick={onClose} className="text-[var(--color-text-secondary)]">
+        <button onClick={onClose} className="p-1 text-[var(--color-text-secondary)]">
           <X className="w-5 h-5" />
         </button>
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#d4872a] to-[#96501d] flex items-center justify-center">
-            <span className="text-[8px] font-bold text-[#fdf8f0]" style={{ fontFamily: "'Cinzel', serif" }}>G</span>
-          </div>
-          <h3
-            className="text-sm tracking-wider font-semibold text-[var(--color-text)]"
-            style={{ fontFamily: "'Cinzel', serif" }}
-          >
-            Gymli
-          </h3>
-        </div>
+        <h3 className="text-sm font-bold text-[var(--color-text)]">
+          Coach
+        </h3>
         <button
           onClick={handleClear}
-          className="text-[var(--color-text-secondary)] hover:text-[var(--color-danger)]"
+          className="p-1 text-[var(--color-text-secondary)] opacity-50 hover:opacity-100 transition-opacity"
+          title="Clear history"
         >
-          <Trash2 className="w-4.5 h-4.5" />
+          <Trash2 className="w-4 h-4" />
         </button>
       </div>
 
@@ -110,19 +103,13 @@ export default function ChatOverlay({ onClose }) {
           </div>
         ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#d4872a] to-[#96501d] flex items-center justify-center mb-4">
-              <span className="text-xl font-bold text-[#fdf8f0]" style={{ fontFamily: "'Cinzel', serif" }}>G</span>
-            </div>
-            <p className="text-sm text-[var(--color-text)] font-medium mb-1">Chat with Gymli</p>
-            <p className="text-xs text-[var(--color-text-secondary)] max-w-xs">
-              Ask about exercises, form tips, plan adjustments, or just chat about your training journey.
-            </p>
+            <p className="text-sm text-[var(--color-text)] font-medium mb-1">Ask about your training, progress, or plan.</p>
             {/* Quick prompts */}
             <div className="flex flex-wrap justify-center gap-2 mt-6 max-w-xs">
               {[
-                'What should I focus on today?',
-                'Tips for bench press form',
-                'Am I overtraining?',
+                "How's my progress?",
+                'What should I focus on?',
+                'Review my last workout',
               ].map((prompt, i) => (
                 <button
                   key={i}
@@ -142,10 +129,7 @@ export default function ChatOverlay({ onClose }) {
 
         {/* Typing indicator */}
         {sending && (
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#d4872a] to-[#96501d] flex items-center justify-center flex-shrink-0">
-              <span className="text-[10px] font-bold text-[#fdf8f0]" style={{ fontFamily: "'Cinzel', serif" }}>G</span>
-            </div>
+          <div className="flex items-start gap-2 mb-3">
             <div className="px-3.5 py-3 rounded-2xl rounded-bl-md bg-[var(--color-surface-alt)]">
               <div className="flex gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-text-secondary)] animate-bounce" style={{ animationDelay: '0ms' }} />

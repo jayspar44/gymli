@@ -4,7 +4,7 @@
   "description": "AI-powered gym companion",
   "type": "module",
   "scripts": {
-    "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "install-all": "NODE_ENV=development npm install && cd frontend && NODE_ENV=development npm install && cd ../backend && NODE_ENV=development npm install",
     "build": "npm run install-all && cd frontend && npm run build",
     "lint": "npm run lint --prefix frontend && npm run lint --prefix backend",
     "dev:local": "node scripts/dev-with-ports.js",
