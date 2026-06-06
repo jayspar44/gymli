@@ -6,9 +6,7 @@
   "type": "module",
   "workspaces": [
     "apps/*",
-    "packages/*",
-    "frontend",
-    "backend"
+    "packages/*"
   ],
   "scripts": {
     "install-all": "NODE_ENV=development npm install && cd frontend && NODE_ENV=development npm install && cd ../backend && NODE_ENV=development npm install",

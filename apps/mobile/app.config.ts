@@ -13,7 +13,7 @@ const config: ExpoConfig = {
   icon: './assets/images/icon.png',
   userInterfaceStyle: 'automatic',
   android: {
-    package: isDev ? 'com.gymli.dev' : 'com.gymli.app',
+    package: isDev ? 'com.getgymli.dev' : 'com.getgymli.app',
     adaptiveIcon: {
       backgroundColor: '#E6F4FE',
       foregroundImage: './assets/images/android-icon-foreground.png',
