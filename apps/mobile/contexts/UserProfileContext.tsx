@@ -10,12 +10,14 @@ type ProfileValue = {
 const Ctx = createContext<ProfileValue | null>(null);
 
 export function UserProfileProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [profile, setProfile] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const loadProfile = useCallback(async () => {
+    // I-3: wait for Firebase auth to finish restoring the user before acting
+    if (authLoading) return;
     if (!user) { setProfile(null); setLoading(false); return; }
     try {
       setLoading(true);
@@ -24,7 +26,7 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
       if (err.response?.status === 404) setProfile(null);
       else setError(err.message);
     } finally { setLoading(false); }
-  }, [user]);
+  }, [user, authLoading]);
 
   useEffect(() => { loadProfile(); }, [loadProfile]);
 

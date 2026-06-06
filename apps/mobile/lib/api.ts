@@ -4,9 +4,16 @@ import { auth } from './auth';
 
 const baseURL = (Constants.expoConfig?.extra?.apiUrl as string) ?? '/api';
 
+const authReady = new Promise<void>((resolve) => {
+  const unsub = auth.onAuthStateChanged(() => { unsub(); resolve(); });
+});
+
 const client = createApiClient({
   baseURL,
-  getToken: async () => (auth.currentUser ? auth.currentUser.getIdToken() : null),
+  getToken: async () => {
+    await authReady;
+    return auth.currentUser ? auth.currentUser.getIdToken() : null;
+  },
 });
 
 export const api = createServices(client);

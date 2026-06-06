@@ -25,18 +25,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => onAuthStateChanged(auth, (u) => { setUser(u); setLoading(false); }), []);
 
+  // M-1: configure GoogleSignin once on mount (native only)
+  useEffect(() => {
+    if (Platform.OS === 'web') return;
+    import('@react-native-google-signin/google-signin').then(({ GoogleSignin }) => {
+      GoogleSignin.configure({ webClientId: Constants.expoConfig?.extra?.googleWebClientId as string });
+    });
+  }, []);
+
   async function signInWithGoogle() {
     if (Platform.OS === 'web') {
       return signInWithPopup(auth, new GoogleAuthProvider());
     }
     const { GoogleSignin, isSuccessResponse } = await import('@react-native-google-signin/google-signin');
-    GoogleSignin.configure({
-      webClientId: Constants.expoConfig?.extra?.googleWebClientId as string,
-    });
     await GoogleSignin.hasPlayServices();
     const res = await GoogleSignin.signIn();
     if (!isSuccessResponse(res)) throw new Error('Google sign-in cancelled');
+    // I-2: idToken can be null — guard before passing to credential
     const idToken = res.data.idToken;
+    if (!idToken) throw new Error('Google Sign-In did not return an ID token — check webClientId config');
     return signInWithCredential(auth, GoogleAuthProvider.credential(idToken));
   }
 
