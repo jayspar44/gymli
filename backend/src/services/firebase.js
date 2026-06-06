@@ -1,4 +1,5 @@
 import admin from 'firebase-admin';
+import { getFirestore } from 'firebase-admin/firestore';
 import logger from '../logger.js';
 
 let serviceAccount;
@@ -20,7 +21,10 @@ if (!admin.apps.length) {
   });
 }
 
-const db = admin.firestore();
+// Use a named database when FIRESTORE_DATABASE_ID is set (e.g. 'dev' for the dev
+// environment). Leave unset (or empty) to use the default database in production.
+const databaseId = process.env.FIRESTORE_DATABASE_ID;
+const db = databaseId ? getFirestore(databaseId) : getFirestore();
 // Optional fields (e.g. per-exercise notes, kind-specific set fields) are often
 // undefined; without this the Admin SDK throws on any undefined value at write time.
 db.settings({ ignoreUndefinedProperties: true });
