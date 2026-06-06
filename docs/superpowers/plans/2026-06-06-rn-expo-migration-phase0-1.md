@@ -731,9 +731,18 @@ import { auth } from './auth';
 
 const baseURL = (Constants.expoConfig?.extra?.apiUrl as string) ?? '/api';
 
+// Gate token reads on the first auth-state event so cold-start requests (while Firebase
+// restores the user from AsyncStorage) don't fire before auth.currentUser is set.
+const authReady = new Promise<void>((resolve) => {
+  const unsub = auth.onAuthStateChanged(() => { unsub(); resolve(); });
+});
+
 const client = createApiClient({
   baseURL,
-  getToken: async () => (auth.currentUser ? auth.currentUser.getIdToken() : null),
+  getToken: async () => {
+    await authReady;
+    return auth.currentUser ? auth.currentUser.getIdToken() : null;
+  },
 });
 
 export const api = createServices(client);
