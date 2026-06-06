@@ -11,7 +11,6 @@ const config: ExpoConfig = {
   newArchEnabled: true,
   android: {
     package: 'com.gymli.app',
-    edgeToEdgeEnabled: true,
     adaptiveIcon: {
       backgroundColor: '#E6F4FE',
       foregroundImage: './assets/images/android-icon-foreground.png',

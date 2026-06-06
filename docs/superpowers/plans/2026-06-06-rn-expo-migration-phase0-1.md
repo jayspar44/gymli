@@ -380,6 +380,8 @@ export function createServices(client: AxiosInstance) {
     sendChat: (message: string, context: any) => post('/chat', { message, context }),
     getChatHistory: (limit?: number) => get('/chat/history', { params: { limit } }),
     clearChatHistory: () => del('/chat/history'),
+    // Conversational logging
+    parseLog: (payload: any) => post('/log/parse', payload),
     // Coaching
     getDailyTip: () => get('/coaching/tip'),
     // Stats
@@ -582,7 +584,7 @@ const config: ExpoConfig = {
   orientation: 'portrait',
   userInterfaceStyle: 'automatic',
   newArchEnabled: true,
-  android: { package: 'com.gymli.app', edgeToEdgeEnabled: true },
+  android: { package: 'com.gymli.app' }, // edge-to-edge is default in SDK 56; the old edgeToEdgeEnabled flag was removed
   web: { bundler: 'metro', output: 'static' },
   plugins: [
     'expo-router',
