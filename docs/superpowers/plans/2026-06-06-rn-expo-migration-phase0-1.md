@@ -583,8 +583,8 @@ const config: ExpoConfig = {
   version: '0.1.0',
   orientation: 'portrait',
   userInterfaceStyle: 'automatic',
-  newArchEnabled: true,
-  android: { package: 'com.gymli.app' }, // edge-to-edge is default in SDK 56; the old edgeToEdgeEnabled flag was removed
+  // New Architecture is the default in SDK 56 (newArchEnabled removed); edge-to-edge is default (edgeToEdgeEnabled removed)
+  android: { package: 'com.gymli.app' },
   web: { bundler: 'metro', output: 'static' },
   plugins: [
     'expo-router',
