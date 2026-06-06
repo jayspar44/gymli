@@ -1,4 +1,16 @@
 export default function LogFeed({ entries, onClarify }) {
+  if (!entries.length) {
+    return (
+      <div className="px-4 py-3 text-center">
+        <p className="text-xs leading-relaxed text-[var(--color-text-secondary)]">
+          Type a set or ask Gymli below — e.g.{' '}
+          <span className="text-[var(--color-text)]">&ldquo;bench 225 5,5,4&rdquo;</span>,{' '}
+          <span className="text-[var(--color-text)]">&ldquo;add plank&rdquo;</span>, or{' '}
+          <span className="text-[var(--color-text)]">&ldquo;what&rsquo;s next?&rdquo;</span>
+        </p>
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col gap-2 overflow-y-auto px-1 py-2">
       {entries.map((e, i) => (

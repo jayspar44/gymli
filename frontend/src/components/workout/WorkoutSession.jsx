@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { X, Timer } from 'lucide-react';
+import { X, Timer, Plus } from 'lucide-react';
 import ExerciseCard from './ExerciseCard';
+import ExercisePicker from '../log/ExercisePicker';
 import RestTimer from './RestTimer';
 import WorkoutSummary from './WorkoutSummary';
 import LogInput from './LogInput';
@@ -24,6 +25,7 @@ export default function WorkoutSession({ day, units, onClose }) {
   const [showFinishSheet, setShowFinishSheet] = useState(false);
   const [feed, setFeed] = useState([]);
   const [parsing, setParsing] = useState(false);
+  const [picking, setPicking] = useState(false);
   const timerRef = useRef(null);
   const lastCompletionRef = useRef(0);
   const pillStripRef = useRef(null);
@@ -188,6 +190,22 @@ export default function WorkoutSession({ day, units, onClose }) {
     setFeed(f => [...f, { from: 'gymli', text: `Added ${option.label}.` }]);
   }
 
+  // Manual exercise add (tap the library) — complements conversational adding.
+  function handleAddExercise(ex) {
+    setPicking(false);
+    const existingIdx = exercises.findIndex(e => e.exerciseId === ex.id);
+    if (existingIdx !== -1) {
+      setCurrentIndex(existingIdx);
+      return;
+    }
+    const kind = ex.kind || 'weighted';
+    setExercises(prev => [
+      ...prev,
+      { exerciseId: ex.id, name: ex.name, kind, targetReps: '', notes: '', sets: [emptySet(kind)] },
+    ]);
+    setCurrentIndex(exercises.length);
+  }
+
   const minutes = Math.floor(elapsedSeconds / 60);
   const seconds = elapsedSeconds % 60;
   const currentExercise = exercises[currentIndex];
@@ -268,7 +286,7 @@ export default function WorkoutSession({ day, units, onClose }) {
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Current exercise — scrollable */}
         <div className="flex-1 overflow-y-auto px-4 py-4">
-          {currentExercise && (
+          {currentExercise ? (
             <ExerciseCard
               exercise={currentExercise}
               units={units}
@@ -276,7 +294,20 @@ export default function WorkoutSession({ day, units, onClose }) {
               onChange={handleExerciseChange}
               onUpdateNotes={handleUpdateNotes}
             />
+          ) : (
+            <div className="flex flex-col items-center justify-center gap-1 py-12 text-center">
+              <p className="text-sm font-medium text-[var(--color-text)]">No exercises yet</p>
+              <p className="text-xs text-[var(--color-text-secondary)]">
+                Tap &ldquo;Add exercise&rdquo; below, or just type it in the bar — e.g. &ldquo;dumbbell bench 60s 10, 9, 8&rdquo;.
+              </p>
+            </div>
           )}
+          <button
+            onClick={() => setPicking(true)}
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-[var(--color-border)] py-3 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
+          >
+            <Plus className="w-4 h-4" /> Add exercise
+          </button>
         </div>
 
         {/* Conversational log feed */}
@@ -287,6 +318,11 @@ export default function WorkoutSession({ day, units, onClose }) {
         {/* Conversational log input */}
         <LogInput onSend={handleLogInput} disabled={parsing} />
       </div>
+
+      {/* Manual exercise picker */}
+      {picking && (
+        <ExercisePicker onSelect={handleAddExercise} onClose={() => setPicking(false)} />
+      )}
 
       {/* Rest timer */}
       {showRestTimer && (

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Plus, Play, Pencil, Trash2, Dumbbell } from 'lucide-react';
 import { useUserProfile } from '../contexts/UserProfileContext';
-import ManualLogForm from '../components/log/ManualLogForm';
 import WorkoutHistoryList from '../components/log/WorkoutHistoryList';
 import WorkoutSession from '../components/workout/WorkoutSession';
 import RoutineEditor from '../components/routine/RoutineEditor';
@@ -13,7 +12,6 @@ export default function Log() {
   const { profile } = useUserProfile();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [showForm, setShowForm] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const [routines, setRoutines] = useState([]);
@@ -86,18 +84,13 @@ export default function Log() {
     }
   }
 
-  function handleSaved() {
-    setShowForm(false);
-    setRefreshKey(k => k + 1);
-  }
-
   // Workout session open — takes priority over everything
   if (sessionDay) {
     return (
       <WorkoutSession
         day={sessionDay}
         units={units}
-        onClose={() => setSessionDay(null)}
+        onClose={() => { setSessionDay(null); setRefreshKey(k => k + 1); refresh(); }}
       />
     );
   }
@@ -107,7 +100,7 @@ export default function Log() {
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <h2 className="text-lg font-semibold text-[var(--color-text)]">Workout Log</h2>
-        <Button variant="primary" size="sm" onClick={() => setShowForm(true)}>
+        <Button variant="primary" size="sm" onClick={startEmpty}>
           <Plus className="w-3.5 h-3.5" />
           Log Workout
         </Button>
@@ -119,16 +112,10 @@ export default function Log() {
           <h3 className="text-sm font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
             Routines
           </h3>
-          <div className="flex gap-2">
-            <Button variant="ghost" size="sm" onClick={startEmpty}>
-              <Play className="w-3.5 h-3.5" />
-              Empty session
-            </Button>
-            <Button variant="secondary" size="sm" onClick={() => setEditing('new')}>
-              <Plus className="w-3.5 h-3.5" />
-              New
-            </Button>
-          </div>
+          <Button variant="secondary" size="sm" onClick={() => setEditing('new')}>
+            <Plus className="w-3.5 h-3.5" />
+            New routine
+          </Button>
         </div>
 
         {routines.length === 0 ? (
@@ -186,15 +173,6 @@ export default function Log() {
 
       {/* History */}
       <WorkoutHistoryList refreshKey={refreshKey} />
-
-      {/* Manual log form overlay */}
-      {showForm && (
-        <ManualLogForm
-          units={units}
-          onSaved={handleSaved}
-          onClose={() => setShowForm(false)}
-        />
-      )}
 
       {/* Routine editor overlay */}
       {editing && (
