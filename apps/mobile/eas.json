@@ -1,9 +1,38 @@
 {
-  "cli": { "version": ">= 12.0.0" },
+  "cli": { "version": ">= 12.0.0", "appVersionSource": "remote" },
   "build": {
-    "development": { "developmentClient": true, "distribution": "internal", "android": { "buildType": "apk" } },
-    "preview": { "distribution": "internal", "android": { "buildType": "apk" } },
-    "production": { "autoIncrement": true }
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "environment": "development",
+      "env": { "APP_VARIANT": "development" },
+      "android": { "buildType": "apk" }
+    },
+    "preview": {
+      "distribution": "internal",
+      "environment": "development",
+      "env": { "APP_VARIANT": "development" },
+      "android": { "buildType": "app-bundle" }
+    },
+    "production": {
+      "distribution": "store",
+      "environment": "production",
+      "env": { "APP_VARIANT": "production" },
+      "android": { "buildType": "app-bundle" }
+    }
   },
-  "submit": { "production": {} }
+  "submit": {
+    "preview": {
+      "android": {
+        "serviceAccountKeyPath": "./play-service-account.json",
+        "track": "internal"
+      }
+    },
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "./play-service-account.json",
+        "track": "internal"
+      }
+    }
+  }
 }

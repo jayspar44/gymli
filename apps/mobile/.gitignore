@@ -42,3 +42,6 @@ example
 /ios
 /android
 .env.local
+
+# Play Store service account key (added by CI/CD, never commit)
+play-service-account.json

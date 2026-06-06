@@ -1,16 +1,19 @@
 import type { ExpoConfig } from 'expo/config';
 
+const variant = process.env.APP_VARIANT ?? 'production';
+const isDev = variant === 'development';
+
 const config: ExpoConfig = {
-  name: 'Gymli',
+  name: isDev ? 'Gymli (Dev)' : 'Gymli',
   slug: 'gymli',
   owner: 'jayspar44',
-  scheme: 'gymli',
+  scheme: isDev ? 'gymli-dev' : 'gymli',
   version: '0.1.0',
   orientation: 'portrait',
   icon: './assets/images/icon.png',
   userInterfaceStyle: 'automatic',
   android: {
-    package: 'com.gymli.app',
+    package: isDev ? 'com.gymli.dev' : 'com.gymli.app',
     adaptiveIcon: {
       backgroundColor: '#E6F4FE',
       foregroundImage: './assets/images/android-icon-foreground.png',
