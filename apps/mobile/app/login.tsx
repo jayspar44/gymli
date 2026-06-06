@@ -17,7 +17,9 @@ export default function Login() {
     try {
       await fn();
     } catch (e: any) {
-      setErr(e.message ?? 'Sign-in failed');
+      const msg: string = e?.message ?? '';
+      if (msg.toLowerCase().includes('cancel')) return; // user dismissed — not an error
+      setErr(msg || 'Sign-in failed');
     } finally {
       setBusy(false);
     }

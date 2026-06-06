@@ -5,9 +5,8 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { ThemeProvider } from '../contexts/ThemeContext';
-import { AuthProvider } from '../contexts/AuthContext';
+import { AuthProvider, useAuth } from '../contexts/AuthContext';
 import { UserProfileProvider } from '../contexts/UserProfileContext';
-import { useAuth } from '../contexts/AuthContext';
 
 function AuthGate() {
   const { user, loading } = useAuth();
@@ -19,6 +18,7 @@ function AuthGate() {
     const inAuth = segments[0] === 'login';
     if (!user && !inAuth) router.replace('/login' as never);
     else if (user && inAuth) router.replace('/' as never);
+    // TODO (Phase 2): if (user && !inAuth && needsOnboarding) redirect to /onboarding once that screen exists
   }, [user, loading, segments]);
 
   return null;
