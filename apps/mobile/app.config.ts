@@ -9,9 +9,6 @@ const config: ExpoConfig = {
   icon: './assets/images/icon.png',
   userInterfaceStyle: 'automatic',
   newArchEnabled: true,
-  ios: {
-    icon: './assets/expo.icon',
-  },
   android: {
     package: 'com.gymli.app',
     edgeToEdgeEnabled: true,
@@ -21,7 +18,6 @@ const config: ExpoConfig = {
       backgroundImage: './assets/images/android-icon-background.png',
       monochromeImage: './assets/images/android-icon-monochrome.png',
     },
-    predictiveBackGestureEnabled: false,
   },
   web: { bundler: 'metro', output: 'static', favicon: './assets/images/favicon.png' },
   plugins: [
@@ -30,7 +26,7 @@ const config: ExpoConfig = {
     [
       'expo-splash-screen',
       {
-        backgroundColor: '#208AEF',
+        backgroundColor: '#0c0a09',
         android: {
           image: './assets/images/splash-icon.png',
           imageWidth: 76,
