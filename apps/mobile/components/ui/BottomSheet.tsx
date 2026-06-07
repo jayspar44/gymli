@@ -1,19 +1,22 @@
 /**
  * BottomSheet — wraps @gorhom/bottom-sheet BottomSheetModal.
  *
- * Usage (imperative ref API matching the web vaul source):
+ * Renders as a true modal that floats ABOVE full-screen content (navigation,
+ * overlays, etc.) via BottomSheetModalProvider in the app root.
+ *
+ * Usage (imperative ref API):
  *   const ref = useRef<BottomSheetRef>(null);
  *   ref.current?.open();
  *   ref.current?.close();
  *
- * OR the open/onClose prop API (matches source):
+ * OR the controlled prop API:
  *   <BottomSheet open={open} onClose={onClose}>...</BottomSheet>
  *
  * NOTE: BottomSheetModalProvider must wrap the app root (see app/_layout.tsx).
  */
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
-import { View } from 'react-native';
-import GorhomBottomSheet, {
+import {
+  BottomSheetModal,
   BottomSheetBackdrop,
   BottomSheetView,
   type BottomSheetBackdropProps,
@@ -43,46 +46,42 @@ export const BottomSheet = forwardRef<BottomSheetRef, Props>(function BottomShee
   { open, onClose, children, className, snapPoints = ['50%', '85%'] },
   ref
 ) {
-  const sheetRef = useRef<GorhomBottomSheet>(null);
+  const modalRef = useRef<BottomSheetModal>(null);
 
   useImperativeHandle(ref, () => ({
-    open: () => sheetRef.current?.snapToIndex(0),
-    close: () => sheetRef.current?.close(),
+    open: () => modalRef.current?.present(),
+    close: () => modalRef.current?.dismiss(),
   }));
 
   // Sync with controlled `open` prop
   useEffect(() => {
     if (open) {
-      sheetRef.current?.snapToIndex(0);
+      modalRef.current?.present();
     } else {
-      sheetRef.current?.close();
+      modalRef.current?.dismiss();
     }
   }, [open]);
 
-  const handleChange = useCallback(
-    (index: number) => {
-      if (index === -1 && onClose) {
-        onClose();
-      }
-    },
-    [onClose]
-  );
+  const handleDismiss = useCallback(() => {
+    if (onClose) {
+      onClose();
+    }
+  }, [onClose]);
 
   return (
-    <GorhomBottomSheet
-      ref={sheetRef}
-      index={-1}
+    <BottomSheetModal
+      ref={modalRef}
       snapPoints={snapPoints}
       enablePanDownToClose
       backdropComponent={renderBackdrop}
-      onChange={handleChange}
+      onDismiss={handleDismiss}
       handleIndicatorStyle={{ backgroundColor: '#d1d5db', width: 40 }}
       backgroundStyle={{ backgroundColor: 'white' }}
     >
       <BottomSheetView className={cn('flex-1 px-4 pb-8', className)}>
         {children}
       </BottomSheetView>
-    </GorhomBottomSheet>
+    </BottomSheetModal>
   );
 });
 
