@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { X, Trash2 } from 'lucide-react-native';
+import { useColorScheme } from 'nativewind';
 import {
   BottomSheetModal,
   BottomSheetBackdrop,
@@ -34,6 +35,7 @@ const renderBackdrop = (props: BottomSheetBackdropProps) => (
 );
 
 export function ChatOverlay({ open, onClose }: Props) {
+  const { colorScheme } = useColorScheme();
   const modalRef = useRef<BottomSheetModal>(null);
   const scrollRef = useRef<ScrollView>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -129,8 +131,8 @@ export function ChatOverlay({ open, onClose }: Props) {
       enablePanDownToClose
       backdropComponent={renderBackdrop}
       onDismiss={handleDismiss}
-      handleIndicatorStyle={{ backgroundColor: '#d1d5db', width: 40 }}
-      backgroundStyle={{ backgroundColor: 'white' }}
+      handleIndicatorStyle={{ backgroundColor: '#a1a1aa', width: 40 }}
+      backgroundStyle={{ backgroundColor: colorScheme === 'dark' ? '#1c1917' : '#ffffff' }}
     >
       <BottomSheetView className="flex-1">
         {/* Header */}

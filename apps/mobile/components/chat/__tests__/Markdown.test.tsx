@@ -6,3 +6,8 @@ test('renders bold and bullets', async () => {
   expect(getByText('this')).toBeTruthy();
   expect(getByText('a')).toBeTruthy();
 });
+
+test('does not throw when children is null or undefined', () => {
+  expect(() => render(<Markdown>{null}</Markdown>)).not.toThrow();
+  expect(() => render(<Markdown>{undefined as any}</Markdown>)).not.toThrow();
+});

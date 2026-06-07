@@ -11,8 +11,8 @@ function renderInline(text: string, keyBase: string) {
   );
 }
 
-export function Markdown({ children, className }: { children: string; className?: string }) {
-  const blocks = children.split(/\n{2,}/); // paragraphs
+export function Markdown({ children, className }: { children?: string | null; className?: string }) {
+  const blocks = (children ?? '').split(/\n{2,}/); // paragraphs
   return (
     <View>
       {blocks.map((block, bi) => {

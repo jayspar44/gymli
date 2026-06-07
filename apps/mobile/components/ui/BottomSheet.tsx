@@ -21,6 +21,7 @@ import {
   BottomSheetView,
   type BottomSheetBackdropProps,
 } from '@gorhom/bottom-sheet';
+import { useColorScheme } from 'nativewind';
 import { cn } from '../../lib/cn';
 
 export type BottomSheetRef = {
@@ -46,6 +47,7 @@ export const BottomSheet = forwardRef<BottomSheetRef, Props>(function BottomShee
   { open, onClose, children, className, snapPoints = ['50%', '85%'] },
   ref
 ) {
+  const { colorScheme } = useColorScheme();
   const modalRef = useRef<BottomSheetModal>(null);
 
   useImperativeHandle(ref, () => ({
@@ -75,8 +77,8 @@ export const BottomSheet = forwardRef<BottomSheetRef, Props>(function BottomShee
       enablePanDownToClose
       backdropComponent={renderBackdrop}
       onDismiss={handleDismiss}
-      handleIndicatorStyle={{ backgroundColor: '#d1d5db', width: 40 }}
-      backgroundStyle={{ backgroundColor: 'white' }}
+      handleIndicatorStyle={{ backgroundColor: '#a1a1aa', width: 40 }}
+      backgroundStyle={{ backgroundColor: colorScheme === 'dark' ? '#1c1917' : '#ffffff' }}
     >
       <BottomSheetView className={cn('flex-1 px-4 pb-8', className)}>
         {children}
