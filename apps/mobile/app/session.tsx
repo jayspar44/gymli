@@ -10,6 +10,12 @@
  * Data via api (getTodaysWorkout / getRoutine not in shared services, so we
  * load the routine from getRoutines and match by id; getPreviousPerformance;
  * logWorkout; parseLog).
+ *
+ * Persistence: the active session is written to AsyncStorage under
+ * ACTIVE_SESSION_KEY on every meaningful state change and restored on mount.
+ * The key is cleared only on a successful finish (not on X/back, so the user
+ * can resume). If a saved session exists it takes precedence over ?routine /
+ * ?start=empty params — the user resumes where they left off.
  */
 import { useState, useEffect, useRef } from 'react';
 import {
@@ -23,6 +29,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { X, Timer, Plus } from 'lucide-react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { applyAction, emptySet, type SessionState, type SessionAction } from '@gymli/shared';
 import { api } from '../lib/api';
@@ -37,6 +44,10 @@ import { ExercisePicker } from '../components/log/ExercisePicker';
 import { BottomSheet } from '../components/ui/BottomSheet';
 import { Button } from '../components/ui/Button';
 import { cn } from '../lib/cn';
+
+// ─── Storage key ──────────────────────────────────────────────────────────────
+
+const ACTIVE_SESSION_KEY = 'gymli:active-session';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -85,6 +96,15 @@ type Routine = {
   exercises?: RoutineExercise[];
 };
 
+type PersistedSession = {
+  exercises: SessionExercise[];
+  feed: FeedEntry[];
+  currentIndex: number;
+  startedAt: number;
+  units: string;
+  routineName: string;
+};
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function initExercise(ex: RoutineExercise): SessionExercise {
@@ -119,6 +139,9 @@ export default function SessionScreen() {
   const currentIndexRef = useRef(0);
   const [routineName, setRoutineName] = useState('My Routine');
   const [showRestTimer, setShowRestTimer] = useState(false);
+  // startedAt: epoch ms when the session began; used to compute elapsed time
+  // so the timer survives a web refresh.
+  const startedAtRef = useRef<number>(0);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [saving, setSaving] = useState(false);
   const [result, setResult] = useState<WorkoutResult | null>(null);
@@ -127,6 +150,10 @@ export default function SessionScreen() {
   const [feed, setFeed] = useState<FeedEntry[]>([]);
   const [parsing, setParsing] = useState(false);
   const [picking, setPicking] = useState(false);
+
+  // Guard: true while the initial restore/load is still running; prevents
+  // the write-through effect from overwriting saved state with empty state.
+  const restoredRef = useRef(false);
 
   // Keep currentIndexRef in sync so async/functional-updater closures can read stable index
   useEffect(() => {
@@ -138,10 +165,27 @@ export default function SessionScreen() {
   const sessionId = useRef(`s-${Math.round(Date.now())}`).current;
   const pillScrollRef = useRef<ScrollView>(null);
 
-  // ── Load session exercises from routine or start empty ──────────────────────
+  // ── Load session: restore from AsyncStorage or init from params ─────────────
   useEffect(() => {
     async function load() {
       try {
+        // 1. Check for a saved session first.
+        const saved = await AsyncStorage.getItem(ACTIVE_SESSION_KEY);
+        if (saved) {
+          const parsed: PersistedSession = JSON.parse(saved);
+          setExercises(parsed.exercises ?? []);
+          setFeed(parsed.feed ?? []);
+          setCurrentIndex(parsed.currentIndex ?? 0);
+          startedAtRef.current = parsed.startedAt ?? Date.now();
+          // Restore elapsed time from saved startedAt so the timer is accurate.
+          setElapsedSeconds(Math.floor((Date.now() - startedAtRef.current) / 1000));
+          if (parsed.routineName) setRoutineName(parsed.routineName);
+          // units come from profile, not stored (profile loads separately)
+          return; // skip routine/empty init
+        }
+
+        // 2. No saved session — init from params.
+        startedAtRef.current = Date.now();
         if (params.routine) {
           const routines = (await api.getRoutines()) as Routine[];
           const routine = Array.isArray(routines)
@@ -155,13 +199,32 @@ export default function SessionScreen() {
         // For ?start=empty we leave exercises as []
       } catch {
         // start blank on error
+        startedAtRef.current = Date.now();
       } finally {
+        restoredRef.current = true;
         setLoadingSession(false);
       }
     }
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // ── Write-through: persist session state to AsyncStorage ───────────────────
+  // Only runs after the initial load completes (restoredRef.current === true).
+  useEffect(() => {
+    if (!restoredRef.current) return;
+    const snapshot: PersistedSession = {
+      exercises,
+      feed,
+      currentIndex,
+      startedAt: startedAtRef.current,
+      units,
+      routineName,
+    };
+    AsyncStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(snapshot)).catch(
+      () => {}
+    );
+  }, [exercises, feed, currentIndex, units, routineName]);
 
   // ── Load previous performance ───────────────────────────────────────────────
   useEffect(() => {
@@ -194,10 +257,10 @@ export default function SessionScreen() {
     );
   }, [previousData]);
 
-  // ── Elapsed timer ───────────────────────────────────────────────────────────
+  // ── Elapsed timer (epoch-based so it survives refresh) ─────────────────────
   useEffect(() => {
     timerRef.current = setInterval(() => {
-      setElapsedSeconds((s) => s + 1);
+      setElapsedSeconds(Math.floor((Date.now() - startedAtRef.current) / 1000));
     }, 1000);
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -262,6 +325,8 @@ export default function SessionScreen() {
         })),
         duration,
       });
+      // Clear persisted session — workout is saved.
+      AsyncStorage.removeItem(ACTIVE_SESSION_KEY).catch(() => {});
       setResult({ ...(workoutResult as WorkoutResult), duration });
     } catch (err) {
       console.error('Failed to save workout:', err);
@@ -377,6 +442,8 @@ export default function SessionScreen() {
         targetReps: ex.targetReps || '8-12',
       })),
     });
+    // Clear persisted session — user saved this as a routine and is done.
+    AsyncStorage.removeItem(ACTIVE_SESSION_KEY).catch(() => {});
   }
 
   // ── Derived values ──────────────────────────────────────────────────────────
@@ -442,12 +509,16 @@ export default function SessionScreen() {
       </View>
 
       {/* ── Exercise pill strip ── */}
+      {/* BUG 1 FIX: grow-0 shrink-0 prevents the ScrollView from expanding
+          vertically in the column layout. items-center on contentContainerClassName
+          prevents the horizontal flex row from stretching pills to full height
+          (the default align-items:stretch on web). */}
       <ScrollView
         ref={pillScrollRef}
         horizontal
         showsHorizontalScrollIndicator={false}
-        className="border-b border-zinc-200 dark:border-zinc-800"
-        contentContainerClassName="flex-row gap-2 px-4 py-2"
+        className="grow-0 shrink-0 border-b border-zinc-200 dark:border-zinc-800"
+        contentContainerClassName="flex-row items-center gap-2 px-4 py-2"
       >
         {exercises.map((ex, i) => (
           <Pressable
