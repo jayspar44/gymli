@@ -517,8 +517,9 @@ export default function SessionScreen() {
         ref={pillScrollRef}
         horizontal
         showsHorizontalScrollIndicator={false}
-        className="grow-0 shrink-0 border-b border-zinc-200 dark:border-zinc-800"
-        contentContainerClassName="flex-row items-center gap-2 px-4 py-2"
+        style={{ flexGrow: 0, flexShrink: 0, height: 52 }}
+        className="border-b border-zinc-200 dark:border-zinc-800"
+        contentContainerClassName="flex-row items-center gap-2 px-4"
       >
         {exercises.map((ex, i) => (
           <Pressable
