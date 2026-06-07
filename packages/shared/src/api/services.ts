@@ -1,4 +1,5 @@
 import type { AxiosInstance } from 'axios';
+import type { TodayData, Routine, StreakData, DailyTip } from '../types';
 
 export function createServices(client: AxiosInstance) {
   const get = <T>(url: string, config?: any) => client.get<T>(url, config).then(r => r.data);
@@ -11,15 +12,15 @@ export function createServices(client: AxiosInstance) {
     getProfile: () => get('/user/profile'),
     updateProfile: (data: any) => post('/user/profile', data),
     // Routines
-    getRoutines: () => get('/routines'),
-    createRoutine: (data: any) => post('/routines', data),
-    getRoutine: (id: string) => get(`/routines/${id}`),
+    getRoutines: () => get<Routine[]>('/routines'),
+    createRoutine: (data: any) => post<Routine>('/routines', data),
+    getRoutine: (id: string) => get<Routine>(`/routines/${id}`),
     updateRoutine: (id: string, data: any) => put(`/routines/${id}`, data),
     deleteRoutine: (id: string) => del(`/routines/${id}`),
     // Exercises
     searchExercises: (params: any) => get('/exercises', { params }),
     // Workouts
-    getTodaysWorkout: () => get('/workouts/today'),
+    getTodaysWorkout: () => get<TodayData>('/workouts/today'),
     logWorkout: (data: any) => post('/workouts', data),
     getWorkouts: (params: any) => get('/workouts', { params }),
     updateWorkout: (id: string, data: any) => put(`/workouts/${id}`, data),
@@ -32,11 +33,11 @@ export function createServices(client: AxiosInstance) {
     // Conversational logging
     parseLog: (payload: any) => post('/log/parse', payload),
     // Coaching
-    getDailyTip: () => get('/coaching/tip'),
+    getDailyTip: () => get<DailyTip>('/coaching/tip'),
     // Stats
     getExerciseProgress: (exerciseId: string) => get(`/stats/exercise/${exerciseId}`),
     getVolumeStats: (period: string) => get('/stats/volume', { params: { period } }),
-    getStreakData: () => get('/stats/streak'),
+    getStreakData: () => get<StreakData>('/stats/streak'),
     getInsights: () => get('/stats/insights'),
     getLoggedExercises: () => get('/stats/exercises'),
   };
