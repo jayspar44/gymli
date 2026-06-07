@@ -2,16 +2,22 @@ import { createContext, useContext, useState, useEffect, useCallback, type React
 import { useAuth } from './AuthContext';
 import { api } from '../lib/api';
 
+export type UserProfile = {
+  units?: string;
+  onboardingComplete?: boolean;
+  [key: string]: unknown;
+};
+
 type ProfileValue = {
-  profile: any | null; loading: boolean; error: string | null;
-  updateProfile: (d: any) => Promise<any>; refreshProfile: () => Promise<void>;
+  profile: UserProfile | null; loading: boolean; error: string | null;
+  updateProfile: (d: Partial<UserProfile>) => Promise<UserProfile>; refreshProfile: () => Promise<void>;
   needsOnboarding: boolean;
 };
 const Ctx = createContext<ProfileValue | null>(null);
 
 export function UserProfileProvider({ children }: { children: ReactNode }) {
   const { user, loading: authLoading } = useAuth();
-  const [profile, setProfile] = useState<any | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,7 +27,7 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
     if (!user) { setProfile(null); setLoading(false); return; }
     try {
       setLoading(true);
-      setProfile(await api.getProfile()); setError(null);
+      setProfile(await api.getProfile() as UserProfile); setError(null);
     } catch (err: any) {
       if (err.response?.status === 404) setProfile(null);
       else setError(err.message);
@@ -30,8 +36,8 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => { loadProfile(); }, [loadProfile]);
 
-  const updateProfile = useCallback(async (data: any) => {
-    const updated = await api.updateProfile(data); setProfile(updated); return updated;
+  const updateProfile = useCallback(async (data: Partial<UserProfile>) => {
+    const updated = await api.updateProfile(data) as UserProfile; setProfile(updated); return updated;
   }, []);
 
   return (

@@ -57,7 +57,7 @@ export function RestTimer({ duration = 90, onDismiss }: Props) {
 
   const minutes = Math.floor(remaining / 60);
   const seconds = remaining % 60;
-  const progress = remaining / duration;
+  const progress = duration > 0 ? remaining / duration : 0;
 
   return (
     <View className="absolute bottom-0 left-0 right-0 z-40 px-4 pb-2">

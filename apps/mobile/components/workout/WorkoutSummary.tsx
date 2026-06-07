@@ -70,7 +70,9 @@ export function WorkoutSummary({ result, onClose, onSaveAsRoutine }: Props) {
     ) || 0;
 
   const volumeDisplay = result.totalVolume
-    ? `${(result.totalVolume / 1000).toFixed(1)}k`
+    ? result.totalVolume >= 1000
+      ? `${(result.totalVolume / 1000).toFixed(1)}k`
+      : `${Math.round(result.totalVolume)}`
     : '—';
 
   return (

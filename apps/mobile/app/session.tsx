@@ -26,7 +26,7 @@ import { X, Timer, Plus } from 'lucide-react-native';
 
 import { applyAction, emptySet, type SessionState, type SessionAction } from '@gymli/shared';
 import { api } from '../lib/api';
-import { useUserProfile } from '../contexts/UserProfileContext';
+import { useUserProfile, type UserProfile } from '../contexts/UserProfileContext';
 
 import { ExerciseCard } from '../components/workout/ExerciseCard';
 import { RestTimer } from '../components/workout/RestTimer';
@@ -111,11 +111,13 @@ export default function SessionScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ start?: string; routine?: string }>();
   const { profile } = useUserProfile();
-  const units = (profile as any)?.units ?? 'lbs';
+  const units = profile?.units ?? 'lbs';
 
   const [loadingSession, setLoadingSession] = useState(true);
   const [exercises, setExercises] = useState<SessionExercise[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const currentIndexRef = useRef(0);
+  const [routineName, setRoutineName] = useState('My Routine');
   const [showRestTimer, setShowRestTimer] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [saving, setSaving] = useState(false);
@@ -125,6 +127,11 @@ export default function SessionScreen() {
   const [feed, setFeed] = useState<FeedEntry[]>([]);
   const [parsing, setParsing] = useState(false);
   const [picking, setPicking] = useState(false);
+
+  // Keep currentIndexRef in sync so async/functional-updater closures can read stable index
+  useEffect(() => {
+    currentIndexRef.current = currentIndex;
+  }, [currentIndex]);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastCompletionRef = useRef(0);
@@ -142,6 +149,7 @@ export default function SessionScreen() {
             : null;
           if (routine?.exercises?.length) {
             setExercises(routine.exercises.map(initExercise));
+            if (routine.name) setRoutineName(routine.name);
           }
         }
         // For ?start=empty we leave exercises as []
@@ -162,8 +170,7 @@ export default function SessionScreen() {
     api.getPreviousPerformance(ids).then((data) => {
       setPreviousData((data as PreviousData) ?? {});
     }).catch(() => {});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadingSession]);
+  }, [exercises.length]);
 
   // ── Pre-fill weights from previous session ──────────────────────────────────
   useEffect(() => {
@@ -284,7 +291,7 @@ export default function SessionScreen() {
     setExercises((prev) => {
       let session: SessionState = {
         exercises: prev.map((e) => ({ ...e, sets: [...e.sets] })),
-        currentExerciseId: prev[currentIndex]?.exerciseId || null,
+        currentExerciseId: prev[currentIndexRef.current]?.exerciseId || null,
       };
       for (const a of actions) session = applyAction(session, a);
       return session.exercises as SessionExercise[];
@@ -302,7 +309,7 @@ export default function SessionScreen() {
           kind: e.kind,
           sets: e.sets,
         })),
-        currentExerciseId: exercises[currentIndex]?.exerciseId || null,
+        currentExerciseId: exercises[currentIndexRef.current]?.exerciseId || null,
       };
       const env = await api.parseLog({ text, session, units, sessionId });
       const envelope = env as any;
@@ -342,23 +349,26 @@ export default function SessionScreen() {
       return;
     }
     const kind = ex.kind || 'weighted';
-    setExercises((prev) => [
-      ...prev,
-      {
-        exerciseId: ex.id,
-        name: ex.name,
-        kind,
-        targetReps: '',
-        notes: '',
-        sets: [emptySet(kind) as SetData],
-      },
-    ]);
-    setCurrentIndex(exercises.length);
+    setExercises((prev) => {
+      const updated = [
+        ...prev,
+        {
+          exerciseId: ex.id,
+          name: ex.name,
+          kind,
+          targetReps: '',
+          notes: '',
+          sets: [emptySet(kind) as SetData],
+        },
+      ];
+      setCurrentIndex(updated.length - 1);
+      return updated;
+    });
   }
 
   async function handleSaveAsRoutine() {
     await api.createRoutine({
-      name: 'My Routine',
+      name: routineName,
       exercises: exercises.map((ex) => ({
         exerciseId: ex.exerciseId,
         name: ex.name,
@@ -447,7 +457,7 @@ export default function SessionScreen() {
               'flex-shrink-0 px-3 py-1 rounded-full',
               i === currentIndex
                 ? 'bg-primary'
-                : ex.sets.some((s) => s.completed)
+                : i < currentIndex || ex.sets.some((s) => s.completed)
                   ? 'bg-green-100 dark:bg-green-900/30'
                   : 'bg-surface-alt dark:bg-surface-dark'
             )}
@@ -457,7 +467,7 @@ export default function SessionScreen() {
                 'text-xs font-medium',
                 i === currentIndex
                   ? 'text-white'
-                  : ex.sets.some((s) => s.completed)
+                  : i < currentIndex || ex.sets.some((s) => s.completed)
                     ? 'text-green-600 dark:text-green-400'
                     : 'text-zinc-500'
               )}

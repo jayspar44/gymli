@@ -30,7 +30,8 @@ export function LogFeed({ entries, onClarify }: Props) {
   // Auto-scroll to bottom when new entries arrive
   useEffect(() => {
     if (entries.length > 0) {
-      setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 50);
+      const id = setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 50);
+      return () => clearTimeout(id);
     }
   }, [entries.length]);
 
