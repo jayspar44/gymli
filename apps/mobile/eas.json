@@ -11,12 +11,14 @@
     "preview": {
       "distribution": "internal",
       "environment": "development",
+      "autoIncrement": true,
       "env": { "APP_VARIANT": "development" },
       "android": { "buildType": "app-bundle" }
     },
     "production": {
       "distribution": "store",
       "environment": "production",
+      "autoIncrement": true,
       "env": { "APP_VARIANT": "production" },
       "android": { "buildType": "app-bundle" }
     }

@@ -1,0 +1,24 @@
+name: Release Prod (Android internal)
+
+# Build the prod variant (com.getgymli.app) and submit to the Play internal
+# testing track for promotion. Run manually with:  eas workflow:run release-prod.yml
+# (or connect the EAS GitHub app to trigger on version tags).
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  build_android_prod:
+    name: Build prod AAB
+    type: build
+    params:
+      platform: android
+      profile: production
+
+  submit_android_prod:
+    name: Submit prod to Play internal
+    needs: [build_android_prod]
+    type: submit
+    params:
+      platform: android
+      profile: production
