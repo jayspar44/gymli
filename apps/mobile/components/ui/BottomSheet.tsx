@@ -1,16 +1,16 @@
 /**
- * BottomSheet — wraps @gorhom/bottom-sheet BottomSheetModal.
+ * BottomSheet — wraps @gorhom/bottom-sheet BottomSheetModal (native).
  *
- * Renders as a true modal that floats ABOVE full-screen content (navigation,
- * overlays, etc.) via BottomSheetModalProvider in the app root.
+ * On web, Metro resolves this to BottomSheet.web.tsx automatically.
+ * tsc uses this file for type-checking both platforms (types are identical).
  *
- * Usage (imperative ref API):
- *   const ref = useRef<BottomSheetRef>(null);
- *   ref.current?.open();
- *   ref.current?.close();
- *
- * OR the controlled prop API:
- *   <BottomSheet open={open} onClose={onClose}>...</BottomSheet>
+ * Public API:
+ *   Imperative ref:
+ *     const ref = useRef<BottomSheetRef>(null);
+ *     ref.current?.open();
+ *     ref.current?.close();
+ *   Controlled props:
+ *     <BottomSheet open={open} onClose={onClose}>...</BottomSheet>
  *
  * NOTE: BottomSheetModalProvider must wrap the app root (see app/_layout.tsx).
  */
@@ -29,13 +29,16 @@ export type BottomSheetRef = {
   close: () => void;
 };
 
-type Props = {
-  /** Controlled open state (matches web source prop API) */
+export type BottomSheetProps = {
+  /** Controlled open state */
   open?: boolean;
   onClose?: () => void;
   children?: React.ReactNode;
   className?: string;
-  /** Snap points; defaults to ['50%', '85%'] */
+  /**
+   * Snap points (native). On web the last entry is used as maxHeight.
+   * Defaults to ['50%', '85%'].
+   */
   snapPoints?: (string | number)[];
 };
 
@@ -43,7 +46,7 @@ const renderBackdrop = (props: BottomSheetBackdropProps) => (
   <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} opacity={0.5} />
 );
 
-export const BottomSheet = forwardRef<BottomSheetRef, Props>(function BottomSheet(
+export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(function BottomSheet(
   { open, onClose, children, className, snapPoints = ['50%', '85%'] },
   ref
 ) {
@@ -65,9 +68,7 @@ export const BottomSheet = forwardRef<BottomSheetRef, Props>(function BottomShee
   }, [open]);
 
   const handleDismiss = useCallback(() => {
-    if (onClose) {
-      onClose();
-    }
+    onClose?.();
   }, [onClose]);
 
   return (

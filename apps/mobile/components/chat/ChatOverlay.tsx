@@ -1,15 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { X, Trash2 } from 'lucide-react-native';
-import { useColorScheme } from 'nativewind';
-import {
-  BottomSheetModal,
-  BottomSheetBackdrop,
-  BottomSheetView,
-  type BottomSheetBackdropProps,
-} from '@gorhom/bottom-sheet';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
+import { BottomSheet, type BottomSheetRef } from '../ui/BottomSheet';
 import { api } from '../../lib/api';
 
 type Message = {
@@ -30,26 +24,12 @@ const QUICK_PROMPTS = [
   'Review my last workout',
 ];
 
-const renderBackdrop = (props: BottomSheetBackdropProps) => (
-  <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} opacity={0.5} />
-);
-
 export function ChatOverlay({ open, onClose }: Props) {
-  const { colorScheme } = useColorScheme();
-  const modalRef = useRef<BottomSheetModal>(null);
+  const sheetRef = useRef<BottomSheetRef>(null);
   const scrollRef = useRef<ScrollView>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
-
-  // Sync open state with modal
-  useEffect(() => {
-    if (open) {
-      modalRef.current?.present();
-    } else {
-      modalRef.current?.dismiss();
-    }
-  }, [open]);
 
   // Load history when opened
   useEffect(() => {
@@ -90,7 +70,7 @@ export function ChatOverlay({ open, onClose }: Props) {
     setSending(true);
 
     try {
-      const result = await api.sendChat(text, { screen: 'chat' }) as any;
+      const result = (await api.sendChat(text, { screen: 'chat' })) as any;
       const assistantMsg: Message = {
         id: `resp-${Date.now()}`,
         role: 'assistant',
@@ -111,92 +91,78 @@ export function ChatOverlay({ open, onClose }: Props) {
     }
   }
 
-  async function handleClear() {
+  const handleClear = useCallback(async () => {
     try {
       await api.clearChatHistory();
       setMessages([]);
     } catch {
       // ignore
     }
-  }
-
-  const handleDismiss = useCallback(() => {
-    onClose();
-  }, [onClose]);
+  }, []);
 
   return (
-    <BottomSheetModal
-      ref={modalRef}
-      snapPoints={['92%']}
-      enablePanDownToClose
-      backdropComponent={renderBackdrop}
-      onDismiss={handleDismiss}
-      handleIndicatorStyle={{ backgroundColor: '#a1a1aa', width: 40 }}
-      backgroundStyle={{ backgroundColor: colorScheme === 'dark' ? '#1c1917' : '#ffffff' }}
-    >
-      <BottomSheetView className="flex-1">
-        {/* Header */}
-        <View className="flex-row items-center justify-between px-4 h-14 border-b border-zinc-200 dark:border-zinc-800">
-          <Pressable onPress={onClose} className="p-1">
-            <X size={20} color="#71717a" />
-          </Pressable>
-          <Text className="text-sm font-bold text-zinc-900 dark:text-zinc-50">Coach</Text>
-          <Pressable onPress={handleClear} className="p-1 opacity-50">
-            <Trash2 size={16} color="#71717a" />
-          </Pressable>
-        </View>
+    <BottomSheet ref={sheetRef} open={open} onClose={onClose} snapPoints={['92%']}>
+      {/* Header */}
+      <View className="flex-row items-center justify-between h-14 border-b border-zinc-200 dark:border-zinc-800">
+        <Pressable onPress={onClose} className="p-1">
+          <X size={20} color="#71717a" />
+        </Pressable>
+        <Text className="text-sm font-bold text-zinc-900 dark:text-zinc-50">Coach</Text>
+        <Pressable onPress={handleClear} className="p-1 opacity-50">
+          <Trash2 size={16} color="#71717a" />
+        </Pressable>
+      </View>
 
-        {/* Messages */}
-        <ScrollView
-          ref={scrollRef}
-          className="flex-1 px-4 py-4"
-          contentContainerStyle={{ flexGrow: 1 }}
-          keyboardShouldPersistTaps="handled"
-        >
-          {loading ? (
-            <View className="flex-1 items-center justify-center py-12">
-              <ActivityIndicator color="#d4872a" />
+      {/* Messages */}
+      <ScrollView
+        ref={scrollRef}
+        className="flex-1 py-4"
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        {loading ? (
+          <View className="flex-1 items-center justify-center py-12">
+            <ActivityIndicator color="#d4872a" />
+          </View>
+        ) : messages.length === 0 ? (
+          <View className="flex-1 items-center justify-center py-16">
+            <Text className="text-sm text-zinc-900 dark:text-zinc-50 font-medium mb-1 text-center">
+              Ask about your training, progress, or plan.
+            </Text>
+            {/* Quick prompts */}
+            <View className="flex-row flex-wrap justify-center gap-2 mt-6 max-w-xs">
+              {QUICK_PROMPTS.map((prompt, i) => (
+                <Pressable
+                  key={i}
+                  onPress={() => handleSend(prompt)}
+                  className="px-3 py-1.5 rounded-full bg-surface-alt dark:bg-surface-dark border border-zinc-200 dark:border-zinc-700"
+                >
+                  <Text className="text-xs text-zinc-500">{prompt}</Text>
+                </Pressable>
+              ))}
             </View>
-          ) : messages.length === 0 ? (
-            <View className="flex-1 items-center justify-center py-16">
-              <Text className="text-sm text-zinc-900 dark:text-zinc-50 font-medium mb-1 text-center">
-                Ask about your training, progress, or plan.
-              </Text>
-              {/* Quick prompts */}
-              <View className="flex-row flex-wrap justify-center gap-2 mt-6 max-w-xs">
-                {QUICK_PROMPTS.map((prompt, i) => (
-                  <Pressable
-                    key={i}
-                    onPress={() => handleSend(prompt)}
-                    className="px-3 py-1.5 rounded-full bg-surface-alt dark:bg-surface-dark border border-zinc-200 dark:border-zinc-700"
-                  >
-                    <Text className="text-xs text-zinc-500">{prompt}</Text>
-                  </Pressable>
-                ))}
+          </View>
+        ) : (
+          messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)
+        )}
+
+        {/* Typing indicator */}
+        {sending ? (
+          <View className="flex-row items-start gap-2 mb-3">
+            <View className="px-3.5 py-3 rounded-2xl rounded-bl-sm bg-surface-alt dark:bg-surface-dark">
+              <View className="flex-row gap-1">
+                <View className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
+                <View className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
+                <View className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
               </View>
             </View>
-          ) : (
-            messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)
-          )}
+          </View>
+        ) : null}
+      </ScrollView>
 
-          {/* Typing indicator */}
-          {sending ? (
-            <View className="flex-row items-start gap-2 mb-3">
-              <View className="px-3.5 py-3 rounded-2xl rounded-bl-sm bg-surface-alt dark:bg-surface-dark">
-                <View className="flex-row gap-1">
-                  <View className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
-                  <View className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
-                  <View className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
-                </View>
-              </View>
-            </View>
-          ) : null}
-        </ScrollView>
-
-        {/* Input */}
-        <ChatInput onSend={handleSend} disabled={sending} />
-      </BottomSheetView>
-    </BottomSheetModal>
+      {/* Input */}
+      <ChatInput onSend={handleSend} disabled={sending} />
+    </BottomSheet>
   );
 }
 
