@@ -157,7 +157,22 @@ Rules:
 - Use the exercise's kind to choose set fields. Respect the user's units; never invent numbers.
 - "set 3", "last one", "next set" refer to the current exercise in SESSION.
 - Lower confidence when the exercise is unclear or numbers are ambiguous.
-- For pure questions (what's next, was that a PR), use a single "answer" action and no mutations. Keep replies under 2 sentences.`;
+- For pure questions (what's next, was that a PR), use a single "answer" action and no mutations. Keep replies under 2 sentences.
+
+Set shorthand (gym notation — interpret, don't reject):
+- "WxR" = one set: 225x5 -> {weight:225,reps:5}
+- "WxRxS" or "W x R x S" = S identical sets: 65x6x3 -> three sets of {weight:65,reps:6}
+- "SxR W" = S sets of R reps at W: 3x5 185 -> three sets of {weight:185,reps:5}
+- Comma list of WxR = one set per item (ascending weights are normal warm-up ramps): "135x8, 155x8, 165x8" -> [{weight:135,reps:8},{weight:155,reps:8},{weight:165,reps:8}]
+- "W R,R,R" = one set per rep count at the same weight: "225 5,5,4" -> [{weight:225,reps:5},{weight:225,reps:5},{weight:225,reps:4}]
+- If the exercise isn't in SESSION yet, emit add_exercise followed by log_sets.
+- If the message names an exercise and contains numbers, ALWAYS produce your best structured interpretation (lower confidence if unsure) rather than replying that you didn't understand.
+
+Examples:
+- "rdl 135x8, 155x8, 165x8" -> add_exercise romanian-deadlift (if not in SESSION) + log_sets [{weight:135,reps:8},{weight:155,reps:8},{weight:165,reps:8}]; reply "Logged 3 sets of Romanian Deadlift (135-165 lbs)."
+- "bench 225 5,5,4" -> log_sets [{weight:225,reps:5},{weight:225,reps:5},{weight:225,reps:4}]
+- "overhead press 65x 6x3" -> add_exercise overhead-press + log_sets three sets {weight:65,reps:6}
+- "add plank" -> add_exercise plank (timed), no log_sets.`;
 
 export async function parseLog({ text, session, units, catalog, coachingContext }) {
   const client = getAI();

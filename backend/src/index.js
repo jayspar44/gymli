@@ -13,6 +13,10 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = express();
+// Behind Cloud Run's proxy: trust the first hop so req.ip is the real client
+// (rate limiting otherwise keys all users to the proxy IP and express-rate-limit
+// logs ValidationErrors on every request).
+app.set('trust proxy', 1);
 const port = process.env.PORT || 4201;
 
 // Read version from version.json

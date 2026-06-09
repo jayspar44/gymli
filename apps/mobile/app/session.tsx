@@ -173,15 +173,22 @@ export default function SessionScreen() {
         const saved = await AsyncStorage.getItem(ACTIVE_SESSION_KEY);
         if (saved) {
           const parsed: PersistedSession = JSON.parse(saved);
-          setExercises(parsed.exercises ?? []);
-          setFeed(parsed.feed ?? []);
-          setCurrentIndex(parsed.currentIndex ?? 0);
-          startedAtRef.current = parsed.startedAt ?? Date.now();
-          // Restore elapsed time from saved startedAt so the timer is accurate.
-          setElapsedSeconds(Math.floor((Date.now() - startedAtRef.current) / 1000));
-          if (parsed.routineName) setRoutineName(parsed.routineName);
-          // units come from profile, not stored (profile loads separately)
-          return; // skip routine/empty init
+          // Discard stale sessions (e.g. abandoned days ago) — resuming them
+          // produces absurd elapsed timers and surprises the user.
+          const ageMs = Date.now() - (parsed.startedAt ?? 0);
+          const MAX_RESUME_AGE_MS = 12 * 60 * 60 * 1000; // 12h
+          if (parsed.startedAt && ageMs < MAX_RESUME_AGE_MS) {
+            setExercises(parsed.exercises ?? []);
+            setFeed(parsed.feed ?? []);
+            setCurrentIndex(parsed.currentIndex ?? 0);
+            startedAtRef.current = parsed.startedAt;
+            // Restore elapsed time from saved startedAt so the timer is accurate.
+            setElapsedSeconds(Math.floor((Date.now() - startedAtRef.current) / 1000));
+            if (parsed.routineName) setRoutineName(parsed.routineName);
+            // units come from profile, not stored (profile loads separately)
+            return; // skip routine/empty init
+          }
+          await AsyncStorage.removeItem(ACTIVE_SESSION_KEY);
         }
 
         // 2. No saved session — init from params.
@@ -359,7 +366,11 @@ export default function SessionScreen() {
         currentExerciseId: prev[currentIndexRef.current]?.exerciseId || null,
       };
       for (const a of actions) session = applyAction(session, a);
-      return session.exercises as SessionExercise[];
+      const next = session.exercises as SessionExercise[];
+      // If the AI added a new exercise, focus it so the card is visible
+      // (otherwise only its pill appears and the add looks like a no-op).
+      if (next.length > prev.length) setCurrentIndex(next.length - 1);
+      return next;
     });
   }
 
@@ -483,7 +494,7 @@ export default function SessionScreen() {
   // ── Active session ──────────────────────────────────────────────────────────
 
   return (
-    <SafeAreaView className="flex-1 bg-bg dark:bg-bg-dark" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-bg dark:bg-bg-dark" edges={['top', 'bottom']}>
       {/* ── Header ── */}
       <View className="flex-row items-center justify-between px-4 h-14 border-b border-zinc-200 dark:border-zinc-800">
         <Pressable onPress={() => router.back()}>

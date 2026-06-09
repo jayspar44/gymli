@@ -53,7 +53,9 @@ export function LogFeed({ entries, onClarify }: Props) {
   return (
     <ScrollView
       ref={scrollRef}
-      className="flex-1 px-1 py-2"
+      // grow-0: size to content up to the parent's maxHeight cap. flex-1 here
+      // collapses to 0 height on native (Yoga: flexBasis 0 in an auto-height parent).
+      className="grow-0 px-1 py-2"
       showsVerticalScrollIndicator={false}
     >
       <View className="gap-2">
