@@ -164,6 +164,9 @@ export default function SessionScreen() {
   const lastCompletionRef = useRef(0);
   const sessionId = useRef(`s-${Math.round(Date.now())}`).current;
   const pillScrollRef = useRef<ScrollView>(null);
+  // All exercise cards render stacked; pills jump-scroll to a card via these offsets.
+  const mainScrollRef = useRef<ScrollView>(null);
+  const cardOffsetsRef = useRef<Record<number, number>>({});
 
   // ── Load session: restore from AsyncStorage or init from params ─────────────
   useEffect(() => {
@@ -285,12 +288,24 @@ export default function SessionScreen() {
     }
   }, [currentIndex, exercises.length]);
 
+  // ── Scroll the exercise list to the current card (pill tap / AI add) ────────
+  useEffect(() => {
+    // Small delay so a freshly added card has been laid out (onLayout fired).
+    const id = setTimeout(() => {
+      const y = cardOffsetsRef.current[currentIndex];
+      if (y != null && mainScrollRef.current) {
+        mainScrollRef.current.scrollTo({ y: Math.max(0, y - 8), animated: true });
+      }
+    }, 80);
+    return () => clearTimeout(id);
+  }, [currentIndex, exercises.length]);
+
   // ── Handlers ────────────────────────────────────────────────────────────────
 
-  function handleExerciseChange(updated: SessionExercise) {
+  function handleExerciseChange(index: number, updated: SessionExercise) {
     const newExercises = [...exercises];
-    const prevExercise = exercises[currentIndex];
-    newExercises[currentIndex] = updated;
+    const prevExercise = exercises[index];
+    newExercises[index] = updated;
     setExercises(newExercises);
 
     const completedCount = updated.sets.filter((s) => s.completed).length;
@@ -310,9 +325,9 @@ export default function SessionScreen() {
     }
   }
 
-  function handleUpdateNotes(notes: string) {
+  function handleUpdateNotes(index: number, notes: string) {
     const newExercises = [...exercises];
-    newExercises[currentIndex] = { ...newExercises[currentIndex], notes };
+    newExercises[index] = { ...newExercises[index], notes };
     setExercises(newExercises);
   }
 
@@ -461,7 +476,6 @@ export default function SessionScreen() {
 
   const minutes = Math.floor(elapsedSeconds / 60);
   const seconds = elapsedSeconds % 60;
-  const currentExercise = exercises[currentIndex];
   const completedExerciseCount = exercises.filter((ex) =>
     ex.sets.some((s) => s.completed)
   ).length;
@@ -563,20 +577,32 @@ export default function SessionScreen() {
 
       {/* ── Split layout: exercise grid + log feed + input ── */}
       <View className="flex-1 overflow-hidden">
-        {/* Scrollable exercise area */}
+        {/* Scrollable exercise area — ALL exercises stacked; pills jump-scroll */}
         <ScrollView
+          ref={mainScrollRef}
           className="flex-1 px-4 py-4"
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          {currentExercise ? (
-            <ExerciseCard
-              exercise={currentExercise}
-              units={units}
-              previous={previousData[currentExercise.exerciseId]}
-              onChange={handleExerciseChange}
-              onUpdateNotes={handleUpdateNotes}
-            />
+          {exercises.length > 0 ? (
+            <View className="gap-4">
+              {exercises.map((ex, i) => (
+                <View
+                  key={`${ex.exerciseId}-${i}`}
+                  onLayout={(e) => {
+                    cardOffsetsRef.current[i] = e.nativeEvent.layout.y;
+                  }}
+                >
+                  <ExerciseCard
+                    exercise={ex}
+                    units={units}
+                    previous={previousData[ex.exerciseId]}
+                    onChange={(updated) => handleExerciseChange(i, updated)}
+                    onUpdateNotes={(notes) => handleUpdateNotes(i, notes)}
+                  />
+                </View>
+              ))}
+            </View>
           ) : (
             <View className="flex-col items-center justify-center gap-1 py-12">
               <Text className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
