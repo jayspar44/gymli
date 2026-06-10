@@ -1,9 +1,12 @@
 import { View } from 'react-native';
 import { Tabs } from 'expo-router';
 import { Home, Dumbbell, TrendingUp, User } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChatFAB } from '../../components/chat/ChatFAB';
 
 export default function TabsLayout() {
+  const insets = useSafeAreaInsets();
+
   return (
     <View className="flex-1">
       <Tabs
@@ -11,7 +14,11 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarActiveTintColor: '#d4872a',
           tabBarLabelStyle: { fontSize: 12 },
-          tabBarStyle: { height: 64, paddingBottom: 8, paddingTop: 6 },
+          tabBarStyle: {
+            height: 60 + insets.bottom,
+            paddingBottom: insets.bottom + 6,
+            paddingTop: 6,
+          },
         }}
       >
         <Tabs.Screen

@@ -4,8 +4,7 @@
   "version": "1.0.0",
   "dependencies": {
     "@expo/ui": "~56.0.16",
-    "@gorhom/bottom-sheet": "^5.2.14",
-    "@gymli/shared": "^0.1.0",
+"@gymli/shared": "^0.1.0",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-google-signin/google-signin": "^16.1.2",
     "@shopify/flash-list": "2.0.2",

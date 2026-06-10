@@ -6,7 +6,7 @@
  *   onClose: () => void
  *   onSaved: (saved: Routine) => void
  *
- * Rendered as a @gorhom/bottom-sheet modal (85% snap) with an ExercisePicker
+ * Rendered as a BottomSheet (RN Modal, 85% snap) with an ExercisePicker
  * overlay (also a bottom-sheet) for adding exercises.
  */
 import { useState } from 'react';

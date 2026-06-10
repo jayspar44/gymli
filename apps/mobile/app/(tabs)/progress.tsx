@@ -285,7 +285,7 @@ export default function ProgressScreen() {
     <SafeAreaView className="flex-1 bg-bg dark:bg-bg-dark" edges={['top']}>
       <ScrollView
         className="flex-1"
-        contentContainerClassName="pb-6"
+        contentContainerClassName="pb-24"
         showsVerticalScrollIndicator={false}
       >
         <View className="px-4 pt-4 pb-2">

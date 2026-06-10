@@ -1,28 +1,27 @@
 /**
- * BottomSheet — wraps @gorhom/bottom-sheet BottomSheetModal (native).
+ * BottomSheet — cross-platform bottom sheet built on React Native's Modal.
  *
- * On web, Metro resolves this to BottomSheet.web.tsx automatically.
- * tsc uses this file for type-checking both platforms (types are identical).
+ * Works on both native (Android / iOS) and web.  No @gorhom/bottom-sheet.
  *
- * Public API:
+ * Public API
+ * ----------
  *   Imperative ref:
  *     const ref = useRef<BottomSheetRef>(null);
  *     ref.current?.open();
  *     ref.current?.close();
+ *
  *   Controlled props:
  *     <BottomSheet open={open} onClose={onClose}>...</BottomSheet>
  *
- * NOTE: BottomSheetModalProvider must wrap the app root (see app/_layout.tsx).
+ *   Optional:
+ *     snapPoints?: string[]   — largest % value is used as the panel's maxHeight
+ *                               (defaults to ['85%'])
+ *     children, className
  */
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
-import {
-  BottomSheetModal,
-  BottomSheetBackdrop,
-  BottomSheetView,
-  type BottomSheetBackdropProps,
-} from '@gorhom/bottom-sheet';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
+import { Modal, View, Pressable, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from 'nativewind';
-import { cn } from '../../lib/cn';
 
 export type BottomSheetRef = {
   open: () => void;
@@ -36,56 +35,104 @@ export type BottomSheetProps = {
   children?: React.ReactNode;
   className?: string;
   /**
-   * Snap points (native). On web the last entry is used as maxHeight.
-   * Defaults to ['50%', '85%'].
+   * Snap points.  The largest percentage entry is used as the panel maxHeight.
+   * Defaults to ['85%'].
    */
   snapPoints?: (string | number)[];
 };
 
-const renderBackdrop = (props: BottomSheetBackdropProps) => (
-  <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} opacity={0.5} />
-);
-
 export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(function BottomSheet(
-  { open, onClose, children, className, snapPoints = ['50%', '85%'] },
+  { open: openProp, onClose, children, snapPoints = ['85%'] },
   ref
 ) {
   const { colorScheme } = useColorScheme();
-  const modalRef = useRef<BottomSheetModal>(null);
+  const insets = useSafeAreaInsets();
+  const [visible, setVisible] = useState(false);
 
-  useImperativeHandle(ref, () => ({
-    open: () => modalRef.current?.present(),
-    close: () => modalRef.current?.dismiss(),
-  }));
+  // Derive maxHeight from the largest snap point
+  const lastSnap = snapPoints[snapPoints.length - 1] ?? '85%';
+  const maxHeightPct = typeof lastSnap === 'number' ? lastSnap : parseInt(String(lastSnap), 10);
 
-  // Sync with controlled `open` prop
-  useEffect(() => {
-    if (open) {
-      modalRef.current?.present();
-    } else {
-      modalRef.current?.dismiss();
-    }
-  }, [open]);
-
-  const handleDismiss = useCallback(() => {
+  const doOpen = useCallback(() => setVisible(true), []);
+  const doClose = useCallback(() => {
+    setVisible(false);
     onClose?.();
   }, [onClose]);
 
+  useImperativeHandle(ref, () => ({ open: doOpen, close: doClose }));
+
+  // Sync with controlled `open` prop
+  useEffect(() => {
+    if (openProp === true) {
+      setVisible(true);
+    } else if (openProp === false) {
+      setVisible(false);
+    }
+  }, [openProp]);
+
+  const bg = colorScheme === 'dark' ? '#1c1917' : '#ffffff';
+  // Bottom padding: gesture-nav inset + a little breathing room
+  const bottomPad = (insets.bottom || 0) + 16;
+
   return (
-    <BottomSheetModal
-      ref={modalRef}
-      snapPoints={snapPoints}
-      enablePanDownToClose
-      backdropComponent={renderBackdrop}
-      onDismiss={handleDismiss}
-      handleIndicatorStyle={{ backgroundColor: '#a1a1aa', width: 40 }}
-      backgroundStyle={{ backgroundColor: colorScheme === 'dark' ? '#1c1917' : '#ffffff' }}
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={doClose}
+      statusBarTranslucent
     >
-      <BottomSheetView className={cn('flex-1 px-4 pb-8', className)}>
-        {children}
-      </BottomSheetView>
-    </BottomSheetModal>
+      {/* Full-screen backdrop — tap anywhere outside the panel to close */}
+      <Pressable style={styles.backdrop} onPress={doClose}>
+        {/* Bottom-anchored panel — stopPropagation so taps inside don't close */}
+        <Pressable
+          onPress={(e) => e.stopPropagation()}
+          style={[
+            styles.panel,
+            {
+              backgroundColor: bg,
+              maxHeight: `${maxHeightPct}%` as unknown as number,
+              paddingBottom: bottomPad,
+            },
+          ]}
+        >
+          {/* Grab-handle indicator */}
+          <View style={styles.handle} />
+
+          {/* Sheet content */}
+          <View style={styles.content}>{children}</View>
+        </Pressable>
+      </Pressable>
+    </Modal>
   );
 });
 
 export default BottomSheet;
+
+const styles = StyleSheet.create({
+  backdrop: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  panel: {
+    width: '100%',
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    overflow: 'hidden',
+    paddingTop: 8,
+  },
+  handle: {
+    alignSelf: 'center',
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#a1a1aa',
+    marginTop: 4,
+    marginBottom: 8,
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 16,
+  },
+});
