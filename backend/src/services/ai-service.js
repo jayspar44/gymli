@@ -172,7 +172,8 @@ Examples:
 - "rdl 135x8, 155x8, 165x8" -> add_exercise romanian-deadlift (if not in SESSION) + log_sets [{weight:135,reps:8},{weight:155,reps:8},{weight:165,reps:8}]; reply "Logged 3 sets of Romanian Deadlift (135-165 lbs)."
 - "bench 225 5,5,4" -> log_sets [{weight:225,reps:5},{weight:225,reps:5},{weight:225,reps:4}]
 - "overhead press 65x 6x3" -> add_exercise overhead-press + log_sets three sets {weight:65,reps:6}
-- "add plank" -> add_exercise plank (timed), no log_sets.`;
+- "add plank" -> add_exercise plank (timed), no log_sets.
+- "I'm done" / "finish workout" -> single answer action: "Tap End (top right) to review and save your workout." No mutations.`;
 
 export async function parseLog({ text, session, units, catalog, coachingContext }) {
   const client = getAI();
@@ -197,7 +198,9 @@ ${sessionText}`;
       systemInstruction: system,
       responseMimeType: 'application/json',
       temperature: 0.2,
-      maxOutputTokens: 800,
+      // Generous cap: model thinking tokens count against this limit on
+      // gemini-3 models; 800 intermittently truncated the JSON envelope.
+      maxOutputTokens: 2048,
     },
   });
   return JSON.parse(response.text);

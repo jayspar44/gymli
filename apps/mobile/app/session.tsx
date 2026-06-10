@@ -220,9 +220,12 @@ export default function SessionScreen() {
   }, []);
 
   // ── Write-through: persist session state to AsyncStorage ───────────────────
-  // Only runs after the initial load completes (restoredRef.current === true).
+  // Only runs after the initial load completes (restoredRef.current === true)
+  // and stops once a finish/save has begun (finishingRef) so a remount mid-save
+  // can't restore a workout that is being (or has been) saved.
+  const finishingRef = useRef(false);
   useEffect(() => {
-    if (!restoredRef.current) return;
+    if (!restoredRef.current || finishingRef.current) return;
     const snapshot: PersistedSession = {
       exercises,
       feed,
@@ -336,6 +339,13 @@ export default function SessionScreen() {
     setSaving(true);
     const duration = Math.round(elapsedSeconds / 60);
 
+    // Clear persistence up-front and stop the write-through: if the app is
+    // killed/remounted while the save is in flight, the session must NOT be
+    // restored (the save very likely landed server-side; a restored copy makes
+    // the workout look unfinishable). Re-persisted only if the save fails.
+    finishingRef.current = true;
+    AsyncStorage.removeItem(ACTIVE_SESSION_KEY).catch(() => {});
+
     try {
       const workoutResult = await api.logWorkout({
         exercises: exercises.map((ex) => ({
@@ -347,8 +357,6 @@ export default function SessionScreen() {
         })),
         duration,
       });
-      // Clear persisted session — workout is saved.
-      AsyncStorage.removeItem(ACTIVE_SESSION_KEY).catch(() => {});
       setResult({ ...(workoutResult as WorkoutResult), duration });
     } catch (err) {
       console.error('Failed to save workout:', err);
@@ -369,6 +377,17 @@ export default function SessionScreen() {
         ),
         prs: [],
       });
+      // Save failed — put the snapshot back so closing the app doesn't lose
+      // the workout; the user can End again later.
+      const snapshot: PersistedSession = {
+        exercises,
+        feed,
+        currentIndex,
+        startedAt: startedAtRef.current,
+        units,
+        routineName,
+      };
+      AsyncStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(snapshot)).catch(() => {});
     } finally {
       setSaving(false);
     }
@@ -391,6 +410,14 @@ export default function SessionScreen() {
 
   async function handleLogInput(text: string) {
     setFeed((f) => [...f, { from: 'user', text }]);
+
+    // Finish intent — handle locally, no AI round-trip needed.
+    if (/^(i'?m\s+|all\s+)?(done|finished|finish|end)(\s+(the\s+)?workout)?\s*[.!]?$/i.test(text.trim())) {
+      setFeed((f) => [...f, { from: 'gymli', text: 'Nice work — review and save below.' }]);
+      setShowFinishSheet(true);
+      return;
+    }
+
     setParsing(true);
     try {
       const session = {

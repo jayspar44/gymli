@@ -4,6 +4,7 @@ import { validateEnvelope } from './log-envelope.js';
 import { resolveExercise } from './exercise-resolver.js';
 import { logInteraction } from './interaction-log-service.js';
 import { buildCoachingContext, formatContextForAI } from './coaching-context-service.js';
+import logger from '../logger.js';
 
 export async function handleParse(uid, { text, session, units, sessionId }) {
   const catalog = await getCachedCatalog();
@@ -12,13 +13,26 @@ export async function handleParse(uid, { text, session, units, sessionId }) {
   try { coachingContext = formatContextForAI(await buildCoachingContext(uid)); } catch { /* non-fatal */ }
 
   let raw;
+  let parseError = null;
   try {
     raw = await parseLog({ text, session, units, catalog, coachingContext });
-  } catch {
+  } catch (err) {
+    parseError = err;
     raw = null;
   }
 
   const { ok, value } = validateEnvelope(raw);
+  if (!ok) {
+    // Surface WHY a parse fell back so failures are debuggable from logs.
+    logger.warn(
+      {
+        inputText: text,
+        parseError: parseError?.message || null,
+        rawEnvelope: raw ? JSON.stringify(raw).slice(0, 1500) : null,
+      },
+      'log parse fell back to clarification'
+    );
+  }
   let envelope = ok ? value : { reply: "I didn't catch that — try again?", confidence: 0, needsClarification: true, clarification: null, actions: [] };
 
   // Server-side resolution guard: every mutating action must reference a real catalog id.
