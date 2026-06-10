@@ -24,6 +24,7 @@ import {
   ScrollView,
   Pressable,
   ActivityIndicator,
+  Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -41,7 +42,6 @@ import { WorkoutSummary } from '../components/workout/WorkoutSummary';
 import { LogInput } from '../components/workout/LogInput';
 import { LogFeed } from '../components/workout/LogFeed';
 import { ExercisePicker } from '../components/log/ExercisePicker';
-import { BottomSheet } from '../components/ui/BottomSheet';
 import { Button } from '../components/ui/Button';
 import { cn } from '../lib/cn';
 
@@ -677,33 +677,45 @@ export default function SessionScreen() {
         onClose={() => setPicking(false)}
       />
 
-      {/* ── Finish confirmation sheet ── */}
-      <BottomSheet
-        open={showFinishSheet}
-        onClose={() => setShowFinishSheet(false)}
-        snapPoints={['40%']}
+      {/* ── Finish confirmation ── plain RN Modal (NOT a gorhom sheet): the
+          session unmounts immediately after saving, and tearing down a gorhom
+          modal mid-dismiss on native can wedge its portal/backdrop — which
+          left users unable to end workouts. RN Modal is safe to unmount. */}
+      <Modal
+        visible={showFinishSheet}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowFinishSheet(false)}
       >
-        <View className="py-4 gap-4">
-          <Text className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
-            End workout?
-          </Text>
-          <Text className="text-base text-zinc-500">
-            {completedExerciseCount} of {totalExercises} exercises completed
-          </Text>
-          <View className="flex-row gap-3">
-            <Button
-              variant="secondary"
-              fullWidth
-              onPress={() => setShowFinishSheet(false)}
-            >
-              Cancel
-            </Button>
-            <Button variant="primary" fullWidth onPress={handleFinish}>
-              End Workout
-            </Button>
-          </View>
-        </View>
-      </BottomSheet>
+        <Pressable
+          className="flex-1 items-center justify-center bg-black/50 px-6"
+          onPress={() => setShowFinishSheet(false)}
+        >
+          <Pressable
+            className="w-full rounded-2xl bg-white dark:bg-surface-dark p-6 gap-4"
+            onPress={(e) => e.stopPropagation()}
+          >
+            <Text className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
+              End workout?
+            </Text>
+            <Text className="text-base text-zinc-500">
+              {completedExerciseCount} of {totalExercises} exercises completed
+            </Text>
+            <View className="flex-row gap-3">
+              <Button
+                variant="secondary"
+                fullWidth
+                onPress={() => setShowFinishSheet(false)}
+              >
+                Cancel
+              </Button>
+              <Button variant="primary" fullWidth onPress={handleFinish}>
+                End Workout
+              </Button>
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }

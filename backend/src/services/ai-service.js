@@ -52,7 +52,9 @@ Be specific about their performance. Celebrate PRs. Keep it short.`;
     const response = await client.models.generateContent({
       model: GEMINI_MODEL,
       contents: prompt,
-      config: { temperature: 0.8, maxOutputTokens: 200 },
+      // Thinking tokens count against this cap on gemini-3 models; 200
+      // truncated summaries mid-sentence ("That was a").
+      config: { temperature: 0.8, maxOutputTokens: 1024 },
     });
     return response.text;
   } catch (error) {
@@ -88,7 +90,7 @@ Return as JSON array of strings. Only valid JSON.`;
       config: {
         responseMimeType: 'application/json',
         temperature: 0.8,
-        maxOutputTokens: 300,
+        maxOutputTokens: 1024,
       },
     });
     return JSON.parse(response.text);
@@ -124,7 +126,7 @@ export async function chat(messages, context, coachingContext) {
       config: {
         systemInstruction: systemPrompt,
         temperature: 0.8,
-        maxOutputTokens: 500,
+        maxOutputTokens: 1024,
       },
     });
     return response.text;
