@@ -17,6 +17,15 @@ const app = express();
 // (rate limiting otherwise keys all users to the proxy IP and express-rate-limit
 // logs ValidationErrors on every request).
 app.set('trust proxy', 1);
+// Disable ETags. This is a per-user dynamic JSON API; express's default weak
+// ETag on res.json() triggers conditional GETs (If-None-Match → 304 Not
+// Modified). React Native's okhttp cache then hands the app a 304 with an EMPTY
+// body, so e.g. the workout history rendered as "no workouts". Never 304 here.
+app.set('etag', false);
+app.use((req, res, next) => {
+  res.set('Cache-Control', 'no-store');
+  next();
+});
 const port = process.env.PORT || 4201;
 
 // Read version from version.json
