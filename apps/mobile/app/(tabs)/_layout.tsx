@@ -6,7 +6,14 @@ import { ChatFAB } from '../../components/chat/ChatFAB';
 export default function TabsLayout() {
   return (
     <View className="flex-1">
-      <Tabs screenOptions={{ headerShown: false, tabBarActiveTintColor: '#d4872a' }}>
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarActiveTintColor: '#d4872a',
+          tabBarLabelStyle: { fontSize: 12 },
+          tabBarStyle: { height: 64, paddingBottom: 8, paddingTop: 6 },
+        }}
+      >
         <Tabs.Screen
           name="index"
           options={{

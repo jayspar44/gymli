@@ -51,9 +51,9 @@ export function SetRow({ setIndex, set, units, kind, onChange }: Props) {
             onChangeText={(v) => handleChange(weightField.key, v)}
             placeholder="0"
             placeholderTextColor="#71717a"
-            className="w-full py-2 px-2.5 rounded-lg bg-surface-alt dark:bg-surface-dark border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-50 text-sm text-center"
+            className="w-full h-12 px-2.5 rounded-lg bg-surface-alt dark:bg-surface-dark border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-50 text-lg font-medium text-center"
           />
-          <Text className="absolute right-2 top-2.5 text-[10px] text-zinc-500">
+          <Text className="absolute right-2 top-3.5 text-xs text-zinc-500">
             {weightField.key === 'weight' ? units : weightField.label}
           </Text>
         </View>
@@ -67,27 +67,27 @@ export function SetRow({ setIndex, set, units, kind, onChange }: Props) {
               onChangeText={(v) => handleChange(field.key, v)}
               placeholder="0"
               placeholderTextColor="#71717a"
-              className="w-full py-2 px-2.5 rounded-lg bg-surface-alt dark:bg-surface-dark border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-50 text-sm text-center"
+              className="w-full h-12 px-2.5 rounded-lg bg-surface-alt dark:bg-surface-dark border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-50 text-lg font-medium text-center"
             />
-            <Text className="absolute right-2 top-2.5 text-[10px] text-zinc-500">
+            <Text className="absolute right-2 top-3.5 text-xs text-zinc-500">
               {field.label.toLowerCase()}
             </Text>
           </View>
         ))}
       </View>
 
-      {/* Completion toggle */}
+      {/* Completion toggle — 48×48dp M3 target */}
       <Pressable
         onPress={() => handleChange('completed', !set.completed)}
         className={cn(
-          'flex items-center justify-center w-8 h-8 rounded-lg border',
+          'flex items-center justify-center w-12 h-12 rounded-xl border',
           set.completed
             ? 'bg-primary border-primary'
             : 'border-zinc-300 dark:border-zinc-600'
         )}
       >
         <Check
-          size={16}
+          size={22}
           strokeWidth={2.5}
           color={set.completed ? '#fff' : '#71717a'}
         />

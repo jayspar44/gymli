@@ -45,22 +45,22 @@ export function GymliInsights() {
     <Card padding="none">
       <View className="flex-row items-center justify-between px-4 py-3 border-b border-zinc-200 dark:border-zinc-700">
         <View className="flex-row items-center gap-2">
-          <Sparkles size={16} color="#d4872a" />
-          <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+          <Sparkles size={18} color="#d4872a" />
+          <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
             AI Insights
           </Text>
         </View>
         <Pressable
           onPress={loadInsights}
           disabled={loading}
-          className={loading ? 'opacity-40' : ''}
+          className={`min-h-10 min-w-10 items-center justify-center ${loading ? 'opacity-40' : ''}`}
         >
-          <RefreshCw size={14} color="#71717a" />
+          <RefreshCw size={16} color="#71717a" />
         </Pressable>
       </View>
       <View className="px-4 py-3 gap-2">
         {insights.map((insight, i) => (
-          <Text key={i} className="text-sm text-zinc-900 dark:text-zinc-50 leading-relaxed">
+          <Text key={i} className="text-base text-zinc-900 dark:text-zinc-50 leading-relaxed">
             {insight}
           </Text>
         ))}

@@ -65,7 +65,7 @@ export default function Today() {
     <SafeAreaView className="flex-1 bg-bg dark:bg-bg-dark" edges={['top']}>
       <ScrollView contentContainerClassName="gap-6 px-4 pb-24 pt-4">
         <View>
-          <Text className="text-xl font-bold text-zinc-900 dark:text-zinc-50">Today</Text>
+          <Text className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Today</Text>
           {streak?.currentStreak ? (
             <Text className="text-sm text-zinc-500">{streak.currentStreak} day streak</Text>
           ) : null}
@@ -73,7 +73,7 @@ export default function Today() {
 
         {todayData?.alreadyLoggedToday ? (
           <View className="rounded-2xl bg-surface-alt p-4 dark:bg-surface-dark">
-            <Text className="font-semibold text-zinc-900 dark:text-zinc-50">
+            <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
               Workout complete for today
             </Text>
             <Text className="text-sm text-zinc-500">
@@ -82,36 +82,36 @@ export default function Today() {
           </View>
         ) : (
           <Pressable
-            className="rounded-xl bg-primary py-4"
+            className="rounded-xl bg-primary min-h-14 items-center justify-center"
             onPress={() => router.push('/log?start=empty' as never)}
           >
-            <Text className="text-center font-semibold text-white">Start workout</Text>
+            <Text className="text-center text-base font-semibold text-white">Start workout</Text>
           </Pressable>
         )}
 
         <View>
-          <Text className="mb-2 text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+          <Text className="mb-2 text-base font-semibold text-zinc-900 dark:text-zinc-50">
             Routines
           </Text>
           {routines.length === 0 ? (
-            <Text className="text-sm text-zinc-500">
+            <Text className="text-base text-zinc-500">
               No routines yet. Build one from the Log tab.
             </Text>
           ) : (
             routines.map((r) => (
               <Pressable
                 key={r.id}
-                className="mb-2 flex-row items-center justify-between rounded-xl bg-surface-alt px-4 py-3 dark:bg-surface-dark"
+                className="mb-2 flex-row items-center justify-between rounded-xl bg-surface-alt px-4 py-3.5 dark:bg-surface-dark"
                 onPress={() => router.push(`/log?routine=${r.id}` as never)}
               >
-                <Text className="font-medium text-zinc-900 dark:text-zinc-50">{r.name}</Text>
-                <Text className="text-xs text-zinc-500">{r.exercises?.length ?? 0} exercises</Text>
+                <Text className="text-base font-medium text-zinc-900 dark:text-zinc-50">{r.name}</Text>
+                <Text className="text-sm text-zinc-500">{r.exercises?.length ?? 0} exercises</Text>
               </Pressable>
             ))
           )}
         </View>
 
-        {tip ? <Text className="text-xs text-zinc-500">{tip}</Text> : null}
+        {tip ? <Text className="text-sm text-zinc-500">{tip}</Text> : null}
       </ScrollView>
     </SafeAreaView>
   );

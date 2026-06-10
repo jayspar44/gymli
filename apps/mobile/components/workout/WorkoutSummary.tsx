@@ -80,7 +80,7 @@ export function WorkoutSummary({ result, onClose, onSaveAsRoutine }: Props) {
       <View className="w-full max-w-sm rounded-2xl bg-white dark:bg-surface-dark border border-zinc-200 dark:border-zinc-700 shadow-2xl overflow-hidden">
         {/* Header */}
         <View className="px-6 pt-6 pb-4 items-center">
-          <Text className="text-xl font-bold text-zinc-900 dark:text-zinc-50 mb-1">
+          <Text className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 mb-1">
             Workout Complete
           </Text>
         </View>
@@ -102,13 +102,13 @@ export function WorkoutSummary({ result, onClose, onSaveAsRoutine }: Props) {
           {/* PRs */}
           {result.prs && result.prs.length > 0 && (
             <View className="mx-6 mb-4 gap-1.5">
-              <Text className="text-xs font-semibold text-zinc-500 uppercase tracking-wide">
+              <Text className="text-sm font-semibold text-zinc-500 uppercase tracking-wide">
                 Personal Records
               </Text>
               {result.prs.map((pr, i) => (
                 <View key={i} className="flex-row items-center gap-2">
                   <Badge variant="success">PR</Badge>
-                  <Text className="text-sm text-zinc-900 dark:text-zinc-50">
+                  <Text className="text-base text-zinc-900 dark:text-zinc-50">
                     {pr.name}: {pr.score} (+{pr.score - pr.previousBest})
                   </Text>
                 </View>
@@ -118,8 +118,8 @@ export function WorkoutSummary({ result, onClose, onSaveAsRoutine }: Props) {
 
           {/* AI summary */}
           {result.gymliSummary && (
-            <View className="mx-6 mb-4 px-3 py-2.5 rounded-xl bg-surface-alt dark:bg-zinc-800">
-              <Text className="text-sm text-zinc-900 dark:text-zinc-50 leading-relaxed">
+            <View className="mx-6 mb-4 px-4 py-3 rounded-xl bg-surface-alt dark:bg-zinc-800">
+              <Text className="text-base text-zinc-900 dark:text-zinc-50 leading-relaxed">
                 {result.gymliSummary}
               </Text>
             </View>

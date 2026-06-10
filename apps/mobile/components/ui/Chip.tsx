@@ -21,7 +21,7 @@ export function Chip({
     <Pressable
       onPress={onPress}
       className={cn(
-        'flex-row items-center gap-1.5 px-3 py-1.5 rounded-full',
+        'flex-row items-center gap-1.5 px-4 min-h-10 rounded-full',
         selected
           ? 'bg-primary'
           : 'bg-surface-alt dark:bg-surface-dark',

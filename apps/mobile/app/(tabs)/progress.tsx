@@ -79,7 +79,7 @@ function OverviewTab() {
         </Card>
       ) : weekStats ? (
         <Card>
-          <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
+          <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
             This Week
           </Text>
           <View className="flex-row gap-4">
@@ -289,7 +289,7 @@ export default function ProgressScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View className="px-4 pt-4 pb-2">
-          <Text className="text-xl font-bold text-zinc-900 dark:text-zinc-50 mb-3">
+          <Text className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 mb-3">
             Progress
           </Text>
           <SegmentedControl

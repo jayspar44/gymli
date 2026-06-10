@@ -33,7 +33,7 @@ export function Input({
           className={cn(
             'w-full rounded-xl bg-surface-alt dark:bg-surface-dark border border-zinc-200 dark:border-zinc-700',
             'text-zinc-900 dark:text-zinc-50',
-            'px-3 py-2.5 text-sm',
+            'px-4 min-h-12 text-base',
             Icon && 'pl-10',
             suffix && 'pr-12',
             error && 'border-red-500',

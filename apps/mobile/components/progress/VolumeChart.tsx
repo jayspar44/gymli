@@ -42,7 +42,7 @@ export function VolumeChart({ weeks = 8 }: { weeks?: number }) {
   return (
     <Card padding="none">
       <CardHeader className="px-4 pt-3 pb-3">
-        <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+        <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
           Weekly Volume
         </Text>
       </CardHeader>
@@ -54,7 +54,7 @@ export function VolumeChart({ weeks = 8 }: { weeks?: number }) {
           </View>
         ) : data.length === 0 ? (
           <View className="h-40 items-center justify-center">
-            <Text className="text-sm text-zinc-500">No volume data yet</Text>
+            <Text className="text-base text-zinc-500">No volume data yet</Text>
           </View>
         ) : (
           <BarChart

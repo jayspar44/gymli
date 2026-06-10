@@ -104,12 +104,12 @@ export function ChatOverlay({ open, onClose }: Props) {
     <BottomSheet ref={sheetRef} open={open} onClose={onClose} snapPoints={['92%']}>
       {/* Header */}
       <View className="flex-row items-center justify-between h-14 border-b border-zinc-200 dark:border-zinc-800">
-        <Pressable onPress={onClose} className="p-1">
-          <X size={20} color="#71717a" />
+        <Pressable onPress={onClose} className="min-h-12 min-w-12 items-center justify-center">
+          <X size={22} color="#71717a" />
         </Pressable>
-        <Text className="text-sm font-bold text-zinc-900 dark:text-zinc-50">Coach</Text>
-        <Pressable onPress={handleClear} className="p-1 opacity-50">
-          <Trash2 size={16} color="#71717a" />
+        <Text className="text-base font-bold text-zinc-900 dark:text-zinc-50">Coach</Text>
+        <Pressable onPress={handleClear} className="min-h-12 min-w-12 items-center justify-center opacity-50">
+          <Trash2 size={18} color="#71717a" />
         </Pressable>
       </View>
 
@@ -135,9 +135,9 @@ export function ChatOverlay({ open, onClose }: Props) {
                 <Pressable
                   key={i}
                   onPress={() => handleSend(prompt)}
-                  className="px-3 py-1.5 rounded-full bg-surface-alt dark:bg-surface-dark border border-zinc-200 dark:border-zinc-700"
+                  className="px-4 py-2.5 rounded-full bg-surface-alt dark:bg-surface-dark border border-zinc-200 dark:border-zinc-700 min-h-10 items-center justify-center"
                 >
-                  <Text className="text-xs text-zinc-500">{prompt}</Text>
+                  <Text className="text-sm text-zinc-500">{prompt}</Text>
                 </Pressable>
               ))}
             </View>

@@ -12,15 +12,15 @@ const variants: Record<Variant, string> = {
   destructive: 'bg-red-500',
 };
 const sizes: Record<Size, string> = {
-  sm: 'px-3 py-1.5',
-  md: 'px-4 py-2.5',
-  lg: 'px-5 py-3.5',
+  sm: 'px-4 min-h-10',
+  md: 'px-5 min-h-12',
+  lg: 'px-6 min-h-14',
 };
 const textVariants: Record<Variant, string> = {
-  primary: 'text-white font-semibold text-sm',
-  secondary: 'text-zinc-900 dark:text-zinc-50 font-semibold text-sm',
-  ghost: 'text-primary font-semibold text-sm',
-  destructive: 'text-white font-semibold text-sm',
+  primary: 'text-white font-semibold text-base',
+  secondary: 'text-zinc-900 dark:text-zinc-50 font-semibold text-base',
+  ghost: 'text-primary font-semibold text-base',
+  destructive: 'text-white font-semibold text-base',
 };
 
 export function Button({

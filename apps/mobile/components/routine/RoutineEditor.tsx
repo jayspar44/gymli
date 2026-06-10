@@ -90,11 +90,11 @@ export function RoutineEditor({ routine, onClose, onSaved }: Props) {
       <BottomSheet open={!picking} onClose={onClose} snapPoints={['85%']}>
         {/* Header */}
         <View className="flex-row items-center justify-between mb-4">
-          <Text className="text-lg font-bold text-zinc-900 dark:text-zinc-50">
+          <Text className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
             {routine?.id ? 'Edit routine' : 'New routine'}
           </Text>
-          <Pressable onPress={onClose} hitSlop={8}>
-            <X size={20} color="#71717a" />
+          <Pressable onPress={onClose} className="min-h-12 min-w-12 items-center justify-center">
+            <X size={22} color="#71717a" />
           </Pressable>
         </View>
 
@@ -104,7 +104,7 @@ export function RoutineEditor({ routine, onClose, onSaved }: Props) {
           onChangeText={setName}
           placeholder="Routine name"
           placeholderTextColor="#71717a"
-          className="mb-4 rounded-xl bg-surface-alt dark:bg-surface-dark px-4 py-3 text-sm text-zinc-900 dark:text-zinc-50 border border-zinc-200 dark:border-zinc-700"
+          className="mb-4 rounded-xl bg-surface-alt dark:bg-surface-dark px-4 min-h-12 text-base text-zinc-900 dark:text-zinc-50 border border-zinc-200 dark:border-zinc-700"
         />
 
         {/* Exercise list */}
@@ -116,23 +116,23 @@ export function RoutineEditor({ routine, onClose, onSaved }: Props) {
           {exercises.map((ex, i) => (
             <View
               key={i}
-              className="flex-row items-center justify-between rounded-xl bg-surface-alt dark:bg-surface-dark px-4 py-3"
+              className="flex-row items-center justify-between rounded-xl bg-surface-alt dark:bg-surface-dark px-4 py-3.5"
             >
               <View className="flex-1 min-w-0 mr-3">
                 <Text
-                  className="text-sm font-medium text-zinc-900 dark:text-zinc-50"
+                  className="text-base font-medium text-zinc-900 dark:text-zinc-50"
                   numberOfLines={1}
                 >
                   {ex.name}
                 </Text>
                 {ex.targetSets != null && ex.targetReps != null ? (
-                  <Text className="text-xs text-zinc-500">
+                  <Text className="text-sm text-zinc-500">
                     {ex.targetSets} sets · {ex.targetReps} reps
                   </Text>
                 ) : null}
               </View>
-              <Pressable onPress={() => removeExercise(i)} hitSlop={8}>
-                <Trash2 size={16} color="#71717a" />
+              <Pressable onPress={() => removeExercise(i)} className="min-h-12 min-w-12 items-center justify-center">
+                <Trash2 size={18} color="#71717a" />
               </Pressable>
             </View>
           ))}
@@ -140,10 +140,10 @@ export function RoutineEditor({ routine, onClose, onSaved }: Props) {
           {/* Add exercise button */}
           <Pressable
             onPress={() => setPicking(true)}
-            className="flex-row items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-300 dark:border-zinc-600 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-300 dark:border-zinc-600 py-4"
           >
-            <Plus size={16} color="#71717a" />
-            <Text className="text-sm text-zinc-500">Add exercise</Text>
+            <Plus size={18} color="#71717a" />
+            <Text className="text-base text-zinc-500">Add exercise</Text>
           </Pressable>
         </ScrollView>
 

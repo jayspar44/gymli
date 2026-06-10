@@ -26,7 +26,7 @@ export function SegmentedControl({
           key={option.value}
           onPress={() => onChange(option.value)}
           className={cn(
-            'flex-1 px-3 py-1.5 rounded-lg items-center',
+            'flex-1 px-3 min-h-11 rounded-lg items-center justify-center',
             value === option.value
               ? 'bg-white dark:bg-zinc-700 shadow-sm'
               : ''

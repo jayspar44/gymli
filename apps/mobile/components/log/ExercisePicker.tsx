@@ -96,23 +96,23 @@ export function ExercisePicker({ open, onSelect, onClose }: Props) {
       <Pressable
         key={ex.id}
         onPress={() => onSelect(ex)}
-        className="w-full flex-row items-center gap-3 px-1 py-3 border-b border-zinc-200 dark:border-zinc-700 active:bg-surface-alt dark:active:bg-surface-dark"
+        className="w-full flex-row items-center gap-3 px-1 py-3.5 border-b border-zinc-200 dark:border-zinc-700 active:bg-surface-alt dark:active:bg-surface-dark"
       >
         <View className="flex-1 min-w-0">
           <Text
-            className="text-sm font-medium text-zinc-900 dark:text-zinc-50"
+            className="text-base font-medium text-zinc-900 dark:text-zinc-50"
             numberOfLines={1}
           >
             {ex.name}
           </Text>
-          <Text className="text-xs text-zinc-500">
+          <Text className="text-sm text-zinc-500">
             {ex.category}
             {ex.muscleGroups?.primary?.length
               ? ` · ${ex.muscleGroups.primary.join(', ')}`
               : ''}
           </Text>
         </View>
-        <ChevronRight size={16} color="#71717a" />
+        <ChevronRight size={18} color="#71717a" />
       </Pressable>
     ),
     [onSelect]
@@ -123,7 +123,7 @@ export function ExercisePicker({ open, onSelect, onClose }: Props) {
       {/* Search input */}
       <View className="relative mb-3 flex-row items-center">
         <View className="absolute left-3 z-10">
-          <Search size={16} color="#71717a" />
+          <Search size={18} color="#71717a" />
         </View>
         <TextInput
           ref={inputRef}
@@ -131,7 +131,7 @@ export function ExercisePicker({ open, onSelect, onClose }: Props) {
           onChangeText={setQuery}
           placeholder="Search exercises..."
           placeholderTextColor="#71717a"
-          className="flex-1 pl-9 pr-3 py-2.5 rounded-xl bg-surface-alt dark:bg-surface-dark border border-zinc-200 dark:border-zinc-700 text-sm text-zinc-900 dark:text-zinc-50"
+          className="flex-1 pl-10 pr-3 min-h-12 rounded-xl bg-surface-alt dark:bg-surface-dark border border-zinc-200 dark:border-zinc-700 text-base text-zinc-900 dark:text-zinc-50"
         />
       </View>
 

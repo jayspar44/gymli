@@ -87,7 +87,7 @@ export function WorkoutHistoryItem({ workout }: { workout: Workout }) {
       >
         {/* Date badge */}
         <View className="w-10 flex-shrink-0 items-center justify-center">
-          <Text className="text-[10px] uppercase text-zinc-500">
+          <Text className="text-xs uppercase text-zinc-500">
             {date.toLocaleDateString('en-US', { weekday: 'short' })}
           </Text>
           <Text className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 leading-tight">
@@ -99,7 +99,7 @@ export function WorkoutHistoryItem({ workout }: { workout: Workout }) {
         <View className="flex-1 min-w-0">
           <View className="flex-row items-center gap-2">
             <Text
-              className="text-sm font-semibold text-zinc-900 dark:text-zinc-50"
+              className="text-base font-semibold text-zinc-900 dark:text-zinc-50"
               numberOfLines={1}
             >
               {workout.dayName ||
@@ -114,18 +114,18 @@ export function WorkoutHistoryItem({ workout }: { workout: Workout }) {
           <View className="flex-row items-center gap-3 mt-0.5">
             {workout.duration != null && (
               <View className="flex-row items-center gap-1">
-                <Clock size={12} color="#71717a" />
-                <Text className="text-xs text-zinc-500">{workout.duration}m</Text>
+                <Clock size={14} color="#71717a" />
+                <Text className="text-sm text-zinc-500">{workout.duration}m</Text>
               </View>
             )}
             <View className="flex-row items-center gap-1">
-              <Dumbbell size={12} color="#71717a" />
-              <Text className="text-xs text-zinc-500">
+              <Dumbbell size={14} color="#71717a" />
+              <Text className="text-sm text-zinc-500">
                 {exerciseCount} exercise{exerciseCount !== 1 ? 's' : ''}
               </Text>
             </View>
             {volume && (
-              <Text className="text-xs text-zinc-500">{volume} vol</Text>
+              <Text className="text-sm text-zinc-500">{volume} vol</Text>
             )}
           </View>
         </View>
@@ -143,15 +143,15 @@ export function WorkoutHistoryItem({ workout }: { workout: Workout }) {
             <View
               key={i}
               className={cn(
-                'py-2',
+                'py-2.5',
                 i < (workout.exercises!.length - 1) &&
                   'border-b border-zinc-200 dark:border-zinc-700'
               )}
             >
-              <Text className="text-sm font-medium text-zinc-900 dark:text-zinc-50 mb-1">
+              <Text className="text-base font-medium text-zinc-900 dark:text-zinc-50 mb-0.5">
                 {ex.name}
               </Text>
-              <Text className="text-xs text-zinc-500 font-mono">
+              <Text className="text-sm text-zinc-500 font-mono">
                 {ex.sets
                   ?.map((set, j) => {
                     const part =

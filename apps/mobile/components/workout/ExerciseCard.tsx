@@ -91,16 +91,16 @@ export function ExerciseCard({ exercise, units, previous, onChange, onUpdateNote
     <Card padding="none" className="overflow-hidden">
       {/* Header */}
       <View className="px-4 py-3 border-b border-zinc-200 dark:border-zinc-700">
-        <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+        <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
           {exercise.name}
         </Text>
         {exercise.targetReps != null && (
-          <Text className="text-xs text-zinc-500 mt-0.5">
+          <Text className="text-sm text-zinc-500 mt-0.5">
             Target: {exercise.targetSets} x {exercise.targetReps}
           </Text>
         )}
         {previousLine && (
-          <Text className="text-xs text-zinc-500 mt-1">{previousLine}</Text>
+          <Text className="text-sm text-zinc-500 mt-1">{previousLine}</Text>
         )}
       </View>
 
@@ -108,18 +108,18 @@ export function ExerciseCard({ exercise, units, previous, onChange, onUpdateNote
       <View className="px-4 py-2">
         {/* Header row */}
         <View className="flex-row items-center gap-2 pb-1 mb-1 border-b border-zinc-200 dark:border-zinc-700">
-          <Text className="w-6 text-[10px] text-zinc-500 text-center uppercase">Set</Text>
+          <Text className="w-6 text-xs text-zinc-500 text-center uppercase">Set</Text>
           <View className="flex-1 flex-row gap-2">
             {fields.map((f, fi) => (
               <Text
                 key={f.key}
-                className={`${fi === fields.length - 1 && fields.length > 1 ? 'w-16' : 'flex-1'} text-[10px] text-zinc-500 text-center uppercase`}
+                className={`${fi === fields.length - 1 && fields.length > 1 ? 'w-16' : 'flex-1'} text-xs text-zinc-500 text-center uppercase`}
               >
                 {f.label}
               </Text>
             ))}
           </View>
-          <Text className="w-8 text-[10px] text-zinc-500 text-center">✓</Text>
+          <Text className="w-12 text-xs text-zinc-500 text-center">✓</Text>
         </View>
 
         {exercise.sets.map((set, i) => (
@@ -135,29 +135,29 @@ export function ExerciseCard({ exercise, units, previous, onChange, onUpdateNote
       </View>
 
       {/* Add/Remove + Notes */}
-      <View className="px-4 py-2 border-t border-zinc-200 dark:border-zinc-700">
+      <View className="px-4 py-3 border-t border-zinc-200 dark:border-zinc-700">
         <View className="flex-row items-center justify-center gap-4">
           <Pressable
             onPress={removeSet}
             disabled={exercise.sets.length <= 1}
-            className="flex-row items-center gap-1 opacity-100 disabled:opacity-30"
+            className="flex-row items-center gap-1.5 py-3 opacity-100 disabled:opacity-30"
           >
-            <Minus size={12} color="#71717a" />
-            <Text className="text-xs text-zinc-500">Remove</Text>
+            <Minus size={14} color="#71717a" />
+            <Text className="text-sm text-zinc-500">Remove</Text>
           </Pressable>
-          <Pressable onPress={addSet} className="flex-row items-center gap-1">
-            <Plus size={12} color="#d4872a" />
-            <Text className="text-xs text-primary">Add Set</Text>
+          <Pressable onPress={addSet} className="flex-row items-center gap-1.5 py-3">
+            <Plus size={14} color="#d4872a" />
+            <Text className="text-sm text-primary">Add Set</Text>
           </Pressable>
         </View>
 
         {/* Notes toggle */}
         <Pressable
           onPress={() => setShowNotes(!showNotes)}
-          className="flex-row items-center gap-1 mt-2"
+          className="flex-row items-center gap-1.5 py-3"
         >
-          <FileText size={14} color="#71717a" />
-          <Text className="text-xs text-zinc-500">
+          <FileText size={16} color="#71717a" />
+          <Text className="text-sm text-zinc-500">
             {exercise.notes ? 'Edit note' : 'Add note'}
           </Text>
         </Pressable>
@@ -170,7 +170,7 @@ export function ExerciseCard({ exercise, units, previous, onChange, onUpdateNote
             placeholderTextColor="#71717a"
             multiline
             numberOfLines={2}
-            className="mt-2 w-full rounded-lg bg-surface-alt dark:bg-surface-dark border border-zinc-200 dark:border-zinc-700 text-sm text-zinc-900 dark:text-zinc-50 p-2"
+            className="mt-2 w-full rounded-lg bg-surface-alt dark:bg-surface-dark border border-zinc-200 dark:border-zinc-700 text-base text-zinc-900 dark:text-zinc-50 p-3"
           />
         )}
       </View>

@@ -26,7 +26,7 @@ export function PRBoard({ exercises }: { exercises: PRExercise[] }) {
   return (
     <Card padding="none">
       <CardHeader className="px-4 pt-3 pb-3">
-        <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+        <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
           Personal Records
         </Text>
       </CardHeader>
@@ -34,15 +34,15 @@ export function PRBoard({ exercises }: { exercises: PRExercise[] }) {
         {exercises.map((ex, idx) => (
           <View
             key={ex.name}
-            className={`flex-row items-center justify-between px-4 py-3 ${
+            className={`flex-row items-center justify-between px-4 py-3.5 ${
               idx < exercises.length - 1 ? 'border-b border-zinc-200 dark:border-zinc-700' : ''
             }`}
           >
-            <Text className="text-sm text-zinc-900 dark:text-zinc-50 flex-1 mr-2" numberOfLines={1}>
+            <Text className="text-base text-zinc-900 dark:text-zinc-50 flex-1 mr-2" numberOfLines={1}>
               {ex.name}
             </Text>
             <View className="flex-row items-center gap-2">
-              <Text className="text-sm font-semibold tabular-nums text-zinc-900 dark:text-zinc-50">
+              <Text className="text-base font-semibold tabular-nums text-zinc-900 dark:text-zinc-50">
                 {scoreLabel(ex)}
               </Text>
               {ex.isRecent && <Badge variant="success">PR</Badge>}

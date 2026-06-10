@@ -537,14 +537,17 @@ export default function SessionScreen() {
   return (
     <SafeAreaView className="flex-1 bg-bg dark:bg-bg-dark" edges={['top', 'bottom']}>
       {/* ── Header ── */}
-      <View className="flex-row items-center justify-between px-4 h-14 border-b border-zinc-200 dark:border-zinc-800">
-        <Pressable onPress={() => router.back()}>
-          <X size={20} color="#71717a" />
+      <View className="flex-row items-center justify-between px-4 h-16 border-b border-zinc-200 dark:border-zinc-800">
+        <Pressable
+          onPress={() => router.back()}
+          className="min-h-12 min-w-12 items-center justify-center"
+        >
+          <X size={22} color="#71717a" />
         </Pressable>
 
         <View className="flex-row items-center gap-2">
-          <Timer size={16} color="#d4872a" />
-          <Text className="font-mono font-medium text-zinc-900 dark:text-zinc-50 tabular-nums text-sm">
+          <Timer size={18} color="#d4872a" />
+          <Text className="font-mono font-medium text-zinc-900 dark:text-zinc-50 tabular-nums text-base">
             {minutes}:{seconds.toString().padStart(2, '0')}
           </Text>
         </View>
@@ -552,9 +555,9 @@ export default function SessionScreen() {
         <Pressable
           onPress={() => setShowFinishSheet(true)}
           disabled={saving}
-          className="opacity-100 disabled:opacity-50"
+          className="min-h-12 min-w-12 items-center justify-center opacity-100 disabled:opacity-50"
         >
-          <Text className="text-sm font-semibold text-zinc-500">
+          <Text className="text-base font-semibold text-zinc-500">
             {saving ? 'Saving...' : 'End'}
           </Text>
         </Pressable>
@@ -569,7 +572,7 @@ export default function SessionScreen() {
         ref={pillScrollRef}
         horizontal
         showsHorizontalScrollIndicator={false}
-        style={{ flexGrow: 0, flexShrink: 0, height: 52 }}
+        style={{ flexGrow: 0, flexShrink: 0, height: 60 }}
         className="border-b border-zinc-200 dark:border-zinc-800"
         contentContainerClassName="flex-row items-center gap-2 px-4"
       >
@@ -578,7 +581,7 @@ export default function SessionScreen() {
             key={i}
             onPress={() => setCurrentIndex(i)}
             className={cn(
-              'flex-shrink-0 px-3 py-1 rounded-full',
+              'flex-shrink-0 px-4 py-2.5 rounded-full',
               i === currentIndex
                 ? 'bg-primary'
                 : i < currentIndex || ex.sets.some((s) => s.completed)
@@ -588,7 +591,7 @@ export default function SessionScreen() {
           >
             <Text
               className={cn(
-                'text-xs font-medium',
+                'text-sm font-medium',
                 i === currentIndex
                   ? 'text-white'
                   : i < currentIndex || ex.sets.some((s) => s.completed)
@@ -632,10 +635,10 @@ export default function SessionScreen() {
             </View>
           ) : (
             <View className="flex-col items-center justify-center gap-1 py-12">
-              <Text className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
+              <Text className="text-base font-medium text-zinc-900 dark:text-zinc-50">
                 No exercises yet
               </Text>
-              <Text className="text-xs text-zinc-500 text-center">
+              <Text className="text-sm text-zinc-500 text-center">
                 {`Tap "Add exercise" below, or just type it in the bar — e.g. "dumbbell bench 60s 10, 9, 8".`}
               </Text>
             </View>
@@ -643,10 +646,10 @@ export default function SessionScreen() {
 
           <Pressable
             onPress={() => setPicking(true)}
-            className="mt-4 flex-row w-full items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-300 dark:border-zinc-700 py-3"
+            className="mt-4 flex-row w-full items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-300 dark:border-zinc-700 py-4"
           >
-            <Plus size={16} color="#71717a" />
-            <Text className="text-sm text-zinc-500">Add exercise</Text>
+            <Plus size={18} color="#71717a" />
+            <Text className="text-base text-zinc-500">Add exercise</Text>
           </Pressable>
         </ScrollView>
 
@@ -681,10 +684,10 @@ export default function SessionScreen() {
         snapPoints={['40%']}
       >
         <View className="py-4 gap-4">
-          <Text className="text-lg font-bold text-zinc-900 dark:text-zinc-50">
+          <Text className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
             End workout?
           </Text>
-          <Text className="text-sm text-zinc-500">
+          <Text className="text-base text-zinc-500">
             {completedExerciseCount} of {totalExercises} exercises completed
           </Text>
           <View className="flex-row gap-3">

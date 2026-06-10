@@ -45,13 +45,13 @@ export function ExerciseSelector({
     <View className="relative z-10">
       <Pressable
         onPress={() => setOpen(!open)}
-        className="flex-row items-center justify-between w-full px-3 py-2 rounded-lg bg-surface-alt dark:bg-surface-dark border border-zinc-200 dark:border-zinc-700"
+        className="flex-row items-center justify-between w-full px-4 min-h-12 rounded-lg bg-surface-alt dark:bg-surface-dark border border-zinc-200 dark:border-zinc-700"
       >
-        <Text className="text-sm text-zinc-900 dark:text-zinc-50 flex-1 mr-2" numberOfLines={1}>
+        <Text className="text-base text-zinc-900 dark:text-zinc-50 flex-1 mr-2" numberOfLines={1}>
           {selectedExercise?.name || 'Select exercise'}
         </Text>
         <ChevronDown
-          size={16}
+          size={18}
           color="#71717a"
           style={open ? { transform: [{ rotate: '180deg' }] } : undefined}
         />
@@ -67,7 +67,7 @@ export function ExerciseSelector({
                 setOpen(false);
               }}
               className={cn(
-                'w-full px-3 py-2',
+                'w-full px-4 py-3',
                 ex.id === selected
                   ? 'bg-amber-50 dark:bg-amber-900/20'
                   : ''
@@ -75,7 +75,7 @@ export function ExerciseSelector({
             >
               <Text
                 className={cn(
-                  'text-sm',
+                  'text-base',
                   ex.id === selected
                     ? 'text-primary font-medium'
                     : 'text-zinc-900 dark:text-zinc-50'

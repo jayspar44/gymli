@@ -12,7 +12,7 @@ type Props = {
   disabled?: boolean;
 };
 
-const LINE_HEIGHT = 20;
+const LINE_HEIGHT = 24;
 const MAX_HEIGHT = 120;
 
 export function LogInput({ onSend, disabled }: Props) {
@@ -47,15 +47,15 @@ export function LogInput({ onSend, disabled }: Props) {
         returnKeyType="send"
         onSubmitEditing={submit}
         blurOnSubmit={false}
-        style={{ height: inputHeight }}
-        className="flex-1 resize-none rounded-xl bg-surface-alt dark:bg-surface-dark px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-50 opacity-100 disabled:opacity-50"
+        style={{ height: Math.max(inputHeight, 48) }}
+        className="flex-1 resize-none rounded-xl bg-surface-alt dark:bg-surface-dark px-4 py-2.5 text-base text-zinc-900 dark:text-zinc-50 opacity-100 disabled:opacity-50"
       />
       <Pressable
         onPress={submit}
         disabled={!text.trim() || disabled}
-        className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-primary disabled:opacity-40"
+        className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-primary disabled:opacity-40"
       >
-        <Send size={16} color="#fff" />
+        <Send size={20} color="#fff" />
       </Pressable>
     </View>
   );

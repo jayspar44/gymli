@@ -76,10 +76,10 @@ export function RestTimer({ duration = 90, onDismiss }: Props) {
           className="flex-row items-center justify-between w-full px-4 py-2.5 pt-3"
         >
           <View className="flex-row items-center gap-3">
-            <Text className="text-lg font-mono font-semibold text-zinc-900 dark:text-zinc-50 tabular-nums">
+            <Text className="text-3xl font-bold font-mono text-zinc-900 dark:text-zinc-50 tabular-nums">
               {minutes}:{seconds.toString().padStart(2, '0')}
             </Text>
-            <Text className="text-xs text-zinc-500">
+            <Text className="text-sm text-zinc-500">
               {remaining === 0 ? 'Time to lift!' : 'Rest'}
             </Text>
           </View>
@@ -89,9 +89,9 @@ export function RestTimer({ duration = 90, onDismiss }: Props) {
               e.stopPropagation();
               onDismiss();
             }}
-            className="flex items-center justify-center w-7 h-7 rounded-lg"
+            className="flex items-center justify-center min-h-12 min-w-12 rounded-lg"
           >
-            <X size={16} color="#71717a" />
+            <X size={20} color="#71717a" />
           </Pressable>
         </Pressable>
 
@@ -100,17 +100,17 @@ export function RestTimer({ duration = 90, onDismiss }: Props) {
           <View className="flex-row items-center justify-center gap-4 px-4 pb-3">
             <Pressable
               onPress={() => adjustTime(-15)}
-              className="flex-row items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-alt dark:bg-zinc-800"
+              className="flex-row items-center gap-1.5 px-4 py-3 rounded-lg bg-surface-alt dark:bg-zinc-800"
             >
-              <Minus size={12} color="#71717a" />
-              <Text className="text-xs font-medium text-zinc-500">15s</Text>
+              <Minus size={14} color="#71717a" />
+              <Text className="text-sm font-medium text-zinc-500">15s</Text>
             </Pressable>
             <Pressable
               onPress={() => adjustTime(15)}
-              className="flex-row items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-alt dark:bg-zinc-800"
+              className="flex-row items-center gap-1.5 px-4 py-3 rounded-lg bg-surface-alt dark:bg-zinc-800"
             >
-              <Plus size={12} color="#71717a" />
-              <Text className="text-xs font-medium text-zinc-500">15s</Text>
+              <Plus size={14} color="#71717a" />
+              <Text className="text-sm font-medium text-zinc-500">15s</Text>
             </Pressable>
           </View>
         )}

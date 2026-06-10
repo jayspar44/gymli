@@ -38,7 +38,7 @@ export function LogFeed({ entries, onClarify }: Props) {
   if (!entries.length) {
     return (
       <View className="px-4 py-3">
-        <Text className="text-xs leading-relaxed text-zinc-500 text-center">
+        <Text className="text-sm leading-relaxed text-zinc-500 text-center">
           {'Type a set or ask Gymli below — e.g. '}
           <Text className="text-zinc-900 dark:text-zinc-50">"bench 225 5,5,4"</Text>
           {', '}
@@ -71,7 +71,7 @@ export function LogFeed({ entries, onClarify }: Props) {
                   : 'bg-amber-50 dark:bg-amber-900/20'
               }`}
             >
-              <Text className="text-sm text-zinc-900 dark:text-zinc-50">{entry.text}</Text>
+              <Text className="text-base text-zinc-900 dark:text-zinc-50">{entry.text}</Text>
             </View>
             {entry.clarification?.options?.length ? (
               <View className="mt-1 flex-row flex-wrap gap-2">
@@ -79,9 +79,9 @@ export function LogFeed({ entries, onClarify }: Props) {
                   <Pressable
                     key={opt.exerciseId}
                     onPress={() => onClarify(opt)}
-                    className="rounded-lg border border-primary px-3 py-1"
+                    className="rounded-lg border border-primary px-4 min-h-10 items-center justify-center"
                   >
-                    <Text className="text-xs text-primary">{opt.label}</Text>
+                    <Text className="text-sm text-primary">{opt.label}</Text>
                   </Pressable>
                 ))}
               </View>

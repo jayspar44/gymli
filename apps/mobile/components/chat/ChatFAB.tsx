@@ -13,13 +13,13 @@ export function ChatFAB() {
       {/* Floating action button */}
       <Pressable
         onPress={() => setOpen(true)}
-        className="absolute z-30 items-center justify-center w-12 h-12 rounded-full bg-primary shadow-lg active:scale-90"
+        className="absolute z-30 items-center justify-center w-14 h-14 rounded-full bg-primary shadow-lg active:scale-90"
         style={{
           right: 16,
           bottom: insets.bottom + 72, // above tab bar with safe-area inset
         }}
       >
-        <MessageCircle size={20} color="#fff" />
+        <MessageCircle size={24} color="#fff" />
       </Pressable>
 
       {/* Chat overlay (BottomSheetModal) */}

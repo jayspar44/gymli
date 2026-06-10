@@ -95,26 +95,26 @@ export function StreakCalendar() {
       {/* Streak stats header */}
       <View className="flex-row items-center justify-between px-4 py-3 border-b border-zinc-200 dark:border-zinc-700">
         <View className="flex-row items-center gap-2">
-          <Flame size={18} color="#d4872a" />
+          <Flame size={20} color="#d4872a" />
           <View className="flex-row items-baseline gap-1.5">
-            <Text className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+            <Text className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
               {data.currentStreak}
             </Text>
-            <Text className="text-xs text-zinc-500">day streak</Text>
+            <Text className="text-sm text-zinc-500">day streak</Text>
           </View>
         </View>
         <View className="flex-row gap-4">
           <View className="items-end">
-            <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+            <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
               {data.longestStreak}
             </Text>
-            <Text className="text-[10px] text-zinc-500 uppercase">Best</Text>
+            <Text className="text-xs text-zinc-500 uppercase">Best</Text>
           </View>
           <View className="items-end">
-            <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+            <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
               {data.totalWorkouts}
             </Text>
-            <Text className="text-[10px] text-zinc-500 uppercase">Total</Text>
+            <Text className="text-xs text-zinc-500 uppercase">Total</Text>
           </View>
         </View>
       </View>

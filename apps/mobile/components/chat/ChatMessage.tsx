@@ -21,15 +21,15 @@ export function ChatMessage({ message }: { message: Message }) {
         }`}
       >
         {isUser ? (
-          <Text className="text-sm leading-relaxed text-white">{message.content}</Text>
+          <Text className="text-base leading-relaxed text-white">{message.content}</Text>
         ) : (
-          <Markdown className="text-sm leading-relaxed text-zinc-900 dark:text-zinc-50">
+          <Markdown className="text-base leading-relaxed text-zinc-900 dark:text-zinc-50">
             {message.content}
           </Markdown>
         )}
         {message.timestamp ? (
           <Text
-            className={`text-[10px] mt-1 ${
+            className={`text-xs mt-1 ${
               isUser ? 'text-white/60' : 'text-zinc-500'
             }`}
           >

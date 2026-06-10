@@ -177,7 +177,7 @@ export default function Onboarding() {
                 multiline
                 numberOfLines={3}
                 placeholderTextColor="#71717a"
-                className="w-full rounded-xl bg-surface-alt dark:bg-surface-dark border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-50 px-3 py-2.5 text-sm"
+                className="w-full rounded-xl bg-surface-alt dark:bg-surface-dark border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-50 px-4 py-3 text-base"
                 style={styles.textArea}
               />
             </View>
@@ -209,16 +209,16 @@ export default function Onboarding() {
                     setFormData((prev) => ({ ...prev, experienceLevel: level.value }))
                   }
                   className={cn(
-                    'rounded-2xl border p-4',
+                    'rounded-2xl border p-4 min-h-[72px] justify-center',
                     formData.experienceLevel === level.value
                       ? 'border-primary bg-primary/5'
                       : 'border-zinc-200 dark:border-zinc-700 bg-white dark:bg-surface-dark'
                   )}
                 >
-                  <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+                  <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
                     {level.label}
                   </Text>
-                  <Text className="text-xs text-zinc-500 mt-0.5">{level.desc}</Text>
+                  <Text className="text-sm text-zinc-500 mt-0.5">{level.desc}</Text>
                 </Pressable>
               ))}
             </View>
@@ -239,7 +239,7 @@ export default function Onboarding() {
                     key={unit}
                     onPress={() => setFormData((prev) => ({ ...prev, units: unit }))}
                     className={cn(
-                      'px-3 py-2.5',
+                      'px-4 min-h-12 items-center justify-center',
                       formData.units === unit
                         ? 'bg-primary'
                         : 'bg-white dark:bg-surface-dark'
@@ -247,7 +247,7 @@ export default function Onboarding() {
                   >
                     <Text
                       className={cn(
-                        'text-sm font-medium',
+                        'text-base font-medium',
                         formData.units === unit
                           ? 'text-white'
                           : 'text-zinc-500'

@@ -44,7 +44,7 @@ export function ExerciseChart({ exerciseId }: { exerciseId: string | null }) {
   return (
     <Card padding="none">
       <CardHeader className="px-4 pt-3 pb-3">
-        <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+        <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
           Weight Progression
         </Text>
       </CardHeader>
@@ -56,7 +56,7 @@ export function ExerciseChart({ exerciseId }: { exerciseId: string | null }) {
           </View>
         ) : data.length < 2 ? (
           <View className="h-40 items-center justify-center">
-            <Text className="text-sm text-zinc-500">
+            <Text className="text-base text-zinc-500">
               {data.length === 0
                 ? 'Select an exercise to see progress'
                 : 'Need more sessions to chart'}

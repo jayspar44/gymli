@@ -152,7 +152,7 @@ export default function ProfileScreen() {
       >
         {/* Header */}
         <View className="flex-row items-center justify-between">
-          <Text className="text-xl font-bold text-zinc-900 dark:text-zinc-50">Settings</Text>
+          <Text className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Settings</Text>
           <View className="flex-row items-center gap-2">
             {saved ? (
               <View className="flex-row items-center gap-1">
@@ -222,7 +222,7 @@ export default function ProfileScreen() {
               multiline
               numberOfLines={3}
               textAlignVertical="top"
-              className="rounded-xl bg-surface-alt dark:bg-surface-dark border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-50 px-3 py-2.5 text-sm min-h-[80px]"
+              className="rounded-xl bg-surface-alt dark:bg-surface-dark border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-50 px-4 py-3 text-base min-h-[80px]"
             />
           </View>
 
@@ -236,7 +236,7 @@ export default function ProfileScreen() {
                   key={day}
                   onPress={() => toggleDay(day)}
                   className={[
-                    'flex-1 py-2.5 rounded-lg items-center',
+                    'flex-1 min-h-11 rounded-lg items-center justify-center',
                     formData.availableDays.includes(day)
                       ? 'bg-primary'
                       : 'bg-surface-alt dark:bg-surface-dark',
@@ -244,7 +244,7 @@ export default function ProfileScreen() {
                 >
                   <Text
                     className={[
-                      'text-xs font-medium',
+                      'text-sm font-medium',
                       formData.availableDays.includes(day)
                         ? 'text-white'
                         : 'text-zinc-500',

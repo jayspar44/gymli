@@ -30,7 +30,7 @@ export default function Login() {
       <View className="flex-1 justify-center gap-3 px-6">
         <Text className="mb-4 text-2xl font-bold text-zinc-900 dark:text-zinc-50">Gymli</Text>
         <TextInput
-          className="rounded-xl bg-surface-alt px-4 py-3 dark:bg-surface-dark dark:text-zinc-50"
+          className="rounded-xl bg-surface-alt px-4 min-h-12 text-base dark:bg-surface-dark dark:text-zinc-50"
           placeholder="Email"
           autoCapitalize="none"
           keyboardType="email-address"
@@ -38,15 +38,15 @@ export default function Login() {
           onChangeText={setEmail}
         />
         <TextInput
-          className="rounded-xl bg-surface-alt px-4 py-3 dark:bg-surface-dark dark:text-zinc-50"
+          className="rounded-xl bg-surface-alt px-4 min-h-12 text-base dark:bg-surface-dark dark:text-zinc-50"
           placeholder="Password"
           secureTextEntry
           value={password}
           onChangeText={setPassword}
         />
-        {err ? <Text className="text-sm text-red-500">{err}</Text> : null}
+        {err ? <Text className="text-base text-red-500">{err}</Text> : null}
         <Pressable
-          className="rounded-xl bg-primary py-3"
+          className="rounded-xl bg-primary min-h-14 items-center justify-center"
           onPress={() =>
             run(() =>
               mode === 'in'
@@ -58,20 +58,20 @@ export default function Login() {
           {busy ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text className="text-center font-semibold text-white">
+            <Text className="text-center text-base font-semibold text-white">
               {mode === 'in' ? 'Sign in' : 'Create account'}
             </Text>
           )}
         </Pressable>
         <Pressable
-          className="rounded-xl border border-zinc-300 py-3 dark:border-zinc-700"
+          className="rounded-xl border border-zinc-300 min-h-14 items-center justify-center dark:border-zinc-700"
           onPress={() => run(signInWithGoogle)}
         >
-          <Text className="text-center font-semibold text-zinc-900 dark:text-zinc-50">
+          <Text className="text-center text-base font-semibold text-zinc-900 dark:text-zinc-50">
             Continue with Google
           </Text>
         </Pressable>
-        <Pressable onPress={() => setMode(mode === 'in' ? 'up' : 'in')}>
+        <Pressable className="min-h-10 items-center justify-center" onPress={() => setMode(mode === 'in' ? 'up' : 'in')}>
           <Text className="text-center text-sm text-zinc-500">
             {mode === 'in' ? 'Need an account? Sign up' : 'Have an account? Sign in'}
           </Text>
