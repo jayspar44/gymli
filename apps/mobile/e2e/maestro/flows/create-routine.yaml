@@ -1,0 +1,22 @@
+appId: com.getgymli.dev
+---
+- runFlow: ../helpers/login.yaml
+- evalScript: ${output.routineName = 'E2E Routine ' + Date.now()}
+- tapOn:
+    id: "new-routine-btn"
+- tapOn:
+    id: "routine-name-input"
+- inputText: ${output.routineName}
+- tapOn:
+    id: "routine-add-exercise-btn"
+- tapOn:
+    id: "exercise-search-input"
+- inputText: "bench"
+- tapOn:
+    id: "exercise-result-0"
+- tapOn:
+    id: "routine-save-btn"
+- assertVisible:
+    id: "routine-row-${output.routineName}"
+- assertVisible:
+    text: ".*1 exercise.*"
