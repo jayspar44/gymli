@@ -1,0 +1,35 @@
+appId: com.getgymli.dev
+---
+- runFlow: ../helpers/login.yaml
+- tapOn:
+    id: "session-add-exercise-btn"
+- tapOn:
+    id: "exercise-search-input"
+- inputText: "bench"
+- tapOn:
+    id: "exercise-result-0"
+- tapOn:
+    id: "set-row-weight-0"
+- inputText: "100"
+- tapOn:
+    id: "set-row-reps-0-0"
+- inputText: "5"
+- tapOn:
+    id: "set-row-complete-0"
+- tapOn:
+    id: "session-header-end-btn"
+- tapOn:
+    id: "session-end-btn"
+- extendedWaitUntil:
+    visible:
+      id: "summary-volume"
+    timeout: 20000
+- assertVisible:
+    id: "summary-volume"
+- assertVisible:
+    text: ".*500.*"
+    regex: true
+- assertVisible:
+    id: "summary-sets"
+- tapOn:
+    id: "summary-done-btn"
