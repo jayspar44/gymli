@@ -22,6 +22,7 @@ export const TestIds = {
 
   // session
   SESSION_ADD_EXERCISE_BTN: 'session-add-exercise-btn',
+  SESSION_HEADER_END_BTN: 'session-header-end-btn',
   SESSION_END_BTN: 'session-end-btn',
   ADD_SET_BTN: 'add-set-btn',
 

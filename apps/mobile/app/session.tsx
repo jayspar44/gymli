@@ -554,6 +554,7 @@ export default function SessionScreen() {
         </View>
 
         <Pressable
+          testID={TestIds.SESSION_HEADER_END_BTN}
           onPress={() => setShowFinishSheet(true)}
           disabled={saving}
           className="min-h-12 min-w-12 items-center justify-center opacity-100 disabled:opacity-50"

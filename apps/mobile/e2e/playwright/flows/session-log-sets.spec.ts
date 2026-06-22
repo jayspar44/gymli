@@ -37,8 +37,7 @@ test('run a guided session, log a set, finish, see volume + set count in summary
   await page.getByTestId(setRowCompleteId(0)).click();
 
   // Finish the workout — TWO-STEP: open the confirmation sheet, then confirm.
-  // The header 'End' Pressable has no testID; target it by text.
-  await page.getByText('End').click();
+  await page.getByTestId(TestIds.SESSION_HEADER_END_BTN).click();
   await page.getByTestId(TestIds.SESSION_END_BTN).click();
 
   // Assert summary state: volume = 100 * 5 = 500 (< 1000 so no 'k' suffix), sets = 1.
