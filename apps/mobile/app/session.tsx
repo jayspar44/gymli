@@ -44,6 +44,7 @@ import { ExercisePicker } from '../components/log/ExercisePicker';
 import { Button } from '../components/ui/Button';
 import { BottomSheet } from '../components/ui/BottomSheet';
 import { cn } from '../lib/cn';
+import { TestIds } from '../lib/test-ids';
 
 // ─── Storage key ──────────────────────────────────────────────────────────────
 
@@ -645,6 +646,7 @@ export default function SessionScreen() {
           )}
 
           <Pressable
+            testID={TestIds.SESSION_ADD_EXERCISE_BTN}
             onPress={() => setPicking(true)}
             className="mt-4 flex-row w-full items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-300 dark:border-zinc-700 py-4"
           >
@@ -702,7 +704,7 @@ export default function SessionScreen() {
               </Button>
             </View>
             <View className="flex-1">
-              <Button variant="primary" fullWidth onPress={handleFinish}>
+              <Button testID={TestIds.SESSION_END_BTN} variant="primary" fullWidth onPress={handleFinish}>
                 End Workout
               </Button>
             </View>

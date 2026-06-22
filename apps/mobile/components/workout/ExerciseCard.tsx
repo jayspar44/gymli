@@ -9,6 +9,7 @@ import { Plus, Minus, FileText } from 'lucide-react-native';
 import { emptySet, fieldsForKind } from '@gymli/shared';
 import { Card } from '../ui/Card';
 import { SetRow } from './SetRow';
+import { TestIds } from '../../lib/test-ids';
 
 type SetData = {
   completed: boolean;
@@ -145,7 +146,7 @@ export function ExerciseCard({ exercise, units, previous, onChange, onUpdateNote
             <Minus size={14} color="#71717a" />
             <Text className="text-sm text-zinc-500">Remove</Text>
           </Pressable>
-          <Pressable onPress={addSet} className="flex-row items-center gap-1.5 py-3">
+          <Pressable testID={TestIds.ADD_SET_BTN} onPress={addSet} className="flex-row items-center gap-1.5 py-3">
             <Plus size={14} color="#d4872a" />
             <Text className="text-sm text-primary">Add Set</Text>
           </Pressable>

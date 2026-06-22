@@ -8,6 +8,7 @@ import * as Haptics from 'expo-haptics';
 import { Check } from 'lucide-react-native';
 import { fieldsForKind } from '@gymli/shared';
 import { cn } from '../../lib/cn';
+import { setRowWeightId, setRowRepsId, setRowCompleteId } from '../../lib/test-ids';
 
 type SetData = {
   completed: boolean;
@@ -46,6 +47,7 @@ export function SetRow({ setIndex, set, units, kind, onChange }: Props) {
         {/* First field — flex-1 */}
         <View className="relative flex-1">
           <TextInput
+            testID={setRowWeightId(setIndex)}
             keyboardType="numeric"
             value={set[weightField.key] != null ? String(set[weightField.key]) : ''}
             onChangeText={(v) => handleChange(weightField.key, v)}
@@ -59,9 +61,10 @@ export function SetRow({ setIndex, set, units, kind, onChange }: Props) {
         </View>
 
         {/* Remaining fields — fixed width */}
-        {restFields.map((field) => (
+        {restFields.map((field, fieldIndex) => (
           <View key={field.key} className="relative w-16">
             <TextInput
+              testID={setRowRepsId(setIndex, fieldIndex)}
               keyboardType="numeric"
               value={set[field.key] != null ? String(set[field.key]) : ''}
               onChangeText={(v) => handleChange(field.key, v)}
@@ -78,6 +81,7 @@ export function SetRow({ setIndex, set, units, kind, onChange }: Props) {
 
       {/* Completion toggle — 48×48dp M3 target */}
       <Pressable
+        testID={setRowCompleteId(setIndex)}
         onPress={() => handleChange('completed', !set.completed)}
         className={cn(
           'flex items-center justify-center w-12 h-12 rounded-xl border',

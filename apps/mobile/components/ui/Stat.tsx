@@ -23,16 +23,18 @@ export function Stat({
   trend,
   icon: Icon,
   className,
+  testID,
 }: {
   value: React.ReactNode;
   label: string;
   trend?: Trend;
   icon?: ComponentType<IconProps>;
   className?: string;
+  testID?: string;
 }) {
   const TrendIcon = trend ? trendIcons[trend] : null;
   return (
-    <View className={cn('flex flex-col', className)}>
+    <View testID={testID} className={cn('flex flex-col', className)}>
       <View className="flex-row items-center gap-2">
         {Icon ? <Icon size={16} color="#d4872a" /> : null}
         <Text className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 tabular-nums">

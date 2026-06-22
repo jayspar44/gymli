@@ -25,6 +25,7 @@ import { Card } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
 import { SegmentedControl } from '../../components/ui/SegmentedControl';
 import { Button } from '../../components/ui/Button';
+import { TestIds } from '../../lib/test-ids';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const;
 
@@ -155,7 +156,7 @@ export default function ProfileScreen() {
           <Text className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Settings</Text>
           <View className="flex-row items-center gap-2">
             {saved ? (
-              <View className="flex-row items-center gap-1">
+              <View testID={TestIds.PROFILE_SAVED_INDICATOR} className="flex-row items-center gap-1">
                 <Check size={14} color="#22c55e" strokeWidth={2.5} />
                 <Text className="text-xs text-green-500">Saved</Text>
               </View>
@@ -169,6 +170,7 @@ export default function ProfileScreen() {
         {/* Personal */}
         <Section title="Personal">
           <Input
+            testID={TestIds.PROFILE_DISPLAY_NAME_INPUT}
             label="Display Name"
             value={formData.displayName}
             onChangeText={(v) => handleChange('displayName', v)}

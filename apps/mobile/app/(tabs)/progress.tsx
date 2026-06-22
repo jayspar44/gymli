@@ -9,6 +9,7 @@ import { ExerciseChart } from '../../components/progress/ExerciseChart';
 import { VolumeChart } from '../../components/progress/VolumeChart';
 import { PRBoard } from '../../components/progress/PRBoard';
 import { api } from '../../lib/api';
+import { TestIds, strengthChipId } from '../../lib/test-ids';
 
 /* ---------- helpers ---------- */
 
@@ -66,7 +67,9 @@ function OverviewTab() {
 
   return (
     <View className="gap-4">
-      <StreakCalendar />
+      <View testID={TestIds.STREAK_CALENDAR}>
+        <StreakCalendar />
+      </View>
 
       {/* This Week Summary */}
       {loadingStats ? (
@@ -78,7 +81,7 @@ function OverviewTab() {
           </View>
         </Card>
       ) : weekStats ? (
-        <Card>
+        <Card testID={TestIds.WEEK_STATS_CARD}>
           <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
             This Week
           </Text>
@@ -220,6 +223,7 @@ function StrengthTab() {
           {exercises.map((ex) => (
             <Chip
               key={ex.id}
+              testID={strengthChipId(ex.id)}
               selected={ex.id === selectedId}
               onPress={() => setSelectedId(ex.id)}
             >
@@ -293,6 +297,7 @@ export default function ProgressScreen() {
             Progress
           </Text>
           <SegmentedControl
+            testID={TestIds.PROGRESS_TAB}
             options={[
               { value: 'overview', label: 'Overview' },
               { value: 'strength', label: 'Strength' },

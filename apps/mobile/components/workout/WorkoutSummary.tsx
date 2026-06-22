@@ -10,6 +10,7 @@ import { Clock, Dumbbell, Flame } from 'lucide-react-native';
 import { Stat } from '../ui/Stat';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
+import { TestIds } from '../../lib/test-ids';
 
 type SetData = {
   completed: boolean;
@@ -92,10 +93,10 @@ export function WorkoutSummary({ result, onClose, onSaveAsRoutine }: Props) {
               <Stat value={result.duration ?? '—'} label="Minutes" icon={Clock} />
             </View>
             <View className="flex-1">
-              <Stat value={volumeDisplay} label="Volume" icon={Dumbbell} />
+              <Stat testID={TestIds.SUMMARY_VOLUME} value={volumeDisplay} label="Volume" icon={Dumbbell} />
             </View>
             <View className="flex-1">
-              <Stat value={totalSets} label="Sets" icon={Flame} />
+              <Stat testID={TestIds.SUMMARY_SETS} value={totalSets} label="Sets" icon={Flame} />
             </View>
           </View>
 
@@ -138,7 +139,7 @@ export function WorkoutSummary({ result, onClose, onSaveAsRoutine }: Props) {
                 {savedRoutine ? 'Saved as routine ✓' : 'Save as routine'}
               </Button>
             )}
-            <Button variant="primary" fullWidth onPress={onClose}>
+            <Button testID={TestIds.SUMMARY_DONE_BTN} variant="primary" fullWidth onPress={onClose}>
               Done
             </Button>
           </View>

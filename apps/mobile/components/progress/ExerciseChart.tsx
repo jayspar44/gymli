@@ -3,6 +3,7 @@ import { View, Text } from 'react-native';
 import { LineChart } from 'react-native-gifted-charts';
 import { Card, CardHeader, Skeleton } from '../ui';
 import { api } from '../../lib/api';
+import { TestIds } from '../../lib/test-ids';
 
 type ProgressPoint = {
   date: string;
@@ -42,7 +43,7 @@ export function ExerciseChart({ exerciseId }: { exerciseId: string | null }) {
   const chartData = data.map((d) => ({ value: d.maxWeight, label: d.label }));
 
   return (
-    <Card padding="none">
+    <Card testID={TestIds.EXERCISE_CHART} padding="none">
       <CardHeader className="px-4 pt-3 pb-3">
         <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
           Weight Progression

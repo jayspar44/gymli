@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { View, Text, TextInput, Pressable, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../contexts/AuthContext';
+import { TestIds } from '../lib/test-ids';
 
 export default function Login() {
   const { signInWithEmail, signUpWithEmail, signInWithGoogle } = useAuth();
@@ -30,6 +31,7 @@ export default function Login() {
       <View className="flex-1 justify-center gap-3 px-6">
         <Text className="mb-4 text-2xl font-bold text-zinc-900 dark:text-zinc-50">Gymli</Text>
         <TextInput
+          testID={TestIds.LOGIN_EMAIL}
           className="rounded-xl bg-surface-alt px-4 min-h-12 text-base dark:bg-surface-dark dark:text-zinc-50"
           placeholder="Email"
           autoCapitalize="none"
@@ -38,6 +40,7 @@ export default function Login() {
           onChangeText={setEmail}
         />
         <TextInput
+          testID={TestIds.LOGIN_PASSWORD}
           className="rounded-xl bg-surface-alt px-4 min-h-12 text-base dark:bg-surface-dark dark:text-zinc-50"
           placeholder="Password"
           secureTextEntry
@@ -46,6 +49,7 @@ export default function Login() {
         />
         {err ? <Text className="text-base text-red-500">{err}</Text> : null}
         <Pressable
+          testID={TestIds.LOGIN_SUBMIT}
           className="rounded-xl bg-primary min-h-14 items-center justify-center"
           onPress={() =>
             run(() =>

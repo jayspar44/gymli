@@ -8,14 +8,17 @@ export function SegmentedControl({
   value,
   onChange,
   className,
+  testID,
 }: {
   options: Option[];
   value: string;
   onChange: (value: string) => void;
   className?: string;
+  testID?: string;
 }) {
   return (
     <View
+      testID={testID}
       className={cn(
         'flex-row p-1 rounded-xl bg-surface-alt dark:bg-surface-dark',
         className
@@ -24,6 +27,7 @@ export function SegmentedControl({
       {options.map((option) => (
         <Pressable
           key={option.value}
+          testID={testID ? `${testID}-${option.value}` : undefined}
           onPress={() => onChange(option.value)}
           className={cn(
             'flex-1 px-3 min-h-11 rounded-lg items-center justify-center',

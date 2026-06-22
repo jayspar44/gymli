@@ -11,6 +11,7 @@ import { BottomSheet, type BottomSheetRef } from '../ui/BottomSheet';
 import { Chip } from '../ui/Chip';
 import { Skeleton } from '../ui/Skeleton';
 import { api } from '../../lib/api';
+import { TestIds, exerciseResultId } from '../../lib/test-ids';
 
 const CATEGORIES = ['All', 'compound', 'isolation', 'cardio', 'olympic', 'power'] as const;
 const CATEGORY_LABELS: Record<string, string> = {
@@ -92,9 +93,10 @@ export function ExercisePicker({ open, onSelect, onClose }: Props) {
   }
 
   const renderExercise = useCallback(
-    ({ item: ex }: { item: Exercise }) => (
+    ({ item: ex, index: i }: { item: Exercise; index: number }) => (
       <Pressable
         key={ex.id}
+        testID={exerciseResultId(i)}
         onPress={() => onSelect(ex)}
         className="w-full flex-row items-center gap-3 px-1 py-3.5 border-b border-zinc-200 dark:border-zinc-700 active:bg-surface-alt dark:active:bg-surface-dark"
       >
@@ -126,6 +128,7 @@ export function ExercisePicker({ open, onSelect, onClose }: Props) {
           <Search size={18} color="#71717a" />
         </View>
         <TextInput
+          testID={TestIds.EXERCISE_SEARCH_INPUT}
           ref={inputRef}
           value={query}
           onChangeText={setQuery}

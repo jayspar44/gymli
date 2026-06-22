@@ -16,6 +16,7 @@ import { BottomSheet } from '../ui/BottomSheet';
 import { ExercisePicker } from '../log/ExercisePicker';
 import { Button } from '../ui/Button';
 import { api } from '../../lib/api';
+import { TestIds } from '../../lib/test-ids';
 
 export type RoutineExercise = {
   exerciseId: string;
@@ -100,6 +101,7 @@ export function RoutineEditor({ routine, onClose, onSaved }: Props) {
 
         {/* Routine name input */}
         <TextInput
+          testID={TestIds.ROUTINE_NAME_INPUT}
           value={name}
           onChangeText={setName}
           placeholder="Routine name"
@@ -139,6 +141,7 @@ export function RoutineEditor({ routine, onClose, onSaved }: Props) {
 
           {/* Add exercise button */}
           <Pressable
+            testID={TestIds.ROUTINE_ADD_EXERCISE_BTN}
             onPress={() => setPicking(true)}
             className="flex-row items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-300 dark:border-zinc-600 py-4"
           >
@@ -150,6 +153,7 @@ export function RoutineEditor({ routine, onClose, onSaved }: Props) {
         {/* Save button */}
         <View className="pt-4">
           <Button
+            testID={TestIds.ROUTINE_SAVE_BTN}
             size="lg"
             fullWidth
             disabled={!name.trim() || saving}

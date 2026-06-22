@@ -18,6 +18,7 @@ import { WorkoutHistoryList } from '../../components/log/WorkoutHistoryList';
 import { RoutineEditor } from '../../components/routine/RoutineEditor';
 import { Button } from '../../components/ui/Button';
 import { api } from '../../lib/api';
+import { TestIds, routineRowId } from '../../lib/test-ids';
 
 type RoutineExercise = {
   exerciseId: string;
@@ -117,7 +118,7 @@ export default function LogScreen() {
             <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
               Routines
             </Text>
-            <Button variant="secondary" size="sm" onPress={() => setEditing('new')}>
+            <Button testID={TestIds.NEW_ROUTINE_BTN} variant="secondary" size="sm" onPress={() => setEditing('new')}>
               <Plus size={16} color="#71717a" />
               New routine
             </Button>
@@ -142,6 +143,7 @@ export default function LogScreen() {
               {routines.map((routine) => (
                 <View
                   key={routine.id}
+                  testID={routineRowId(routine.name)}
                   className="flex-row items-center justify-between rounded-xl bg-surface-alt dark:bg-surface-dark px-4 py-3"
                 >
                   <View className="flex-1 min-w-0 mr-3">
