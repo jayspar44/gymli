@@ -54,3 +54,16 @@ maestro test e2e/maestro/flows/smoke.yaml    # single flow (env not needed for s
 ```bash
 npm run e2e            # web then android
 ```
+
+## Flow inventory
+
+| Flow | Playwright spec | Maestro flow | AI? | Self-cleans (PW) |
+|---|---|---|---|---|
+| Login (precondition) | `fixtures/auth.ts` | `helpers/login.yaml` | no | n/a |
+| Create routine | `flows/create-routine.spec.ts` | `flows/create-routine.yaml` | no | yes |
+| Guided session + log sets | `flows/session-log-sets.spec.ts` | `flows/session-log-sets.yaml` | no | yes |
+| Conversational log | `flows/conversational-log.spec.ts` | `flows/conversational-log.yaml` | yes | yes |
+| View progress | `flows/view-progress.spec.ts` | `flows/view-progress.yaml` | no | yes (PW seeds+cleans) |
+| Edit profile | `flows/edit-profile.spec.ts` | `flows/edit-profile.yaml` | no | yes (restores name) |
+
+AI flows assert on resulting app **state**, never on AI reply wording.

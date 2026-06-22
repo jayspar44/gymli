@@ -31,7 +31,8 @@
     "android:dev": "cd frontend && npm run android:dev",
     "android:local": "cd frontend && npm run android:local",
     "e2e:web": "npm run e2e:web -w apps/mobile",
-    "e2e:android": "npm run e2e:android -w apps/mobile"
+    "e2e:android": "npm run e2e:android -w apps/mobile",
+    "e2e": "npm run e2e -w apps/mobile"
   },
   "dependencies": {
     "concurrently": "^8.2.2",
