@@ -108,9 +108,15 @@ export function WorkoutHistoryList({ refreshKey }: { refreshKey: number }) {
   }
 
   return (
-    <View className="flex-1">
+    <View>
+      {/* scrollEnabled={false}: this list lives inside log.tsx's outer ScrollView,
+          so the outer scroll handles all scrolling. Without this, FlashList has no
+          measured height in a ScrollView content container on web (flex-1 = 0 in
+          unconstrained-height context) and renders invisibly. On native this is the
+          recommended pattern for FlashList nested inside a ScrollView. */}
       <FlashList
         data={workouts}
+        scrollEnabled={false}
         keyExtractor={(item, index) => item.id ?? `${index}`}
         renderItem={({ item }) => (
           <View className="mb-3">
