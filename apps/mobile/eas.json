@@ -5,6 +5,7 @@
       "developmentClient": true,
       "distribution": "internal",
       "environment": "development",
+      "channel": "development",
       "env": { "APP_VARIANT": "development" },
       "android": { "buildType": "apk" }
     },
@@ -12,6 +13,7 @@
       "distribution": "internal",
       "environment": "development",
       "autoIncrement": true,
+      "channel": "production",
       "env": { "APP_VARIANT": "development" },
       "android": { "buildType": "app-bundle" }
     },
@@ -19,6 +21,7 @@
       "distribution": "store",
       "environment": "production",
       "autoIncrement": true,
+      "channel": "production",
       "env": { "APP_VARIANT": "production" },
       "android": { "buildType": "app-bundle" }
     }

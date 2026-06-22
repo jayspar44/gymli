@@ -46,6 +46,12 @@ const config: ExpoConfig = {
     ],
   ],
   experiments: { typedRoutes: true },
+  runtimeVersion: { policy: 'appVersion' },
+  updates: {
+    url: 'https://u.expo.dev/18695339-fd5b-4c06-9743-d0e59c0ac197',
+    // fallbackToCacheTimeout 0 = fully non-blocking startup (fetch update in background)
+    fallbackToCacheTimeout: 0,
+  },
   extra: {
     apiUrl: process.env.EXPO_PUBLIC_API_URL,
     firebaseConfig: process.env.EXPO_PUBLIC_FIREBASE_CONFIG,
