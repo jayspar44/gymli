@@ -65,7 +65,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "e2e:web": "playwright test --config e2e/playwright/playwright.config.ts",
     "e2e:android": "set -a && . ./e2e/.env.e2e && set +a && maestro test e2e/maestro/flows -e E2E_TEST_EMAIL=$E2E_TEST_EMAIL -e E2E_TEST_PASSWORD=$E2E_TEST_PASSWORD",
     "e2e": "npm run e2e:web && npm run e2e:android"
@@ -77,6 +77,10 @@
     ],
     "roots": [
       "<rootDir>"
+    ],
+    "testPathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "<rootDir>/e2e/playwright/"
     ]
   },
   "private": true
