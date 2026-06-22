@@ -65,7 +65,9 @@ function RootLayout() {
           <AuthProvider>
             <UserProfileProvider>
               <AuthGate />
-              <Stack screenOptions={{ headerShown: false }} />
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="session" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+              </Stack>
             </UserProfileProvider>
           </AuthProvider>
         </ThemeProvider>
