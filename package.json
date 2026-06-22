@@ -29,7 +29,8 @@
     "prepare": "husky",
     "android": "cd frontend && npm run android",
     "android:dev": "cd frontend && npm run android:dev",
-    "android:local": "cd frontend && npm run android:local"
+    "android:local": "cd frontend && npm run android:local",
+    "e2e:web": "npm run e2e:web -w apps/mobile"
   },
   "dependencies": {
     "concurrently": "^8.2.2",
