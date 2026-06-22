@@ -1,0 +1,24 @@
+appId: com.getgymli.dev
+---
+- runFlow: ../helpers/login.yaml
+- tapOn:
+    id: "log-input"
+- inputText: "bench 225 5,5,4"
+- tapOn:
+    id: "log-send-btn"
+# Generous wait for the real Gemini parse (mirrors Playwright 45s anchor).
+# Assert resulting set-row STATE only — never AI reply wording.
+- extendedWaitUntil:
+    visible:
+      id: "set-row-weight-0"
+    timeout: 45000
+- assertVisible:
+    id: "set-row-weight-0"
+- assertVisible:
+    text: "225"
+- assertVisible:
+    id: "set-row-reps-0-0"
+- assertVisible:
+    id: "set-row-reps-0-1"
+- assertVisible:
+    id: "set-row-reps-0-2"
