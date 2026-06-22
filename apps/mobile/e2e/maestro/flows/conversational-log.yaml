@@ -14,11 +14,13 @@ appId: com.getgymli.dev
     timeout: 45000
 - assertVisible:
     id: "set-row-weight-0"
-- assertVisible:
     text: "225"
 - assertVisible:
     id: "set-row-reps-0-0"
+    text: "5"
 - assertVisible:
     id: "set-row-reps-0-1"
+    text: "5"
 - assertVisible:
     id: "set-row-reps-0-2"
+    text: "4"
