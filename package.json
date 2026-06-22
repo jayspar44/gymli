@@ -9,13 +9,16 @@
     "packages/*"
   ],
   "scripts": {
-    "install-all": "NODE_ENV=development npm install && cd frontend && NODE_ENV=development npm install && cd ../backend && NODE_ENV=development npm install",
-    "build": "npm run install-all && cd frontend && npm run build",
-    "lint": "npm run lint --prefix frontend && npm run lint --prefix backend",
+    "install-all": "NODE_ENV=development npm install && cd backend && NODE_ENV=development npm install",
+    "build:web": "cd apps/mobile && NODE_ENV=development npx expo export -p web",
+    "deploy:web:dev": "npm run build:web && firebase deploy --only hosting:dev",
+    "deploy:web:prod": "npm run build:web && firebase deploy --only hosting:prod",
+    "lint": "npm run lint --prefix apps/mobile && npm run lint --prefix backend",
+    "test": "npm run test --prefix apps/mobile && npm run test --workspace @gymli/shared",
     "dev:local": "node scripts/dev-with-ports.js",
     "dev:local:list": "node scripts/list-instances.js",
     "dev:local:kill": "node scripts/kill-instance.js",
-    "dev:frontend": "cd frontend && npm run dev",
+    "dev:mobile": "cd apps/mobile && NODE_ENV=development npx expo start --web",
     "dev:backend": "cd backend && npm run dev",
     "setup:env": "node scripts/setup-env.js",
     "validate-env": "node scripts/validate-env.js",
@@ -27,12 +30,8 @@
     "release:minor": "standard-version --release-as minor",
     "release:major": "standard-version --release-as major",
     "prepare": "husky",
-    "android": "cd frontend && npm run android",
-    "android:dev": "cd frontend && npm run android:dev",
-    "android:local": "cd frontend && npm run android:local",
-    "e2e:web": "npm run e2e:web -w apps/mobile",
-    "e2e:android": "npm run e2e:android -w apps/mobile",
-    "e2e": "npm run e2e -w apps/mobile"
+    "build:android:dev": "cd apps/mobile && NODE_ENV=development npx eas build -p android --profile development",
+    "build:android:prod": "cd apps/mobile && NODE_ENV=development npx eas build -p android --profile production"
   },
   "dependencies": {
     "concurrently": "^8.2.2",
