@@ -1,0 +1,8 @@
+appId: com.getgymli.dev
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: "login-email"
+- assertVisible:
+    id: "login-submit"
