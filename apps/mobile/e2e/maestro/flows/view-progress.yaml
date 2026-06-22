@@ -1,0 +1,20 @@
+appId: com.getgymli.dev
+---
+- runFlow: ../helpers/login.yaml
+# Navigate to the Progress tab by its bottom-nav label.
+- tapOn: "Progress"
+- assertVisible:
+    id: "streak-calendar"
+- assertVisible:
+    id: "week-stats-card"
+- tapOn:
+    id: "progress-tab-strength"
+# Select the first strength chip (id prefix match), then assert the chart renders.
+- tapOn:
+    id: "strength-chip-.*"
+- extendedWaitUntil:
+    visible:
+      id: "exercise-chart"
+    timeout: 15000
+- assertVisible:
+    id: "exercise-chart"
