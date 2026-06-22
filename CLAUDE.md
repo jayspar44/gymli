@@ -25,8 +25,8 @@ Gymli/
 │       ├── app/             # Expo Router routes: (tabs)/{index,log,progress,profile}, login, onboarding, session
 │       ├── components/      # ui/, workout/, log/, progress/, chat/, routine/, layout/
 │       ├── contexts/        # AuthContext, UserProfileContext, ThemeContext
-│       ├── lib/             # firebase.web.ts / firebase.native.ts, api, cn
-│       ├── assets/          # Inter fonts, icons, splash
+│       ├── lib/             # firebase.ts, auth.ts (+ auth.web/.native), api, cn, test-ids
+│       ├── assets/          # icons, splash
 │       ├── e2e/             # E2E tests: playwright/ (web) + maestro/ (Android)
 │       ├── app.config.ts    # dynamic Expo config (web static, updates, sentry plugin)
 │       ├── eas.json         # build profiles + OTA channels (development/preview/production)
@@ -46,7 +46,7 @@ Gymli/
 ```bash
 npm run install-all          # Install root + backend deps (apps/* via workspaces)
 npm run dev:mobile           # Expo dev server (web) for apps/mobile
-npm run dev:local            # Backend dev orchestration (multi-instance ports)
+npm run dev:local            # legacy multi-instance orchestrator — still references the removed frontend/ (D11 follow-up); for Expo dev use dev:mobile + dev:backend
 npm run dev:backend          # Backend only
 npm run lint                 # ESLint apps/mobile + backend
 npm run test                 # apps/mobile (jest-expo) + @gymli/shared (vitest)
@@ -125,7 +125,7 @@ Include in every plan:
 
 ## Theme
 
-Forge-inspired: warm amber primary (#d4872a), stone backgrounds (#fdf8f0 light / #0c0a09 dark). Cinzel display font + Outfit body. Dark/light mode toggle via ThemeContext.
+Forge-inspired: warm amber primary (#d4872a), stone backgrounds (#fdf8f0 light / #0c0a09 dark). System fonts (no custom font loading). Dark/light mode toggle via ThemeContext.
 
 ## Skill Workflows
 
