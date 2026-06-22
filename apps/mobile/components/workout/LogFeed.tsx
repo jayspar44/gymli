@@ -40,11 +40,11 @@ export function LogFeed({ entries, onClarify }: Props) {
       <View className="px-4 py-3">
         <Text className="text-sm leading-relaxed text-zinc-500 text-center">
           {'Type a set or ask Gymli below — e.g. '}
-          <Text className="text-zinc-900 dark:text-zinc-50">"bench 225 5,5,4"</Text>
+          <Text className="text-zinc-900 dark:text-zinc-50">{'"bench 225 5,5,4"'}</Text>
           {', '}
-          <Text className="text-zinc-900 dark:text-zinc-50">"add plank"</Text>
+          <Text className="text-zinc-900 dark:text-zinc-50">{'"add plank"'}</Text>
           {', or '}
-          <Text className="text-zinc-900 dark:text-zinc-50">"what's next?"</Text>
+          <Text className="text-zinc-900 dark:text-zinc-50">{'"what\'s next?"'}</Text>
         </Text>
       </View>
     );
