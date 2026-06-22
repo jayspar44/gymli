@@ -33,7 +33,7 @@ These are choices not fully pinned by the spec. Each is stated as an explicit as
 | # | Decision | Value chosen | Override point | Rationale |
 |---|---|---|---|---|
 | D1 | Web hosting target dir | `apps/mobile/dist` (Expo static export output) | `firebase.json` → `hosting.public` | `app.config.ts` already sets `web.output:'static'`; `npx expo export -p web` writes to `apps/mobile/dist`. |
-| D2 | Firebase hosting target structure | Keep the **single unnamed `hosting` block** (current shape), point it at the prod site `gimli-app`. Do NOT introduce per-target `dev`/`prod` blocks in this plan. | `firebase.json` / `firebase deploy` invocation | `.firebaserc` declares `dev`/`prod` targets but `firebase.json` currently uses one unnamed block deploying to the default site. Changing to multi-target is out of scope (no regression rule). |
+| D2 | Firebase hosting target structure | Use **named hosting targets**: `firebase.json` `hosting` becomes an **array** of two configs — `target:"dev"` → site `gimli-app-dev`, `target:"prod"` → site `gimli-app` — reconciling `.firebaserc` (which already declares both targets under project `gimli-app`) with `firebase.json` (currently a single unnamed block). Deploy each via `firebase deploy --only hosting:<target>`. | `firebase.json` `hosting[]` + `.firebaserc` `targets` | `.firebaserc` already maps `dev`→`gimli-app-dev` and `prod`→`gimli-app`; named targets give separate dev and prod hosting sites (user decision). Both serve the same `apps/mobile/dist` export; environment differences come from the per-deploy `EXPO_PUBLIC_*` env used at export time. |
 | D3 | SPA rewrite for Expo Router | Keep the existing `"**" → "/index.html"` rewrite. | `firebase.json` → `hosting.rewrites` | Expo Router web (even `output:'static'`) needs deep links to resolve client-side; the rewrite is already present and correct. Static export also emits per-route `.html`, so direct hits work; the rewrite is the fallback. |
 | D4 | Sentry: adopt? | **Yes** — `@sentry/react-native` via Expo config plugin + `Sentry.wrap` root layout. Explicit §14 DoD item. | Remove Task 4.x if descoped | DoD requires "Sentry configured". |
 | D5 | Sentry org/project slugs | org `gymli`, project `gymli-mobile` | EAS secrets `SENTRY_ORG`, `SENTRY_PROJECT`; plugin reads them | Sensible defaults; user creates/renames the project in Sentry and overrides the two values. |
@@ -71,75 +71,157 @@ Gymli/
 
 ---
 
-## Task 3.1: Repoint Firebase Hosting at the Expo web export
+## Task 3.1: Repoint Firebase Hosting at the Expo web export (named dev + prod targets)
 
 **Files:**
 - Modify: `/Users/jayspar/Documents/projects/Gymli/firebase.json`
 
 **Interfaces:**
-- Produces: a `firebase.json` whose `hosting.public` is `apps/mobile/dist` with an SPA rewrite — consumed by Task 3.5 (deploy).
+- Produces: a `firebase.json` whose `hosting` is an **array** of two target configs (`dev`→`apps/mobile/dist`, `prod`→`apps/mobile/dist`), each with an SPA rewrite — consumed by Task 3.5 (deploy per target).
 
-**Assumption (D1, D2, D3):** target dir `apps/mobile/dist`; single unnamed hosting block → default/prod site; keep `"**" → "/index.html"` rewrite.
+**Assumption (D1, D2, D3):** target dir `apps/mobile/dist` for both; named targets `dev` (site `gimli-app-dev`) + `prod` (site `gimli-app`), already declared in `.firebaserc` under project `gimli-app`; keep `"**" → "/index.html"` rewrite. The `target` value in each `firebase.json` entry matches the `.firebaserc` `targets.gimli-app.hosting` keys (`dev`/`prod`).
 
-- [ ] **Step 1: Edit `firebase.json` hosting `public`**
+- [ ] **Step 1: Confirm the `.firebaserc` targets exist (no edit — reference only)**
 
-Change ONLY the `public` line. Before:
+```bash
+cd /Users/jayspar/Documents/projects/Gymli
+node -e "const r=require('./.firebaserc'); console.log(JSON.stringify(r.targets['gimli-app'].hosting))"
+```
+Expected: `{"dev":["gimli-app-dev"],"prod":["gimli-app"]}`. If this prints something else, stop — the target/site names below must be updated to match `.firebaserc` (override point D2). The `firebase.json` `hosting[].target` keys MUST equal these `.firebaserc` keys (`dev`, `prod`).
+
+- [ ] **Step 2: Replace the single `hosting` block with a two-target array**
+
+In `/Users/jayspar/Documents/projects/Gymli/firebase.json`, replace the **entire** `"hosting": { … }` object (currently `public: "frontend/dist"`, lines 2–35) with an array. Before:
 ```json
   "hosting": {
     "public": "frontend/dist",
-```
-After:
-```json
-  "hosting": {
-    "public": "apps/mobile/dist",
-```
-
-- [ ] **Step 2: Confirm the SPA rewrite and asset headers still match the Expo export shape**
-
-The existing rewrite block is correct for Expo Router web — leave it:
-```json
-    "rewrites": [
-      { "source": "**", "destination": "/index.html" }
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
     ],
-```
-Expo static export emits hashed assets under `/_expo/static/**` AND copies `assets/`. The existing immutable cache header targets `/assets/**`. Add an `/_expo/static/**` immutable header so Expo's hashed JS/CSS is cached. Replace the `headers` array with:
-```json
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
     "headers": [
       {
         "source": "/assets/**",
         "headers": [
-          { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
-        ]
-      },
-      {
-        "source": "/_expo/static/**",
-        "headers": [
-          { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=31536000, immutable"
+          }
         ]
       },
       {
         "source": "**/*.html",
         "headers": [
-          { "key": "Cache-Control", "value": "no-cache" }
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
         ]
       }
     ]
+  },
 ```
+After (array — `dev` and `prod` entries, identical except `target`; both serve `apps/mobile/dist`; added `/_expo/static/**` immutable cache header for Expo's hashed bundles):
+```json
+  "hosting": [
+    {
+      "target": "dev",
+      "public": "apps/mobile/dist",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        { "source": "**", "destination": "/index.html" }
+      ],
+      "headers": [
+        {
+          "source": "/assets/**",
+          "headers": [
+            { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+          ]
+        },
+        {
+          "source": "/_expo/static/**",
+          "headers": [
+            { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+          ]
+        },
+        {
+          "source": "**/*.html",
+          "headers": [
+            { "key": "Cache-Control", "value": "no-cache" }
+          ]
+        }
+      ]
+    },
+    {
+      "target": "prod",
+      "public": "apps/mobile/dist",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        { "source": "**", "destination": "/index.html" }
+      ],
+      "headers": [
+        {
+          "source": "/assets/**",
+          "headers": [
+            { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+          ]
+        },
+        {
+          "source": "/_expo/static/**",
+          "headers": [
+            { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+          ]
+        },
+        {
+          "source": "**/*.html",
+          "headers": [
+            { "key": "Cache-Control", "value": "no-cache" }
+          ]
+        }
+      ]
+    }
+  ],
+```
+(Leave the `"firestore": { … }` block that follows unchanged.)
 
-- [ ] **Step 3: Validate JSON**
+- [ ] **Step 3: Validate JSON + confirm both targets present**
 
 ```bash
 cd /Users/jayspar/Documents/projects/Gymli
-node -e "JSON.parse(require('fs').readFileSync('firebase.json','utf8')); console.log('firebase.json valid')"
+node -e "const c=JSON.parse(require('fs').readFileSync('firebase.json','utf8')); if(!Array.isArray(c.hosting)) throw new Error('hosting must be an array'); console.log('targets:', c.hosting.map(h=>h.target).join(',')); console.log('publics:', [...new Set(c.hosting.map(h=>h.public))].join(','))"
 ```
-Expected: `firebase.json valid`.
+Expected: `targets: dev,prod` and `publics: apps/mobile/dist`.
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 4: Apply the target→site bindings locally** (idempotent; binds the `firebase.json` targets to the `.firebaserc` sites so `--only hosting:<target>` resolves)
 
 ```bash
 cd /Users/jayspar/Documents/projects/Gymli
-git add firebase.json
-git commit -m "chore(web): point firebase hosting at expo web export (apps/mobile/dist)"
+npx firebase target:apply hosting dev gimli-app-dev 2>&1 | tail -3
+npx firebase target:apply hosting prod gimli-app 2>&1 | tail -3
+```
+Expected: each prints an "Applied hosting target …" confirmation. (These bindings already exist in `.firebaserc`; re-applying is a no-op that confirms the CLI can resolve them.)
+
+- [ ] **Step 5: Commit**
+
+```bash
+cd /Users/jayspar/Documents/projects/Gymli
+git add firebase.json .firebaserc
+git commit -m "chore(web): firebase hosting dev/prod targets → expo web export (apps/mobile/dist)"
 ```
 
 ---
@@ -290,36 +372,52 @@ git commit -m "fix(web): resolve per-route console errors; verify google web aut
 
 ---
 
-## Task 3.5: Deploy web to Firebase Hosting and verify production
+## Task 3.5: Deploy web to Firebase Hosting (dev + prod targets) and verify
 
 **Files:** none (deploy operation)
 
 **Interfaces:**
-- Consumes: `firebase.json` (Task 3.1), `apps/mobile/dist` (Task 3.4 Step 4).
-- Produces: a live hosted Expo web app at the prod Firebase site.
+- Consumes: `firebase.json` two-target array (Task 3.1), `apps/mobile/dist` (Task 3.4 Step 4).
+- Produces: a live hosted Expo web app on the `dev` site (`gimli-app-dev`) and the `prod` site (`gimli-app`).
 
-**Assumption (D2):** deploys the single unnamed `hosting` block to the default site (`gimli-app`, per `.firebaserc`).
+**Assumption (D2):** named targets — `hosting:dev` → `gimli-app-dev`, `hosting:prod` → `gimli-app`. Both serve `apps/mobile/dist`; per-environment differences come from the `EXPO_PUBLIC_*` env present when the export was built. Deploy **dev first**, verify, then **prod**.
 
-- [ ] **Step 1: Confirm a fresh export exists, then deploy hosting only**
+- [ ] **Step 1: Export with the DEV env, then deploy the dev target**
 
+Build the export against the dev backend/Firebase config (use the dev `apps/mobile/.env*`; the relevant vars are `EXPO_PUBLIC_API_URL` / `EXPO_PUBLIC_FIREBASE_CONFIG` / `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`). Then deploy only the `dev` hosting target:
 ```bash
 cd /Users/jayspar/Documents/projects/Gymli/apps/mobile
 NODE_ENV=development npx expo export -p web 2>&1 | tail -3
 cd /Users/jayspar/Documents/projects/Gymli
-npx firebase deploy --only hosting 2>&1 | tail -20
+npx firebase deploy --only hosting:dev 2>&1 | tail -20
 ```
-Expected: ends with `Deploy complete!` and a Hosting URL.
+Expected: ends with `Deploy complete!` and the `gimli-app-dev` Hosting URL.
 
-- [ ] **Step 2: Verify the deployed site**
+- [ ] **Step 2: Verify the DEV site**
 
-Open the deployed Hosting URL (printed by Step 1). Confirm:
-- `/` loads (deep-link a non-root route too, e.g. `/progress` — the SPA rewrite must resolve it, 0 console errors).
-- Google web auth works against the LIVE backend.
+Open the `gimli-app-dev` URL printed by Step 1. Confirm:
+- `/` loads; deep-link a non-root route (e.g. `/progress`) — the SPA rewrite resolves it; 0 console errors.
+- Google web auth works against the dev backend.
 - A round-trip data action (load Today / start a session / open Progress charts) succeeds.
 
-- [ ] **Step 3: Record Phase 3 done**
+- [ ] **Step 3: Re-export with the PROD env, then deploy the prod target**
 
-No commit needed (deploy is not a repo change). Phase 3 DoD met when: hosted web renders all routes at parity, auth works, 0 console errors on every route.
+Re-export against the **prod** `EXPO_PUBLIC_*` config (prod backend host + prod Firebase project), then deploy only the `prod` target:
+```bash
+cd /Users/jayspar/Documents/projects/Gymli/apps/mobile
+NODE_ENV=development npx expo export -p web 2>&1 | tail -3
+cd /Users/jayspar/Documents/projects/Gymli
+npx firebase deploy --only hosting:prod 2>&1 | tail -20
+```
+Expected: ends with `Deploy complete!` and the `gimli-app` (prod) Hosting URL.
+
+- [ ] **Step 4: Verify the PROD site**
+
+Open the `gimli-app` URL. Repeat the Step 2 checks against the prod backend: `/` + deep-linked route load with 0 console errors, Google web auth works, a data round-trip succeeds.
+
+- [ ] **Step 5: Record Phase 3 done**
+
+No commit needed (deploy is not a repo change). Phase 3 DoD met when: BOTH hosted sites (dev + prod) render all routes at parity, auth works, 0 console errors on every route.
 
 ---
 
@@ -665,7 +763,8 @@ In `/Users/jayspar/Documents/projects/Gymli/package.json`, replace the entire `"
   "scripts": {
     "install-all": "NODE_ENV=development npm install && cd backend && NODE_ENV=development npm install",
     "build:web": "cd apps/mobile && NODE_ENV=development npx expo export -p web",
-    "deploy:web": "npm run build:web && firebase deploy --only hosting",
+    "deploy:web:dev": "npm run build:web && firebase deploy --only hosting:dev",
+    "deploy:web:prod": "npm run build:web && firebase deploy --only hosting:prod",
     "lint": "npm run lint --prefix apps/mobile && npm run lint --prefix backend",
     "test": "npm run test --prefix apps/mobile && npm run test --workspace @gymli/shared",
     "dev:local": "node scripts/dev-with-ports.js",
@@ -687,7 +786,7 @@ In `/Users/jayspar/Documents/projects/Gymli/package.json`, replace the entire `"
     "build:android:prod": "cd apps/mobile && NODE_ENV=development npx eas build -p android --profile production"
   },
 ```
-Notes on the diff: `install-all` drops the `cd frontend` install; `build`→`build:web` (expo export); added `deploy:web`; `lint`/`test` now target `apps/mobile` + `@gymli/shared` (the workspace package) instead of `frontend`; `dev:frontend`→`dev:mobile`; Capacitor `android`/`android:dev`/`android:local`→EAS `build:android:dev`/`build:android:prod`.
+Notes on the diff: `install-all` drops the `cd frontend` install; `build`→`build:web` (expo export); added `deploy:web:dev` / `deploy:web:prod` (named Firebase hosting targets, per D2 — export carries the matching `EXPO_PUBLIC_*` env before each deploy); `lint`/`test` now target `apps/mobile` + `@gymli/shared` (the workspace package) instead of `frontend`; `dev:frontend`→`dev:mobile`; Capacitor `android`/`android:dev`/`android:local`→EAS `build:android:dev`/`build:android:prod`.
 
 - [ ] **Step 2: Remove `react-dom` from root deps if now unused** (only `frontend` used it at root level)
 
@@ -781,7 +880,8 @@ npm run dev:backend          # Backend only
 npm run lint                 # ESLint apps/mobile + backend
 npm run test                 # apps/mobile (jest-expo) + @gymli/shared (vitest)
 npm run build:web            # Expo static web export → apps/mobile/dist
-npm run deploy:web           # build:web + firebase deploy --only hosting
+npm run deploy:web:dev       # build:web + firebase deploy --only hosting:dev (gimli-app-dev)
+npm run deploy:web:prod      # build:web + firebase deploy --only hosting:prod (gimli-app)
 npm run build:android:dev    # EAS Android build (development profile)
 npm run build:android:prod   # EAS Android build (production profile)
 npm run setup:env            # Generate .env files from templates
@@ -885,7 +985,7 @@ git add -A && git commit -m "chore: final phase 5 verification fixes" || echo "n
 
 **Placeholder scan:** angle-bracket tokens (`<sentry-auth-token>`, `<dsn>`, `<public-key>`, `<org-id>`, `<project-id>`) are real **user-supplied secrets/identifiers**, not plan placeholders — each is documented in Decisions & Assumptions with its override point, which the writing-plans skill permits for genuinely external credentials. No "TBD/TODO/handle edge cases/similar to Task N" placeholders. Every config edit shows exact before→after.
 
-**Consistency check:** `apps/mobile/dist` used identically in firebase.json (3.1), export (3.2), deploy (3.5), build:web/deploy:web/verify (5.2/5.4), CLAUDE.md (5.3). Channel names `development`/`production` consistent across eas.json (4.2) and the publish smoke (4.2 Step 5). EAS project id `18695339-fd5b-4c06-9743-d0e59c0ac197` matches `app.config.ts` `extra.eas.projectId` and the updates URL (4.2). Sentry env var `EXPO_PUBLIC_SENTRY_DSN` consistent in init (4.1 Step 3), env example (4.1 Step 4), EAS secret (4.1 Step 5). `runtimeVersion:{policy:'appVersion'}` matches D9.
+**Consistency check:** `apps/mobile/dist` used identically in firebase.json both targets (3.1), export (3.2), deploy (3.5), build:web/deploy:web:dev/deploy:web:prod/verify (5.2/5.4), CLAUDE.md (5.3). Firebase hosting target keys `dev`/`prod` consistent across `.firebaserc` (sites `gimli-app-dev`/`gimli-app`), `firebase.json` `hosting[].target` (3.1), `target:apply` (3.1 Step 4), and `--only hosting:dev`/`--only hosting:prod` (3.5, 5.2 scripts). Channel names `development`/`production` consistent across eas.json (4.2) and the publish smoke (4.2 Step 5). EAS project id `18695339-fd5b-4c06-9743-d0e59c0ac197` matches `app.config.ts` `extra.eas.projectId` and the updates URL (4.2). Sentry env var `EXPO_PUBLIC_SENTRY_DSN` consistent in init (4.1 Step 3), env example (4.1 Step 4), EAS secret (4.1 Step 5). `runtimeVersion:{policy:'appVersion'}` matches D9.
 
 **Known follow-ups (intentionally out of scope, flagged not silently dropped):** `scripts/dev-with-ports.js` still copies `frontend/.env.local` (D11) — left for a later dev-tooling cleanup; per-target `dev`/`prod` Firebase hosting (D2) not adopted; on-device EAS Update pull and full EAS cloud-build completion are manual confirmations beyond the wiring DoD.
 
