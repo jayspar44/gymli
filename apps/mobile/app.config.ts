@@ -36,6 +36,14 @@ const config: ExpoConfig = {
       },
     ],
     ['@react-native-google-signin/google-signin', { iosUrlScheme: process.env.EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME ?? 'com.googleusercontent.apps.placeholder' }],
+    [
+      '@sentry/react-native/expo',
+      {
+        organization: process.env.SENTRY_ORG ?? 'gymli',
+        project: process.env.SENTRY_PROJECT ?? 'gymli-mobile',
+        // SENTRY_AUTH_TOKEN is read from the environment (EAS secret) at build time — never inline it here.
+      },
+    ],
   ],
   experiments: { typedRoutes: true },
   extra: {
