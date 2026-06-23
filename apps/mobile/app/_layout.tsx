@@ -1,6 +1,6 @@
 import '../global.css';
-import { useEffect } from 'react';
-import { Platform } from 'react-native';
+import { useEffect, type ReactNode } from 'react';
+import { Platform, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
@@ -56,6 +56,17 @@ function AuthGate() {
   return null;
 }
 
+// On web, render the app as a centered mobile-width column on a dark backdrop so the
+// phone-first UI doesn't stretch awkwardly on desktop. Native renders full-screen.
+function AppFrame({ children }: { children: ReactNode }) {
+  if (Platform.OS !== 'web') return <>{children}</>;
+  return (
+    <View style={{ flex: 1, alignItems: 'center', backgroundColor: '#09090b' }}>
+      <View style={{ flex: 1, width: '100%', maxWidth: 430 }}>{children}</View>
+    </View>
+  );
+}
+
 function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -64,10 +75,12 @@ function RootLayout() {
         <ThemeProvider>
           <AuthProvider>
             <UserProfileProvider>
-              <AuthGate />
-              <Stack screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="session" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
-              </Stack>
+              <AppFrame>
+                <AuthGate />
+                <Stack screenOptions={{ headerShown: false }}>
+                  <Stack.Screen name="session" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+                </Stack>
+              </AppFrame>
             </UserProfileProvider>
           </AuthProvider>
         </ThemeProvider>
