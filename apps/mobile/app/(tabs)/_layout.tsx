@@ -13,7 +13,7 @@ import { ChatFAB } from '../../components/chat/ChatFAB';
 const TABBAR_WEB_FIX = `
 [role='tablist'] { height: auto !important; min-height: 62px !important; padding-bottom: 8px !important; }
 [role='tablist'] [role='tab'] { height: auto !important; min-height: 54px !important; }
-[role='tablist'] [role='tab'] > * { height: auto !important; overflow: visible !important; }
+[role='tablist'] [role='tab'] > *:last-child { height: auto !important; overflow: visible !important; }
 `;
 
 export default function TabsLayout() {
