@@ -56,8 +56,10 @@ npm run e2e                  # All E2E tests
 npm run build:web            # Expo static web export → apps/mobile/dist
 npm run deploy:web:dev       # build:web + firebase deploy --only hosting:dev
 npm run deploy:web:prod      # build:web + firebase deploy --only hosting:prod
-npm run build:android:dev    # EAS Android build (development profile)
-npm run build:android:prod   # EAS Android build (production profile)
+npm run build:android:dev    # EAS Android build (development profile, AAB)
+npm run build:android:prod   # EAS Android build (production profile, AAB)
+npm run update:dev           # EAS Update (OTA) → development channel
+npm run update:prod          # EAS Update (OTA) → production channel
 npm run setup:env            # Generate .env files from templates
 npm run validate-env         # Check required env vars
 npm run release              # Auto-bump version via conventional commits
@@ -139,6 +141,11 @@ Forge-inspired: warm amber primary (#d4872a), stone backgrounds (#fdf8f0 light /
 - **Mobile frame:** web renders inside a centered max-width-430 `AppFrame` (`app/_layout.tsx`) so the phone-first UI doesn't stretch on desktop. Native is full-screen.
 - **Firebase web cold-start auth race:** intermittent 401 on refresh-while-signed-in (token not rehydrated before a screen fetches). Fix-in-waiting: `await auth.authStateReady()` in `lib/api.ts`.
 - Platform splits via `.web.ts` / `.native.ts` (e.g. `lib/auth.*`).
+
+**EAS builds + OTA** (native builds are slow ~10-15min — don't rebuild per change):
+- **Iterate with OTA:** after a native build is installed, ship JS/UI/logic changes via `npm run update:dev` / `update:prod` (`eas update`, seconds — no rebuild/resubmit). Only **native** changes (new native deps, config plugins, icons/splash, `app.config` native bits) need a rebuild.
+- **Channel mapping** (`eas.json`): `development` profile → `development` channel; **`preview` (dev test app) AND `production` both → `production` channel** — so the installed dev/preview app is OTA'd via `npm run update:prod` (quirk worth revisiting: give `preview` its own channel).
+- Faster full builds: `eas build --local` (minibox has the Android SDK + JDK), or a paid EAS plan (priority queue). First build is the slow/cold one.
 
 ## Skill Workflows
 
