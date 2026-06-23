@@ -11,7 +11,7 @@ AI-powered gym assistant with dwarf/forge-themed UI, workout plan generation, gu
 - **Shared logic**: `packages/shared` (`@gymli/shared`) — platform-agnostic TS (axios api client, domain utils, types); zero RN/DOM imports; consumed as source.
 - **Backend**: Node.js 22 + Express 5 (unchanged by the migration).
 - **Database**: Firebase Firestore | **Auth**: Firebase JS SDK (Google native via `@react-native-google-signin`, Google web via `signInWithPopup`, email/password) | **AI**: Gemini 2.5 Flash
-- **Hosting**: Cloud Run (backend) + Firebase Hosting (Expo web export `apps/mobile/dist`). **Builds/OTA**: EAS Build + EAS Update.
+- **Hosting**: Cloud Run (backend) + Firebase Hosting — **dev** `gimli-app-dev.web.app` / **prod** `gimli-app.web.app` (Expo web export `apps/mobile/dist`, named targets). **Builds/OTA**: EAS Build (Android **AABs** by default → Play internal; no installable APK) + EAS Update (dev/prod channels).
 - **iOS**: deferred (codebase is cross-platform; not built in v1).
 
 > **Before writing any Expo code:** read https://docs.expo.dev/versions/v56.0.0/ (mandated by `apps/mobile/AGENTS.md`).
@@ -69,10 +69,13 @@ npm run release              # Auto-bump version via conventional commits
 npm run install-all
 cp backend/.env.example backend/.env          # Add Firebase + Gemini credentials
 cp apps/mobile/.env.example apps/mobile/.env.local
-npm run dev:local
+npm run dev:backend                            # backend (one shell)
+npm run dev:mobile                             # Expo web at the printed URL (another shell)
 ```
 
 Required credentials in `backend/.env`: Firebase service account, Gemini API key. See `backend/.env.example` for full list.
+**E2E:** copy `apps/mobile/e2e/.env.e2e.example` → `.env.e2e` (test-account creds) to run `e2e:web`; `e2e:android` also needs an Android emulator + dev build.
+**Web auth:** Google sign-in on a hosting domain requires adding that domain to Firebase Auth → Authorized domains.
 
 ## API Endpoints
 
@@ -126,6 +129,15 @@ Include in every plan:
 ## Theme
 
 Forge-inspired: warm amber primary (#d4872a), stone backgrounds (#fdf8f0 light / #0c0a09 dark). System fonts (no custom font loading). Dark/light mode toggle via ThemeContext.
+
+## Gotchas
+
+**Web divergence** (web is a real shipped target — these bite):
+- **Tab bar:** react-navigation ignores `tabBarStyle.height` on web (forces a ~47px bar, clipping labels). Styled via a runtime `<style>` injection in `app/(tabs)/_layout.tsx`, scoped to the label only (don't touch the icon child — it collapses the svg).
+- **Custom web CSS:** NativeWind does **not** bundle raw CSS appended to `global.css` on web (only Tailwind utilities). For web-only overrides of third-party DOM, inject a `<style>` at runtime — not via `global.css`.
+- **Mobile frame:** web renders inside a centered max-width-430 `AppFrame` (`app/_layout.tsx`) so the phone-first UI doesn't stretch on desktop. Native is full-screen.
+- **Firebase web cold-start auth race:** intermittent 401 on refresh-while-signed-in (token not rehydrated before a screen fetches). Fix-in-waiting: `await auth.authStateReady()` in `lib/api.ts`.
+- Platform splits via `.web.ts` / `.native.ts` (e.g. `lib/auth.*`).
 
 ## Skill Workflows
 
