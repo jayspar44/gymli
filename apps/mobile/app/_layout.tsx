@@ -5,19 +5,9 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import { Stack, useRouter, useSegments } from 'expo-router';
-import * as Sentry from '@sentry/react-native';
 import { ThemeProvider } from '../contexts/ThemeContext';
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
 import { UserProfileProvider, useUserProfile } from '../contexts/UserProfileContext';
-
-// Sentry is not supported on web — skip init there.
-if (Platform.OS !== 'web') {
-  Sentry.init({
-    dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
-    tracesSampleRate: 0.2,
-    enabled: !!process.env.EXPO_PUBLIC_SENTRY_DSN, // no-op locally if DSN unset
-  });
-}
 
 function AuthGate() {
   const { user, loading: authLoading } = useAuth();
@@ -89,4 +79,4 @@ function RootLayout() {
   );
 }
 
-export default Sentry.wrap(RootLayout);
+export default RootLayout;

@@ -11,7 +11,7 @@ AI-powered gym assistant with dwarf/forge-themed UI, workout plan generation, gu
 - **Shared logic**: `packages/shared` (`@gymli/shared`) — platform-agnostic TS (axios api client, domain utils, types); zero RN/DOM imports; consumed as source.
 - **Backend**: Node.js 22 + Express 5 (unchanged by the migration).
 - **Database**: Firebase Firestore | **Auth**: Firebase JS SDK (Google native via `@react-native-google-signin`, Google web via `signInWithPopup`, email/password) | **AI**: Gemini 2.5 Flash
-- **Hosting**: Cloud Run (backend) + Firebase Hosting (Expo web export `apps/mobile/dist`). **Builds/OTA**: EAS Build + EAS Update. **Monitoring**: Sentry.
+- **Hosting**: Cloud Run (backend) + Firebase Hosting (Expo web export `apps/mobile/dist`). **Builds/OTA**: EAS Build + EAS Update.
 - **iOS**: deferred (codebase is cross-platform; not built in v1).
 
 > **Before writing any Expo code:** read https://docs.expo.dev/versions/v56.0.0/ (mandated by `apps/mobile/AGENTS.md`).
@@ -28,7 +28,7 @@ Gymli/
 │       ├── lib/             # firebase.ts, auth.ts (+ auth.web/.native), api, cn, test-ids
 │       ├── assets/          # icons, splash
 │       ├── e2e/             # E2E tests: playwright/ (web) + maestro/ (Android)
-│       ├── app.config.ts    # dynamic Expo config (web static, updates, sentry plugin)
+│       ├── app.config.ts    # dynamic Expo config (web static, updates)
 │       ├── eas.json         # build profiles + OTA channels (development/preview/production)
 │       └── metro.config.js  # NativeWind wrap + Firebase/Hermes resolver fix
 ├── packages/
