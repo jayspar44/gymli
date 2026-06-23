@@ -113,7 +113,8 @@ All endpoints (except health) require `Authorization: Bearer <token>`.
 ### Git
 
 - **Commits:** Conventional commits (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `perf:`, `test:`)
-- **Branches:** `feature/<name>`, `fix/<name>`, `claude/<name>` for worktrees
+- **Branches:** `feature/<name>`, `fix/<name>`, `claude/<name>` (worktrees)
+- **Branch flow:** `feature/*` → **`develop`** (default + integration branch; squash PR) → **`master`** (prod; **regular merge for releases — never squash to master**). Never PR a feature straight to `master`. Cut releases with `npm run release` (tags `v*` → `release-prod.yml` builds + submits). Merge via `/pr-merge`.
 - **Always use `/commit-push`** instead of raw `git commit` - enforces lint + security checks
 - **Never commit secrets** - run `/security-scan` when in doubt
 
