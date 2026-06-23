@@ -49,3 +49,6 @@ play-service-account.json
 # Playwright output
 playwright-report/
 test-results/
+
+# local build artifacts
+*.aab

@@ -56,10 +56,16 @@ npm run e2e                  # All E2E tests
 npm run build:web            # Expo static web export → apps/mobile/dist
 npm run deploy:web:dev       # build:web + firebase deploy --only hosting:dev
 npm run deploy:web:prod      # build:web + firebase deploy --only hosting:prod
-npm run build:android:dev    # EAS Android build (development profile, AAB)
-npm run build:android:prod   # EAS Android build (production profile, AAB)
-npm run update:dev           # EAS Update (OTA) → development channel
-npm run update:prod          # EAS Update (OTA) → production channel
+npm run build:android:dev    # EAS cloud build — dev app (preview profile, com.getgymli.dev)
+npm run build:android:prod   # EAS cloud build — prod app (production profile, com.getgymli.app)
+npm run build:android:dev:local   # LOCAL build on this machine → apps/mobile/gymli-dev.aab (skips cloud queue)
+npm run build:android:prod:local  # LOCAL build → apps/mobile/gymli-prod.aab
+npm run submit:android:dev   # submit gymli-dev.aab → Play internal
+npm run submit:android:prod  # submit gymli-prod.aab → Play internal
+npm run ship:android:dev:local    # dev: local build + submit to Play internal
+npm run ship:android:prod:local   # prod: local build + submit to Play internal
+npm run update:dev           # EAS Update (OTA) → development channel (dev apps)
+npm run update:prod          # EAS Update (OTA) → production channel (prod app)
 npm run setup:env            # Generate .env files from templates
 npm run validate-env         # Check required env vars
 npm run release              # Auto-bump version via conventional commits
