@@ -1,0 +1,34 @@
+appId: com.getgymli.dev
+---
+- runFlow: ../helpers/login.yaml
+- tapOn:
+    id: "log-input"
+- inputText: "bench 225 5,5,4"
+- tapOn:
+    id: "log-send-btn"
+# Generous wait for the real Gemini parse (mirrors Playwright 45s anchor).
+# Assert resulting set-row STATE only — never AI reply wording.
+- extendedWaitUntil:
+    visible:
+      id: "set-row-weight-0"
+    timeout: 45000
+# "bench 225 5,5,4" → 3 sets: set 0 = 225×5, set 1 = 225×5, set 2 = 225×4.
+# Each set has exactly ONE reps field (fieldIndex 0) for a WEIGHTED exercise.
+- assertVisible:
+    id: "set-row-weight-0"
+    text: "225"
+- assertVisible:
+    id: "set-row-reps-0-0"
+    text: "5"
+- assertVisible:
+    id: "set-row-weight-1"
+    text: "225"
+- assertVisible:
+    id: "set-row-reps-1-0"
+    text: "5"
+- assertVisible:
+    id: "set-row-weight-2"
+    text: "225"
+- assertVisible:
+    id: "set-row-reps-2-0"
+    text: "4"

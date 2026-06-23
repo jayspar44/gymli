@@ -52,7 +52,9 @@ Be specific about their performance. Celebrate PRs. Keep it short.`;
     const response = await client.models.generateContent({
       model: GEMINI_MODEL,
       contents: prompt,
-      config: { temperature: 0.8, maxOutputTokens: 200 },
+      // Thinking tokens count against this cap on gemini-3 models; 200
+      // truncated summaries mid-sentence ("That was a").
+      config: { temperature: 0.8, maxOutputTokens: 1024 },
     });
     return response.text;
   } catch (error) {
@@ -88,7 +90,7 @@ Return as JSON array of strings. Only valid JSON.`;
       config: {
         responseMimeType: 'application/json',
         temperature: 0.8,
-        maxOutputTokens: 300,
+        maxOutputTokens: 1024,
       },
     });
     return JSON.parse(response.text);
@@ -124,7 +126,7 @@ export async function chat(messages, context, coachingContext) {
       config: {
         systemInstruction: systemPrompt,
         temperature: 0.8,
-        maxOutputTokens: 500,
+        maxOutputTokens: 1024,
       },
     });
     return response.text;
@@ -157,7 +159,23 @@ Rules:
 - Use the exercise's kind to choose set fields. Respect the user's units; never invent numbers.
 - "set 3", "last one", "next set" refer to the current exercise in SESSION.
 - Lower confidence when the exercise is unclear or numbers are ambiguous.
-- For pure questions (what's next, was that a PR), use a single "answer" action and no mutations. Keep replies under 2 sentences.`;
+- For pure questions (what's next, was that a PR), use a single "answer" action and no mutations. Keep replies under 2 sentences.
+
+Set shorthand (gym notation — interpret, don't reject):
+- "WxR" = one set: 225x5 -> {weight:225,reps:5}
+- "WxRxS" or "W x R x S" = S identical sets: 65x6x3 -> three sets of {weight:65,reps:6}
+- "SxR W" = S sets of R reps at W: 3x5 185 -> three sets of {weight:185,reps:5}
+- Comma list of WxR = one set per item (ascending weights are normal warm-up ramps): "135x8, 155x8, 165x8" -> [{weight:135,reps:8},{weight:155,reps:8},{weight:165,reps:8}]
+- "W R,R,R" = one set per rep count at the same weight: "225 5,5,4" -> [{weight:225,reps:5},{weight:225,reps:5},{weight:225,reps:4}]
+- If the exercise isn't in SESSION yet, emit add_exercise followed by log_sets.
+- If the message names an exercise and contains numbers, ALWAYS produce your best structured interpretation (lower confidence if unsure) rather than replying that you didn't understand.
+
+Examples:
+- "rdl 135x8, 155x8, 165x8" -> add_exercise romanian-deadlift (if not in SESSION) + log_sets [{weight:135,reps:8},{weight:155,reps:8},{weight:165,reps:8}]; reply "Logged 3 sets of Romanian Deadlift (135-165 lbs)."
+- "bench 225 5,5,4" -> log_sets [{weight:225,reps:5},{weight:225,reps:5},{weight:225,reps:4}]
+- "overhead press 65x 6x3" -> add_exercise overhead-press + log_sets three sets {weight:65,reps:6}
+- "add plank" -> add_exercise plank (timed), no log_sets.
+- "I'm done" / "finish workout" -> single answer action: "Tap End (top right) to review and save your workout." No mutations.`;
 
 export async function parseLog({ text, session, units, catalog, coachingContext }) {
   const client = getAI();
@@ -182,7 +200,9 @@ ${sessionText}`;
       systemInstruction: system,
       responseMimeType: 'application/json',
       temperature: 0.2,
-      maxOutputTokens: 800,
+      // Generous cap: model thinking tokens count against this limit on
+      // gemini-3 models; 800 intermittently truncated the JSON envelope.
+      maxOutputTokens: 2048,
     },
   });
   return JSON.parse(response.text);

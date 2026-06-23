@@ -1,0 +1,5 @@
+.env.e2e
+playwright/.cache/
+playwright-report/
+test-results/
+dist/

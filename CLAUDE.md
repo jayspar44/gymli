@@ -6,61 +6,60 @@ AI-powered gym assistant with dwarf/forge-themed UI, workout plan generation, gu
 
 ## Architecture
 
-**Full-stack monorepo:**
-- **Frontend**: React 19 + Vite 7 + Tailwind CSS 4 + Capacitor 8
-- **Backend**: Node.js 22 + Express 5
-- **Database**: Firebase Firestore | **Auth**: Firebase Auth | **AI**: Gemini 2.5 Flash
-- **Hosting**: Cloud Run (backend) + Firebase Hosting (frontend)
+**Expo monorepo (npm workspaces `apps/*`, `packages/*`):**
+- **Mobile + Web**: Expo SDK 56 (React Native 0.85 + React 19) → Android + static web from one codebase (`apps/mobile`). Expo Router (typed routes), NativeWind 4 (Tailwind v3), Reanimated 4.
+- **Shared logic**: `packages/shared` (`@gymli/shared`) — platform-agnostic TS (axios api client, domain utils, types); zero RN/DOM imports; consumed as source.
+- **Backend**: Node.js 22 + Express 5 (unchanged by the migration).
+- **Database**: Firebase Firestore | **Auth**: Firebase JS SDK (Google native via `@react-native-google-signin`, Google web via `signInWithPopup`, email/password) | **AI**: Gemini 2.5 Flash
+- **Hosting**: Cloud Run (backend) + Firebase Hosting — **dev** `gimli-app-dev.web.app` / **prod** `gimli-app.web.app` (Expo web export `apps/mobile/dist`, named targets). **Builds/OTA**: EAS Build (Android **AABs** by default → Play internal; no installable APK) + EAS Update (dev/prod channels).
+- **iOS**: deferred (codebase is cross-platform; not built in v1).
+
+> **Before writing any Expo code:** read https://docs.expo.dev/versions/v56.0.0/ (mandated by `apps/mobile/AGENTS.md`).
 
 ## Project Structure
 
 ```
 Gymli/
-├── frontend/                 # React + Vite web app
-│   ├── src/
-│   │   ├── pages/           # Today, Log, Progress, Profile, Login, PlanSetup
-│   │   ├── components/      # UI components
-│   │   │   ├── layout/      # Layout, TopBar, BottomNav, ProfileMenu, MobileContainer
-│   │   │   ├── workout/     # WorkoutSession, ExerciseCard, SetRow, RestTimer, WorkoutSummary
-│   │   │   ├── plan/        # TemplatePicker, PlanView
-│   │   │   ├── log/         # ExercisePicker, ManualLogForm, WorkoutHistory*
-│   │   │   ├── chat/        # ChatFAB, ChatOverlay, ChatMessage, ChatInput
-│   │   │   └── progress/    # ExerciseChart, VolumeChart, StreakCalendar, GymliInsights
-│   │   ├── contexts/        # AuthContext, UserProfileContext, ThemeContext
-│   │   ├── api/             # Axios client (client.js), Firebase (firebase.js), API services (services.js)
-│   │   └── utils/           # Helper functions (cn.js)
-│   ├── scripts/             # Android build script
-│   └── capacitor.config.json
-├── backend/                  # Express API server
-│   ├── src/
-│   │   ├── index.js         # Server entry point
-│   │   ├── logger.js        # Pino logger
-│   │   ├── routes/api.js    # Route definitions
-│   │   ├── controllers/     # auth, user, exercise, plan, workout, chat, stats
-│   │   └── services/        # firebase, ai, user, exercise, plan-templates, plan, workout, chat, stats
-│   ├── scripts/             # seed-exercises.js
-│   └── Dockerfile
-├── scripts/                  # Dev tooling (dev-with-ports, setup-env, validate-env, bump-version, etc.)
-├── docs/plans/              # Design docs and implementation plans
-├── firebase.json            # Firebase config
-├── firestore.rules          # Security rules
-└── version.json             # Centralized version
+├── apps/
+│   └── mobile/              # Expo app → Android + static web (iOS-ready)
+│       ├── app/             # Expo Router routes: (tabs)/{index,log,progress,profile}, login, onboarding, session
+│       ├── components/      # ui/, workout/, log/, progress/, chat/, routine/, layout/
+│       ├── contexts/        # AuthContext, UserProfileContext, ThemeContext
+│       ├── lib/             # firebase.ts, auth.ts (+ auth.web/.native), api, cn, test-ids
+│       ├── assets/          # icons, splash
+│       ├── e2e/             # E2E tests: playwright/ (web) + maestro/ (Android)
+│       ├── app.config.ts    # dynamic Expo config (web static, updates)
+│       ├── eas.json         # build profiles + OTA channels (development/preview/production)
+│       └── metro.config.js  # NativeWind wrap + Firebase/Hermes resolver fix
+├── packages/
+│   └── shared/              # @gymli/shared — api client, domain utils, types (vitest)
+├── backend/                 # Express API (Cloud Run) — controllers/ + services/ + routes/api.js
+├── scripts/                 # dev tooling (dev-with-ports, setup-env, validate-env, bump-version, …)
+├── docs/                    # plans (docs/plans), superpowers plans/specs (docs/superpowers/)
+├── firebase.json            # Hosting (apps/mobile/dist) + Firestore config
+├── firestore.rules
+└── version.json
 ```
 
 ## Commands
 
 ```bash
-npm run install-all          # Install root + frontend + backend deps
-npm run dev:local            # Start both frontend (:4000) and backend (:4001)
-npm run dev:frontend         # Frontend only
+npm run install-all          # Install root + backend deps (apps/* via workspaces)
+npm run dev:mobile           # Expo dev server (web) for apps/mobile
+npm run dev:local            # legacy multi-instance orchestrator — still references the removed frontend/ (D11 follow-up); for Expo dev use dev:mobile + dev:backend
 npm run dev:backend          # Backend only
-npm run lint                 # ESLint frontend + backend
-npm run build                # Install all + frontend production build
-npm run android              # Build Android APK (prod)
-npm run android:dev          # Build Android APK (dev)
-npm run android:local        # Build Android APK (local)
+npm run lint                 # ESLint apps/mobile + backend
+npm run test                 # apps/mobile (jest-expo) + @gymli/shared (vitest)
+npm run e2e:web              # Playwright E2E tests (web)
+npm run e2e:android          # Maestro E2E tests (Android)
+npm run e2e                  # All E2E tests
+npm run build:web            # Expo static web export → apps/mobile/dist
+npm run deploy:web:dev       # build:web + firebase deploy --only hosting:dev
+npm run deploy:web:prod      # build:web + firebase deploy --only hosting:prod
+npm run build:android:dev    # EAS Android build (development profile)
+npm run build:android:prod   # EAS Android build (production profile)
 npm run setup:env            # Generate .env files from templates
-npm run validate-env         # Check required env vars are set
+npm run validate-env         # Check required env vars
 npm run release              # Auto-bump version via conventional commits
 ```
 
@@ -69,11 +68,14 @@ npm run release              # Auto-bump version via conventional commits
 ```bash
 npm run install-all
 cp backend/.env.example backend/.env          # Add Firebase + Gemini credentials
-cp frontend/.env.local.template frontend/.env.local
-npm run dev:local
+cp apps/mobile/.env.example apps/mobile/.env.local
+npm run dev:backend                            # backend (one shell)
+npm run dev:mobile                             # Expo web at the printed URL (another shell)
 ```
 
 Required credentials in `backend/.env`: Firebase service account, Gemini API key. See `backend/.env.example` for full list.
+**E2E:** copy `apps/mobile/e2e/.env.e2e.example` → `.env.e2e` (test-account creds) to run `e2e:web`; `e2e:android` also needs an Android emulator + dev build.
+**Web auth:** Google sign-in on a hosting domain requires adding that domain to Firebase Auth → Authorized domains.
 
 ## API Endpoints
 
@@ -105,7 +107,7 @@ All endpoints (except health) require `Authorization: Bearer <token>`.
 ### Code Style
 
 - **Files**: kebab-case | **Components**: PascalCase | **Variables**: camelCase
-- **Frontend**: React Context for global state. Axios wrappers in `api/services.js`. Tailwind CSS with CSS variables for theming. Never raw fetch in components.
+- **Mobile**: Expo Router + NativeWind (Tailwind v3). React Context for global state. API via `@gymli/shared` (never raw fetch in components). Platform splits via `.web.ts`/`.native.ts` extensions.
 - **Backend**: Controller-Service pattern. Pino logging via `req.log`.
 
 ### Git
@@ -117,7 +119,7 @@ All endpoints (except health) require `Authorization: Bearer <token>`.
 
 ### Implementation Plans
 
-Plans live in `docs/plans/` with naming: `YYYY-MM-DD-<project>-<type>.md`
+Plans live in `docs/plans/` (or `docs/superpowers/plans/`) with naming: `YYYY-MM-DD-<project>-<type>.md`
 
 Include in every plan:
 - Skill invocation notes at the top (which skills to use for which tasks)
@@ -126,7 +128,16 @@ Include in every plan:
 
 ## Theme
 
-Forge-inspired: warm amber primary (#d4872a), stone backgrounds (#fdf8f0 light / #0c0a09 dark). Cinzel display font + Outfit body. Dark/light mode toggle via ThemeContext.
+Forge-inspired: warm amber primary (#d4872a), stone backgrounds (#fdf8f0 light / #0c0a09 dark). System fonts (no custom font loading). Dark/light mode toggle via ThemeContext.
+
+## Gotchas
+
+**Web divergence** (web is a real shipped target — these bite):
+- **Tab bar:** react-navigation ignores `tabBarStyle.height` on web (forces a ~47px bar, clipping labels). Styled via a runtime `<style>` injection in `app/(tabs)/_layout.tsx`, scoped to the label only (don't touch the icon child — it collapses the svg).
+- **Custom web CSS:** NativeWind does **not** bundle raw CSS appended to `global.css` on web (only Tailwind utilities). For web-only overrides of third-party DOM, inject a `<style>` at runtime — not via `global.css`.
+- **Mobile frame:** web renders inside a centered max-width-430 `AppFrame` (`app/_layout.tsx`) so the phone-first UI doesn't stretch on desktop. Native is full-screen.
+- **Firebase web cold-start auth race:** intermittent 401 on refresh-while-signed-in (token not rehydrated before a screen fetches). Fix-in-waiting: `await auth.authStateReady()` in `lib/api.ts`.
+- Platform splits via `.web.ts` / `.native.ts` (e.g. `lib/auth.*`).
 
 ## Skill Workflows
 

@@ -1,0 +1,22 @@
+appId: com.getgymli.dev
+---
+# Reusable login precondition. NOT asserted — just establishes a session.
+- launchApp:
+    clearState: false
+- runFlow:
+    when:
+      visible:
+        id: "login-email"
+    commands:
+      - tapOn:
+          id: "login-email"
+      - inputText: ${E2E_TEST_EMAIL}
+      - tapOn:
+          id: "login-password"
+      - inputText: ${E2E_TEST_PASSWORD}
+      - tapOn:
+          id: "login-submit"
+      - extendedWaitUntil:
+          notVisible:
+            id: "login-email"
+          timeout: 30000

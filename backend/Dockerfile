@@ -3,7 +3,9 @@ FROM node:22-slim
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci --omit=dev
+# npm install (not ci) so Linux-only optional deps resolve even though the
+# lockfile is generated on macOS; --omit=dev keeps the image lean.
+RUN npm install --omit=dev --no-audit --no-fund
 
 COPY . .
 

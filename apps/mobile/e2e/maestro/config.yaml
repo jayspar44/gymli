@@ -1,0 +1,5 @@
+appId: com.getgymli.dev
+# Env vars are passed at run time via: maestro test -e KEY=VALUE ...
+# (sourced from .env.e2e by the npm script). Flows reference them as ${E2E_TEST_EMAIL}.
+flows:
+  - flows/*.yaml

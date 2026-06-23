@@ -1,0 +1,18 @@
+appId: com.getgymli.dev
+---
+- runFlow: ../helpers/login.yaml
+- tapOn: "Profile"
+- evalScript: ${output.newName = 'E2E ' + Date.now()}
+- tapOn:
+    id: "profile-display-name-input"
+- inputText: ${output.newName}
+- hideKeyboard
+# Debounced autosave -> "Saved" indicator appears. No sign-out.
+- extendedWaitUntil:
+    visible:
+      id: "profile-saved-indicator"
+    timeout: 15000
+- assertVisible:
+    id: "profile-saved-indicator"
+- assertVisible:
+    id: "profile-display-name-input"
