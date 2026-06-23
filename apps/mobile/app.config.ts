@@ -8,7 +8,7 @@ const config: ExpoConfig = {
   slug: 'gymli',
   owner: 'jayspar44',
   scheme: isDev ? 'gymli-dev' : 'gymli',
-  version: '0.1.0',
+  version: '0.2.0',
   orientation: 'portrait',
   icon: './assets/images/icon.png',
   userInterfaceStyle: 'automatic',

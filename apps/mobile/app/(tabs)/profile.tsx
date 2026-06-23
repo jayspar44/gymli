@@ -18,6 +18,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Check, LogOut } from 'lucide-react-native';
+import Constants from 'expo-constants';
+import * as Updates from 'expo-updates';
 import { useUserProfile, type UserProfile } from '../../contexts/UserProfileContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -26,6 +28,14 @@ import { Input } from '../../components/ui/Input';
 import { SegmentedControl } from '../../components/ui/SegmentedControl';
 import { Button } from '../../components/ui/Button';
 import { TestIds } from '../../lib/test-ids';
+
+// App version + (on native standalone builds) the live OTA update id — null when running
+// the embedded bundle, in dev, or on web. Lets you confirm which build/OTA is actually running.
+function versionLabel(): string {
+  const v = Constants.expoConfig?.version ?? '?';
+  const ota = Updates.updateId ? Updates.updateId.slice(0, 8) : null;
+  return [`Gymli v${v}`, Updates.channel, ota && `OTA ${ota}`].filter(Boolean).join('  ·  ');
+}
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const;
 
@@ -283,6 +293,10 @@ export default function ProfileScreen() {
             Sign Out
           </Button>
         </Section>
+
+        <Text className="mt-2 text-center text-xs text-zinc-400 dark:text-zinc-600">
+          {versionLabel()}
+        </Text>
       </ScrollView>
     </SafeAreaView>
   );
