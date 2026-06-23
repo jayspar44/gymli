@@ -65,6 +65,7 @@ export default function Today() {
     <SafeAreaView className="flex-1 bg-bg dark:bg-bg-dark" edges={['top']}>
       <ScrollView contentContainerClassName="gap-6 px-4 pb-24 pt-4">
         <View>
+          <Text className="mb-0.5 text-xl font-extrabold uppercase tracking-[0.2em] text-primary">Gymli</Text>
           <Text className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Today</Text>
           {streak?.currentStreak ? (
             <Text className="text-sm text-zinc-500">{streak.currentStreak} day streak</Text>
