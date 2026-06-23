@@ -26,6 +26,7 @@ export interface AddExerciseAction {
 export interface LogSetsAction {
   type: 'log_sets';
   exerciseId: string;
+  name?: string;
   kind?: string;
   sets?: Array<{ completed?: boolean; [key: string]: unknown }>;
 }
@@ -60,7 +61,7 @@ export function applyAction(session: SessionState, action: SessionAction): Sessi
     case 'log_sets': {
       let i = findIndex(next, action.exerciseId);
       if (i === -1) {
-        next.exercises.push({ exerciseId: action.exerciseId, name: action.exerciseId, kind: action.kind || 'weighted', notes: '', sets: [] });
+        next.exercises.push({ exerciseId: action.exerciseId, name: action.name ?? action.exerciseId, kind: action.kind || 'weighted', notes: '', sets: [] });
         i = next.exercises.length - 1;
       }
       const newSets = (action.sets || []).map((s) => ({ ...s, completed: s.completed !== false }));

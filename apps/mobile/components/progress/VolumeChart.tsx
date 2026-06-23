@@ -26,7 +26,7 @@ export function VolumeChart({ weeks = 8 }: { weeks?: number }) {
       const result = await api.getVolumeStats('week') as { data?: VolumeWeek[] };
       const all = (result.data || []).map((d) => ({
         ...d,
-        label: new Date(d.week).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        label: (() => { const [y, m, day] = d.week.split('-').map(Number); return new Date(y, m - 1, day).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); })(),
         volumeK: Math.round(d.totalVolume / 100) / 10,
       }));
       setData(all.slice(-weeks));

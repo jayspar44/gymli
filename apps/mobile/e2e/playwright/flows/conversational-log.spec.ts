@@ -27,8 +27,12 @@ test('conversational log "bench 225 5,5,4" produces a set row with weight 225 an
   await page.getByTestId(TestIds.LOG_SEND_BTN).click();
 
   // Generous timeout for the real Gemini parse. Assert STATE, not AI text.
+  // "bench 225 5,5,4" → 3 sets: set 0 = 225×5, set 1 = 225×5, set 2 = 225×4.
+  // Each set has exactly ONE reps field (fieldIndex 0) for a WEIGHTED exercise.
   await expect(page.getByTestId(setRowWeightId(0))).toHaveValue('225', { timeout: 45_000 });
   await expect(page.getByTestId(setRowRepsId(0, 0))).toHaveValue('5');
-  await expect(page.getByTestId(setRowRepsId(0, 1))).toHaveValue('5');
-  await expect(page.getByTestId(setRowRepsId(0, 2))).toHaveValue('4');
+  await expect(page.getByTestId(setRowWeightId(1))).toHaveValue('225');
+  await expect(page.getByTestId(setRowRepsId(1, 0))).toHaveValue('5');
+  await expect(page.getByTestId(setRowWeightId(2))).toHaveValue('225');
+  await expect(page.getByTestId(setRowRepsId(2, 0))).toHaveValue('4');
 });

@@ -12,6 +12,8 @@ appId: com.getgymli.dev
     visible:
       id: "set-row-weight-0"
     timeout: 45000
+# "bench 225 5,5,4" → 3 sets: set 0 = 225×5, set 1 = 225×5, set 2 = 225×4.
+# Each set has exactly ONE reps field (fieldIndex 0) for a WEIGHTED exercise.
 - assertVisible:
     id: "set-row-weight-0"
     text: "225"
@@ -19,8 +21,14 @@ appId: com.getgymli.dev
     id: "set-row-reps-0-0"
     text: "5"
 - assertVisible:
-    id: "set-row-reps-0-1"
+    id: "set-row-weight-1"
+    text: "225"
+- assertVisible:
+    id: "set-row-reps-1-0"
     text: "5"
 - assertVisible:
-    id: "set-row-reps-0-2"
+    id: "set-row-weight-2"
+    text: "225"
+- assertVisible:
+    id: "set-row-reps-2-0"
     text: "4"

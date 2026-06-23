@@ -11,6 +11,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Clock, Dumbbell, ChevronDown } from 'lucide-react-native';
+import { fieldsForKind } from '@gymli/shared';
 import { Card } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { cn } from '../../lib/cn';
@@ -23,10 +24,16 @@ function formatVolume(vol: number | undefined | null): string | null {
 type WorkoutSet = {
   weight?: number;
   reps?: number;
+  addedWeight?: number;
+  assistWeight?: number;
+  seconds?: number;
+  distance?: number;
+  [key: string]: number | string | boolean | undefined;
 };
 
 type WorkoutExercise = {
   name: string;
+  kind?: string;
   unit?: string;
   sets?: WorkoutSet[];
 };
@@ -154,10 +161,16 @@ export function WorkoutHistoryItem({ workout }: { workout: Workout }) {
               <Text className="text-sm text-zinc-500 font-mono">
                 {ex.sets
                   ?.map((set, j) => {
-                    const part =
-                      (set.weight ?? 0) > 0
-                        ? `${set.weight}${ex.unit ?? ''} × ${set.reps}`
-                        : `${set.reps} reps`;
+                    const fields = fieldsForKind(ex.kind || 'weighted');
+                    const part = fields
+                      .map((f) => {
+                        const val = set[f.key];
+                        return val != null && val !== '' && val !== 0
+                          ? `${val}${f.key === 'weight' ? (ex.unit ?? '') : ''}`
+                          : null;
+                      })
+                      .filter(Boolean)
+                      .join(' × ');
                     return j === 0 ? part : `, ${part}`;
                   })
                   .join('') ?? ''}

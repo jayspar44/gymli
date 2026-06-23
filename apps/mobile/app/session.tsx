@@ -263,7 +263,6 @@ export default function SessionScreen() {
             weight:
               (set.weight as string) ||
               (prevPerf.sets?.[i] as any)?.weight ||
-              (prevPerf.sets?.[0] as any)?.weight ||
               '',
           })),
         };
@@ -402,9 +401,12 @@ export default function SessionScreen() {
       };
       for (const a of actions) session = applyAction(session, a);
       const next = session.exercises as SessionExercise[];
-      // If the AI added a new exercise, focus it so the card is visible
-      // (otherwise only its pill appears and the add looks like a no-op).
-      if (next.length > prev.length) setCurrentIndex(next.length - 1);
+      // Focus the exercise the action targeted (handles both new additions and
+      // log_sets onto an existing exercise that isn't the current card).
+      if (session.currentExerciseId) {
+        const targetIdx = next.findIndex((e) => e.exerciseId === session.currentExerciseId);
+        if (targetIdx !== -1) setCurrentIndex(targetIdx);
+      }
       return next;
     });
   }

@@ -4,6 +4,26 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../contexts/AuthContext';
 import { TestIds } from '../lib/test-ids';
 
+function friendlyAuthError(e: any): string {
+  const code: string = e?.code ?? '';
+  switch (code) {
+    case 'auth/invalid-credential':
+    case 'auth/wrong-password':
+    case 'auth/user-not-found':
+      return 'Incorrect email or password';
+    case 'auth/email-already-in-use':
+      return 'An account with that email already exists';
+    case 'auth/weak-password':
+      return 'Password must be at least 6 characters';
+    case 'auth/invalid-email':
+      return 'Enter a valid email address';
+    case 'auth/too-many-requests':
+      return 'Too many attempts. Try again later.';
+    default:
+      return 'Something went wrong. Please try again.';
+  }
+}
+
 export default function Login() {
   const { signInWithEmail, signUpWithEmail, signInWithGoogle } = useAuth();
   const [email, setEmail] = useState('');
@@ -20,7 +40,7 @@ export default function Login() {
     } catch (e: any) {
       const msg: string = e?.message ?? '';
       if (msg.toLowerCase().includes('cancel')) return; // user dismissed — not an error
-      setErr(msg || 'Sign-in failed');
+      setErr(friendlyAuthError(e));
     } finally {
       setBusy(false);
     }

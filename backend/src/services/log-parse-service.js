@@ -51,13 +51,35 @@ export async function handleParse(uid, { text, session, units, sessionId }) {
   }
 
   if (unresolved) {
-    envelope = {
-      reply: unresolved.candidates.length ? 'Which exercise did you mean?' : "I couldn't find that exercise.",
-      confidence: 0,
-      needsClarification: true,
-      clarification: unresolved.candidates.length ? { prompt: 'Which exercise did you mean?', options: unresolved.candidates } : null,
-      actions: [],
-    };
+    if (guarded.length > 0) {
+      // Partial resolution: some actions resolved, at least one didn't.
+      // Apply the resolved actions (needsClarification: false so the client runs applyEnvelopeActions),
+      // and surface the ambiguity in the reply text. The clarification field is preserved for
+      // any future client that can handle mixed envelopes, but the current client gates action
+      // application on !needsClarification so we must keep that false to avoid discarding the
+      // resolved sets.
+      const clarifyText = unresolved.candidates.length
+        ? `Which exercise did you mean for the unrecognised one? (${unresolved.candidates.map(c => c.label).join(', ')})`
+        : "I couldn't find one of the exercises — your other sets were logged.";
+      envelope = {
+        reply: `${envelope.reply || 'Got it.'} ${clarifyText}`.trim(),
+        confidence: envelope.confidence || 0,
+        needsClarification: false,
+        clarification: unresolved.candidates.length
+          ? { prompt: 'Which exercise did you mean?', options: unresolved.candidates }
+          : null,
+        actions: guarded,
+      };
+    } else {
+      // No actions resolved at all — full clarification flow.
+      envelope = {
+        reply: unresolved.candidates.length ? 'Which exercise did you mean?' : "I couldn't find that exercise.",
+        confidence: 0,
+        needsClarification: true,
+        clarification: unresolved.candidates.length ? { prompt: 'Which exercise did you mean?', options: unresolved.candidates } : null,
+        actions: [],
+      };
+    }
   } else {
     envelope.actions = guarded;
   }
