@@ -20,7 +20,7 @@
       "distribution": "internal",
       "environment": "development",
       "autoIncrement": true,
-      "channel": "production",
+      "channel": "development",
       "env": {
         "APP_VARIANT": "development"
       },

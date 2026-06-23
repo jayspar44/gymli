@@ -144,7 +144,7 @@ Forge-inspired: warm amber primary (#d4872a), stone backgrounds (#fdf8f0 light /
 
 **EAS builds + OTA** (native builds are slow ~10-15min — don't rebuild per change):
 - **Iterate with OTA:** after a native build is installed, ship JS/UI/logic changes via `npm run update:dev` / `update:prod` (`eas update`, seconds — no rebuild/resubmit). Only **native** changes (new native deps, config plugins, icons/splash, `app.config` native bits) need a rebuild.
-- **Channel mapping** (`eas.json`): `development` profile → `development` channel; **`preview` (dev test app) AND `production` both → `production` channel** — so the installed dev/preview app is OTA'd via `npm run update:prod` (quirk worth revisiting: give `preview` its own channel).
+- **Channel mapping** (`eas.json`): dev apps (`development` + `preview`, dev backend) → **`development`** channel; `production` (prod backend) → **`production`** channel. Scripts pin `--environment` so each OTA bundle bakes the right backend. So `update:dev` → dev apps; `update:prod` → prod app only — clean dev/prod separation on both axes (channel = which apps, env = which backend).
 - Faster full builds: `eas build --local` (minibox has the Android SDK + JDK), or a paid EAS plan (priority queue). First build is the slow/cold one.
 
 ## Skill Workflows

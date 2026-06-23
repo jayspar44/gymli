@@ -35,8 +35,8 @@
     "prepare": "husky",
     "build:android:dev": "cd apps/mobile && NODE_ENV=development npx eas build -p android --profile development",
     "build:android:prod": "cd apps/mobile && NODE_ENV=development npx eas build -p android --profile production",
-    "update:dev": "cd apps/mobile && npx eas update --channel development",
-    "update:prod": "cd apps/mobile && npx eas update --channel production"
+    "update:dev": "cd apps/mobile && npx eas update --channel development --environment development",
+    "update:prod": "cd apps/mobile && npx eas update --channel production --environment production"
   },
   "dependencies": {
     "concurrently": "^8.2.2",
