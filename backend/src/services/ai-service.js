@@ -54,7 +54,7 @@ Be specific about their performance. Celebrate PRs. Keep it short.`;
       contents: prompt,
       // Thinking tokens count against this cap on gemini-3 models; 200
       // truncated summaries mid-sentence ("That was a").
-      config: { temperature: 0.8, maxOutputTokens: 1024 },
+      config: { maxOutputTokens: 1024 },
     });
     return response.text;
   } catch (error) {
@@ -89,7 +89,6 @@ Return as JSON array of strings. Only valid JSON.`;
       contents: prompt,
       config: {
         responseMimeType: 'application/json',
-        temperature: 0.8,
         maxOutputTokens: 1024,
       },
     });
@@ -125,7 +124,6 @@ export async function chat(messages, context, coachingContext) {
       contents,
       config: {
         systemInstruction: systemPrompt,
-        temperature: 0.8,
         maxOutputTokens: 1024,
       },
     });
@@ -199,7 +197,6 @@ ${sessionText}`;
     config: {
       systemInstruction: system,
       responseMimeType: 'application/json',
-      temperature: 0.2,
       // Generous cap: model thinking tokens count against this limit on
       // gemini-3 models; 800 intermittently truncated the JSON envelope.
       maxOutputTokens: 2048,
